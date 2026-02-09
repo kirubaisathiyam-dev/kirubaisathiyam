@@ -9,10 +9,10 @@ export default function ArticlesPage() {
     <div className="space-y-8 max-w-4xl mx-auto">
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
-          Articles
+          கட்டுரைகள்
         </h1>
         <p style={{ color: "var(--muted-foreground)" }}>
-          Read the latest articles and reflections.
+          சமீபத்திய கட்டுரைகள் மற்றும் சிந்தனைகள்.
         </p>
       </header>
 
@@ -46,7 +46,7 @@ export default function ArticlesPage() {
                     className="text-xs font-semibold uppercase tracking-wide"
                     style={{ color: "var(--muted-foreground)" }}
                   >
-                    Article
+                    கட்டுரை
                   </p>
                   <h2 className="text-lg font-semibold leading-snug">
                     {article.title}

@@ -68,3 +68,16 @@ a {
 .hljs {
   background: transparent;
 }
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+}
+
+.prose h2:first-child,
+.prose h3:first-child,
+.prose h4:first-child {
+  margin-top: 0;
+}

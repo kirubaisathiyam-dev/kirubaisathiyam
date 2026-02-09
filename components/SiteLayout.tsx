@@ -13,20 +13,16 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         className="border-b"
         style={{ borderColor: "var(--border-color)" }}
       >
-        <div className="mx-auto flex w-full items-center justify-between gap-6 px-4 py-5">
+        <div className="mx-auto flex w-full items-center justify-between gap-6 lg:px-6 px-4 py-5">
           <Link
             href="/"
             className="text-lg font-semibold tracking-tight sm:text-xl"
           >
-            கிருபை சத்தியம்
+            கிருபை <span style={{ color: "#df9c00" }}>சத்தியம்</span>
           </Link>
           <nav className="flex items-center gap-3 text-sm sm:text-base">
-            <Link href="/" className="hover:underline">
-              Home
-            </Link>
-            <span style={{ color: "var(--muted-foreground)" }}>|</span>
             <Link href="/articles" className="hover:underline">
-              Articles
+              கட்டுரைகள்
             </Link>
             <span style={{ color: "var(--muted-foreground)" }}>|</span>
             <ThemeToggle />

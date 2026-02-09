@@ -50,7 +50,7 @@ export default function Home() {
                   className="text-xs font-semibold uppercase tracking-wide"
                   style={{ color: "var(--muted-foreground)" }}
                 >
-                  Article
+                  கட்டுரை
                 </p>
                 <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">
                   {featured.title}
@@ -72,12 +72,12 @@ export default function Home() {
 
       <section className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Recent</h2>
+          <h2 className="text-xl font-semibold">சமீபத்திய கட்டுரைகள்</h2>
           <Link
             href="/articles"
             className="text-sm font-semibold hover:underline"
           >
-            More →
+            மேலும் →
           </Link>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -108,7 +108,7 @@ export default function Home() {
                   className="text-xs font-semibold uppercase tracking-wide"
                   style={{ color: "var(--muted-foreground)" }}
                 >
-                  Article
+                  கட்டுரை
                 </p>
                 <Link
                   href={`/articles/${article.slug}`}
