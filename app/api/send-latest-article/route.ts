@@ -1,41 +1,9 @@
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
 import { NextResponse } from "next/server";
 
-type ArticleData = {
-  title?: unknown;
-  date?: unknown;
-  author?: unknown;
-  send_newsletter?: unknown;
-};
+export const runtime = "edge";
 
-type LatestArticle = {
-  slug: string;
-  title: string;
-  date: Date;
-  content: string;
-  sendNewsletter: boolean;
-};
-
-const articlesDirectory = path.join(process.cwd(), "content/articles");
 const listContactsLimit = 500;
 const sendBatchSize = 100;
-
-function parseDate(value: unknown, fallback: Date) {
-  if (typeof value === "string") {
-    const parsed = new Date(value);
-    if (!Number.isNaN(parsed.getTime())) {
-      return parsed;
-    }
-  }
-
-  if (value instanceof Date && !Number.isNaN(value.getTime())) {
-    return value;
-  }
-
-  return fallback;
-}
 
 function escapeHtml(input: string) {
   return input
@@ -51,42 +19,6 @@ function getExcerpt(content: string) {
     .filter(Boolean);
 
   return lines.slice(0, 3).join("\n");
-}
-
-function getLatestArticle(): LatestArticle | null {
-  if (!fs.existsSync(articlesDirectory)) {
-    return null;
-  }
-
-  const fileNames = fs
-    .readdirSync(articlesDirectory)
-    .filter((fileName) => fileName.endsWith(".md"));
-
-  let latest: LatestArticle | null = null;
-
-  for (const fileName of fileNames) {
-    const slug = fileName.replace(/\.md$/, "");
-    const fullPath = path.join(articlesDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, "utf8");
-    const { data, content } = matter(fileContents);
-    const { title, date, send_newsletter } = data as ArticleData;
-    const stats = fs.statSync(fullPath);
-    const articleDate = parseDate(date, stats.mtime);
-
-    const candidate: LatestArticle = {
-      slug,
-      title: typeof title === "string" ? title : slug,
-      date: articleDate,
-      content,
-      sendNewsletter: send_newsletter === true,
-    };
-
-    if (!latest || candidate.date > latest.date) {
-      latest = candidate;
-    }
-  }
-
-  return latest;
 }
 
 async function fetchListContacts(listId: number, apiKey: string) {
@@ -204,27 +136,43 @@ export async function POST(request: Request) {
     );
   }
 
-  const latest = getLatestArticle();
-  if (!latest) {
-    return NextResponse.json(
-      { ok: false, error: "No articles found" },
-      { status: 404 },
-    );
-  }
+  let payload: { slug?: unknown; title?: unknown; content?: unknown } = {};
 
-  if (!latest.sendNewsletter) {
+  try {
+    payload = (await request.json()) as {
+      slug?: unknown;
+      title?: unknown;
+      content?: unknown;
+    };
+  } catch {
     return NextResponse.json(
-      { ok: false, error: "Latest article not marked for newsletter" },
+      { ok: false, error: "Invalid JSON body" },
       { status: 400 },
     );
   }
 
-  const excerpt = getExcerpt(latest.content);
-  const readMoreUrl = baseUrl
-    ? `${baseUrl}/articles/${latest.slug}`
-    : `/articles/${latest.slug}`;
+  const slug =
+    typeof payload.slug === "string" ? payload.slug.trim() : "";
+  const title =
+    typeof payload.title === "string" && payload.title.trim()
+      ? payload.title.trim()
+      : slug;
+  const content =
+    typeof payload.content === "string" ? payload.content : "";
 
-  const safeTitle = escapeHtml(latest.title);
+  if (!slug || !content) {
+    return NextResponse.json(
+      { ok: false, error: "Missing article data" },
+      { status: 400 },
+    );
+  }
+
+  const excerpt = getExcerpt(content);
+  const readMoreUrl = baseUrl
+    ? `${baseUrl}/articles/${slug}`
+    : `/articles/${slug}`;
+
+  const safeTitle = escapeHtml(title);
   const safeExcerpt = escapeHtml(excerpt);
   const safeLink = escapeHtml(readMoreUrl);
 
@@ -237,7 +185,7 @@ export async function POST(request: Request) {
     .join("");
 
   const textContent = [
-    latest.title,
+    title,
     excerpt,
     `Read more: ${readMoreUrl}`,
   ]
@@ -263,7 +211,7 @@ export async function POST(request: Request) {
         apiKey,
         senderEmail,
         senderName,
-        subject: latest.title,
+        subject: title,
         htmlContent,
         textContent,
         bcc: batch,
@@ -273,7 +221,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       sent: recipients.length,
-      article: latest.slug,
+      article: slug,
     });
   } catch (error) {
     const message =
