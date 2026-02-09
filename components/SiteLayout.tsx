@@ -1,4 +1,5 @@
 import SubscribeForm from "@/components/SubscribeForm";
+import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
 
 type SiteLayoutProps = {
@@ -27,6 +28,8 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             <Link href="/articles" className="hover:underline">
               Articles
             </Link>
+            <span style={{ color: "var(--muted-foreground)" }}>|</span>
+            <ThemeToggle />
           </nav>
         </div>
       </header>

@@ -29,6 +29,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
         />
+        <script
+          src="https://kit.fontawesome.com/944b74851d.js"
+          crossOrigin="anonymous"
+        ></script>
       </head>
       <body className="antialiased">
         {children}
