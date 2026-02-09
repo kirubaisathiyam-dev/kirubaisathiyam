@@ -1,6 +1,6 @@
 ﻿backend:
   name: github
-  repo: "YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"
+  repo: "kirubaisathiyam-dev/kirubaisathiyam"
   branch: "main"
 
 media_folder: "public/uploads"
