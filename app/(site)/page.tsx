@@ -1,4 +1,5 @@
 import { getAllArticles } from "@/lib/articles";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -33,12 +34,13 @@ export default function Home() {
                   className="overflow-hidden rounded-md border"
                   style={{ borderColor: "var(--border-color)" }}
                 >
-                  <div className="aspect-[16/9] w-full">
-                    <img
+                  <div className="relative aspect-[16/9] w-full">
+                    <Image
                       src={featured.image}
                       alt={featured.title}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
+                      fill
+                      sizes="(min-width: 1024px) 40rem, 100vw"
+                      className="object-cover"
                     />
                   </div>
                 </div>
@@ -90,12 +92,13 @@ export default function Home() {
                   className="overflow-hidden rounded-md border"
                   style={{ borderColor: "var(--border-color)" }}
                 >
-                  <div className="aspect-[4/3] w-full">
-                    <img
+                  <div className="relative aspect-[4/3] w-full">
+                    <Image
                       src={article.image}
                       alt={article.title}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
+                      fill
+                      sizes="(min-width: 1024px) 18rem, 100vw"
+                      className="object-cover"
                     />
                   </div>
                 </div>

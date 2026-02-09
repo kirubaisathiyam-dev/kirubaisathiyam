@@ -2,9 +2,31 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 const storageKey = "ks_admin_auth";
+const authEvent = "ks-admin-auth-change";
+
+function getSnapshot() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  return window.localStorage.getItem(storageKey) === "true";
+}
+
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  window.addEventListener("storage", callback);
+  window.addEventListener(authEvent, callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(authEvent, callback);
+  };
+}
 
 export default function AdminLayout({
   children,
@@ -13,12 +35,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isAuthed, setIsAuthed] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const stored = window.localStorage.getItem(storageKey);
-    setIsAuthed(stored === "true");
-  }, []);
+  const isAuthed = useSyncExternalStore(subscribe, getSnapshot, () => null);
 
   useEffect(() => {
     if (isAuthed === false && pathname !== "/admin") {

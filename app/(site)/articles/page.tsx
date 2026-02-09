@@ -1,4 +1,5 @@
 import { getAllArticles } from "@/lib/articles";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function ArticlesPage() {
@@ -29,12 +30,13 @@ export default function ArticlesPage() {
                     className="flex-shrink-0 self-start overflow-hidden rounded-md border sm:w-72"
                     style={{ borderColor: "var(--border-color)" }}
                   >
-                    <div className="aspect-[4/3] w-full">
-                      <img
+                    <div className="relative aspect-[4/3] w-full">
+                      <Image
                         src={article.image}
                         alt={article.title}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
+                        fill
+                        sizes="(min-width: 640px) 18rem, 100vw"
+                        className="object-cover"
                       />
                     </div>
                   </div>

@@ -1,4 +1,5 @@
-﻿import { getAllArticles, getArticleBySlug } from "@/lib/articles";
+import { getAllArticles, getArticleBySlug } from "@/lib/articles";
+import Image from "next/image";
 
 export function generateStaticParams() {
   const articles = getAllArticles();
@@ -34,12 +35,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           className="overflow-hidden rounded-lg border"
           style={{ borderColor: "var(--border-color)" }}
         >
-          <div className="aspect-[16/9] w-full">
-            <img
+          <div className="relative aspect-[16/9] w-full">
+            <Image
               src={article.image}
               alt={article.title}
-              className="h-full w-full object-cover"
-              loading="lazy"
+              fill
+              sizes="(min-width: 1024px) 48rem, 100vw"
+              className="object-cover"
             />
           </div>
         </div>

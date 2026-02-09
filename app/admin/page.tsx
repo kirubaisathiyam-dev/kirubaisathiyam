@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const storageKey = "ks_admin_auth";
+const authEvent = "ks-admin-auth-change";
 
 export default function AdminHomePage() {
   const [isAuthed, setIsAuthed] = useState(false);
@@ -22,6 +23,7 @@ export default function AdminHomePage() {
 
   function handleLogout() {
     window.localStorage.removeItem(storageKey);
+    window.dispatchEvent(new Event(authEvent));
     setIsAuthed(false);
     setEmail("");
     setPassword("");
@@ -38,6 +40,7 @@ export default function AdminHomePage() {
 
     if (email.trim() === expectedEmail && password === expectedPassword) {
       window.localStorage.setItem(storageKey, "true");
+      window.dispatchEvent(new Event(authEvent));
       setIsAuthed(true);
       setPassword("");
       return;
