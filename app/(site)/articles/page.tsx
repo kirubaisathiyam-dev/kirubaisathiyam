@@ -23,10 +23,10 @@ export default function ArticlesPage() {
               className="block rounded-lg border p-4 sm:p-5"
               style={{ borderColor: "var(--border-color)" }}
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                 {article.image && (
                   <div
-                    className="overflow-hidden rounded-md border sm:w-48"
+                    className="flex-shrink-0 self-start overflow-hidden rounded-md border sm:w-72"
                     style={{ borderColor: "var(--border-color)" }}
                   >
                     <div className="aspect-[4/3] w-full">

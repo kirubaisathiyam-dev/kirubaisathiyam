@@ -14,6 +14,7 @@ export type ArticleMeta = {
   author: string;
   excerpt: string;
   image?: string;
+  summary?: string;
 };
 
 export type Article = ArticleMeta & {
@@ -80,9 +81,11 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
     date?: unknown;
     author?: unknown;
     image?: unknown;
+    summary?: unknown;
   };
   const parsedDate = parseDate(date, stats.mtime);
   const image = getCoverImage(content, { image: data?.image });
+  const summary = typeof data?.summary === "string" ? data.summary : "";
 
   return {
     slug,
@@ -92,8 +95,9 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
         ? date
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
-    excerpt: getExcerpt(content),
+    excerpt: summary || getExcerpt(content),
     image: image || undefined,
+    summary: summary || undefined,
     sortDate: parsedDate,
   };
 }
@@ -121,9 +125,11 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     date?: unknown;
     author?: unknown;
     image?: unknown;
+    summary?: unknown;
   };
   const parsedDate = parseDate(date, stats.mtime);
   const image = getCoverImage(content, { image: data?.image });
+  const summary = typeof data?.summary === "string" ? data.summary : "";
 
   const processedContent = await remark()
     .use(remarkGfm)
@@ -140,8 +146,9 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
         ? date
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
-    excerpt: getExcerpt(content),
+    excerpt: summary || getExcerpt(content),
     image: image || undefined,
+    summary: summary || undefined,
     contentHtml: processedContent.toString(),
   };
 }

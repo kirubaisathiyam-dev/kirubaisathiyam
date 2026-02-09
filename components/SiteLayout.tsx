@@ -17,7 +17,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             href="/"
             className="text-lg font-semibold tracking-tight sm:text-xl"
           >
-            Kirubai Sathiyam
+            kirubaisathiyam.org
           </Link>
           <nav className="flex items-center gap-3 text-sm sm:text-base">
             <Link href="/" className="hover:underline">
