@@ -21,6 +21,15 @@ function getExcerpt(content: string) {
   return lines.slice(0, 3).join("\n");
 }
 
+function resolveImageUrl(image: string, baseUrl?: string) {
+  const trimmed = image.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (!baseUrl) return "";
+  if (trimmed.startsWith("/")) return `${baseUrl}${trimmed}`;
+  return `${baseUrl}/${trimmed}`;
+}
+
 async function fetchListContacts(listId: number, apiKey: string) {
   const contacts: { email?: string }[] = [];
   let offset = 0;
@@ -136,13 +145,21 @@ export async function POST(request: Request) {
     );
   }
 
-  let payload: { slug?: unknown; title?: unknown; content?: unknown } = {};
+  let payload: {
+    slug?: unknown;
+    title?: unknown;
+    content?: unknown;
+    summary?: unknown;
+    image?: unknown;
+  } = {};
 
   try {
     payload = (await request.json()) as {
       slug?: unknown;
       title?: unknown;
       content?: unknown;
+      summary?: unknown;
+      image?: unknown;
     };
   } catch {
     return NextResponse.json(
@@ -159,6 +176,10 @@ export async function POST(request: Request) {
       : slug;
   const content =
     typeof payload.content === "string" ? payload.content : "";
+  const summary =
+    typeof payload.summary === "string" ? payload.summary.trim() : "";
+  const image =
+    typeof payload.image === "string" ? payload.image.trim() : "";
 
   if (!slug || !content) {
     return NextResponse.json(
@@ -167,7 +188,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const excerpt = getExcerpt(content);
+  const excerpt = summary || getExcerpt(content);
   const readMoreUrl = baseUrl
     ? `${baseUrl}/articles/${slug}`
     : `/articles/${slug}`;
@@ -175,11 +196,41 @@ export async function POST(request: Request) {
   const safeTitle = escapeHtml(title);
   const safeExcerpt = escapeHtml(excerpt);
   const safeLink = escapeHtml(readMoreUrl);
+  const imageUrl = image ? resolveImageUrl(image, baseUrl) : "";
+  const safeImageUrl = imageUrl ? escapeHtml(imageUrl) : "";
 
   const htmlContent = [
-    `<h1>${safeTitle}</h1>`,
-    safeExcerpt ? `<p>${safeExcerpt.replaceAll("\n", "<br />")}</p>` : "",
-    `<p><a href="${safeLink}">Read more</a></p>`,
+    `<!doctype html>`,
+    `<html lang="ta">`,
+    `<head>`,
+    `<meta charset="utf-8" />`,
+    `<meta name="viewport" content="width=device-width, initial-scale=1" />`,
+    `<title>${safeTitle}</title>`,
+    `</head>`,
+    `<body style="margin:0;padding:0;background:#ffffff;color:#111827;font-family:'Noto Serif Tamil','Times New Roman',serif;">`,
+    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff;">`,
+    `<tr>`,
+    `<td align="center" style="padding:24px;">`,
+    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;border:1px solid #e5e7eb;padding:24px;">`,
+    `<tr>`,
+    `<td>`,
+    `<h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;font-weight:700;color:#111827;">${safeTitle}</h1>`,
+    safeImageUrl
+      ? `<img src="${safeImageUrl}" alt="${safeTitle}" style="width:100%;height:auto;display:block;margin:0 0 16px;" />`
+      : "",
+    safeExcerpt
+      ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#111827;">${safeExcerpt.replaceAll("\n", "<br />")}</p>`
+      : "",
+    `<a href="${safeLink}" style="display:inline-block;padding:12px 18px;background:#111827;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">Read more</a>`,
+    `<p style="margin:24px 0 0;font-size:12px;color:#6b7280;">Kirubai Sathiyam</p>`,
+    `</td>`,
+    `</tr>`,
+    `</table>`,
+    `</td>`,
+    `</tr>`,
+    `</table>`,
+    `</body>`,
+    `</html>`,
   ]
     .filter(Boolean)
     .join("");

@@ -7,6 +7,8 @@ export type NewsletterArticle = {
   title: string;
   date: string;
   content: string;
+  summary?: string;
+  image?: string;
 };
 
 type Props = {
@@ -49,6 +51,8 @@ export default function SendNewsletterForm({ articles }: Props) {
           slug: selectedArticle.slug,
           title: selectedArticle.title,
           content: selectedArticle.content,
+          summary: selectedArticle.summary,
+          image: selectedArticle.image,
         }),
       });
 

@@ -2,6 +2,7 @@
   name: github
   repo: "kirubaisathiyam-dev/kirubaisathiyam"
   branch: "main"
+  auth_type: implicit
 
 media_folder: "public/uploads"
 public_folder: "/uploads"

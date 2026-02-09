@@ -26,6 +26,34 @@ function parseDate(value: unknown, fallback: Date) {
   return fallback;
 }
 
+function getExcerpt(content: string) {
+  const lines = content
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter(
+      (line) =>
+        !line.startsWith("#") &&
+        !line.startsWith("!") &&
+        !line.startsWith(">"),
+    );
+
+  return lines.slice(0, 3).join(" ");
+}
+
+function getCoverImage(content: string, data: { image?: unknown }) {
+  if (typeof data.image === "string" && data.image.trim()) {
+    return data.image.trim();
+  }
+
+  const match = content.match(/!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/);
+  if (match?.[1]) {
+    return match[1];
+  }
+
+  return "";
+}
+
 function loadArticles(): NewsletterArticle[] {
   if (!fs.existsSync(articlesDirectory)) {
     return [];
@@ -46,12 +74,16 @@ function loadArticles(): NewsletterArticle[] {
       typeof data?.date === "string"
         ? data.date
         : parsedDate.toISOString().slice(0, 10);
+    const summary = typeof data?.summary === "string" ? data.summary : "";
+    const image = getCoverImage(content, { image: data?.image });
 
     return {
       slug,
       title: typeof data?.title === "string" ? data.title : slug,
       date: dateLabel,
       content,
+      summary: summary || getExcerpt(content),
+      image: image || undefined,
       sortDate: parsedDate,
     };
   });
