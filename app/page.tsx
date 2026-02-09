@@ -1,4 +1,5 @@
 import { getAllArticles } from "@/lib/articles";
+import SubscribeForm from "@/components/SubscribeForm";
 import Link from "next/link";
 
 export default function Home() {
@@ -17,6 +18,11 @@ export default function Home() {
           </li>
         ))}
       </ul>
+
+      <h2 style={{ marginTop: "2rem" }}>
+        புதிய கட்டுரைகள் உங்கள் மின்னஞ்சலில்
+      </h2>
+      <SubscribeForm />
     </main>
   );
 }
