@@ -1,3 +1,4 @@
+import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import SubscribeForm from "@/components/SubscribeForm";
 import ThemeToggle from "@/components/ThemeToggle";
 import Link from "next/link";
@@ -32,6 +33,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">
         {children}
+        <BibleReferenceTooltip />
       </main>
 
       <footer

@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeHighlight from "rehype-highlight";
 import rehypeStringify from "rehype-stringify";
+import { parseBibleReference } from "@/lib/bible";
 
 export type ArticleMeta = {
   slug: string;
@@ -40,6 +41,29 @@ function getExcerpt(content: string) {
     );
 
   return lines.slice(0, 3).join(" ");
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function replaceBibleRefsInHtml(html: string) {
+  return html.replace(/\(([^()]+?)\)/g, (match, inner) => {
+    const innerText = inner.replace(/<[^>]+>/g, "").trim();
+    const parsed = parseBibleReference(innerText);
+    if (!parsed) {
+      return match;
+    }
+
+    const safeRef = escapeHtml(parsed.reference);
+    const safePassage = escapeHtml(parsed.passageId);
+
+    return `(<button type="button" class="bible-ref" data-passage="${safePassage}" data-ref="${safeRef}">${safeRef}</button>)`;
+  });
 }
 
 function getCoverImage(content: string, data: { image?: unknown }) {
@@ -137,6 +161,7 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     .use(rehypeHighlight)
     .use(rehypeStringify)
     .process(content);
+  const contentHtml = replaceBibleRefsInHtml(processedContent.toString());
 
   return {
     slug,
@@ -149,6 +174,6 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     excerpt: summary || getExcerpt(content),
     image: image || undefined,
     summary: summary || undefined,
-    contentHtml: processedContent.toString(),
+    contentHtml,
   };
 }
