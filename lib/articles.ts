@@ -2,13 +2,17 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
-import html from "remark-html";
+import remarkGfm from "remark-gfm";
+import remarkRehype from "remark-rehype";
+import rehypeHighlight from "rehype-highlight";
+import rehypeStringify from "rehype-stringify";
 
 export type ArticleMeta = {
   slug: string;
   title: string;
   date: string;
   author: string;
+  excerpt: string;
 };
 
 export type Article = ArticleMeta & {
@@ -17,16 +21,46 @@ export type Article = ArticleMeta & {
 
 const articlesDirectory = path.join(process.cwd(), "content/articles");
 
-function readArticleMeta(fileName: string): ArticleMeta {
+type ArticleMetaWithSort = ArticleMeta & {
+  sortDate: Date;
+};
+
+function getExcerpt(content: string) {
+  const lines = content
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  return lines.slice(0, 3).join(" ");
+}
+
+function parseDate(value: unknown, fallback: Date) {
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed;
+    }
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value;
+  }
+
+  return fallback;
+}
+
+function readArticleMeta(fileName: string): ArticleMetaWithSort {
   const slug = fileName.replace(/\.md$/, "");
   const fullPath = path.join(articlesDirectory, fileName);
   const fileContents = fs.readFileSync(fullPath, "utf8");
-  const { data } = matter(fileContents);
+  const { data, content } = matter(fileContents);
+  const stats = fs.statSync(fullPath);
   const { title, date, author } = data as {
     title?: unknown;
     date?: unknown;
     author?: unknown;
   };
+  const parsedDate = parseDate(date, stats.mtime);
 
   return {
     slug,
@@ -34,10 +68,10 @@ function readArticleMeta(fileName: string): ArticleMeta {
     date:
       typeof date === "string"
         ? date
-        : date instanceof Date
-          ? date.toISOString().slice(0, 10)
-          : "",
+        : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
+    excerpt: getExcerpt(content),
+    sortDate: parsedDate,
   };
 }
 
@@ -46,7 +80,11 @@ export function getAllArticles(): ArticleMeta[] {
     .readdirSync(articlesDirectory)
     .filter((fileName) => fileName.endsWith(".md"));
 
-  return fileNames.map((fileName) => readArticleMeta(fileName));
+  const articles = fileNames.map((fileName) => readArticleMeta(fileName));
+
+  return articles
+    .sort((a, b) => b.sortDate.getTime() - a.sortDate.getTime())
+    .map(({ sortDate, ...article }) => article);
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article> {
@@ -54,13 +92,20 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
   const fileContents = fs.readFileSync(fullPath, "utf8");
 
   const { data, content } = matter(fileContents);
+  const stats = fs.statSync(fullPath);
   const { title, date, author } = data as {
     title?: unknown;
     date?: unknown;
     author?: unknown;
   };
+  const parsedDate = parseDate(date, stats.mtime);
 
-  const processedContent = await remark().use(html).process(content);
+  const processedContent = await remark()
+    .use(remarkGfm)
+    .use(remarkRehype)
+    .use(rehypeHighlight)
+    .use(rehypeStringify)
+    .process(content);
 
   return {
     slug,
@@ -68,10 +113,9 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     date:
       typeof date === "string"
         ? date
-        : date instanceof Date
-          ? date.toISOString().slice(0, 10)
-          : "",
+        : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
+    excerpt: getExcerpt(content),
     contentHtml: processedContent.toString(),
   };
 }

@@ -50,13 +50,7 @@ export default function SubscribeForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      style={{
-        display: "flex",
-        gap: "0.75rem",
-        flexWrap: "wrap",
-        alignItems: "center",
-        marginTop: "0.75rem",
-      }}
+      className="mt-3 flex flex-wrap items-center gap-3"
     >
       <input
         type="email"
@@ -65,23 +59,17 @@ export default function SubscribeForm() {
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         required
-        style={{
-          padding: "0.5rem 0.75rem",
-          border: "1px solid #ccc",
-          borderRadius: "6px",
-          minWidth: "220px",
-          flex: "1 1 220px",
-        }}
+        className="min-w-[220px] flex-1 rounded-md border px-3 py-2 text-sm"
+        style={{ borderColor: "var(--border-color)" }}
       />
       <button
         type="submit"
         disabled={status === "loading"}
+        className="rounded-md border px-4 py-2 text-sm font-semibold"
         style={{
-          padding: "0.5rem 1rem",
-          borderRadius: "6px",
-          border: "1px solid #111",
-          background: "#111",
-          color: "#fff",
+          borderColor: "var(--foreground)",
+          background: "var(--foreground)",
+          color: "var(--background)",
           cursor: status === "loading" ? "not-allowed" : "pointer",
         }}
       >

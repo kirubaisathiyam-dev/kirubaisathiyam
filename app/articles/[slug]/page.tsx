@@ -19,12 +19,20 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticleBySlug(slug);
 
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>{article.title}</h1>
-      <p>
-        {article.date} · {article.author}
-      </p>
-      <article dangerouslySetInnerHTML={{ __html: article.contentHtml }} />
-    </main>
+    <article className="space-y-6">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
+          {article.title}
+        </h1>
+        <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
+          {article.date} · {article.author}
+        </p>
+      </header>
+
+      <div
+        className="prose prose-neutral max-w-none"
+        dangerouslySetInnerHTML={{ __html: article.contentHtml }}
+      />
+    </article>
   );
 }

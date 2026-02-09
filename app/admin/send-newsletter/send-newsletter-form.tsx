@@ -75,25 +75,13 @@ export default function SendNewsletterForm({ articles }: Props) {
   }
 
   return (
-    <div
-      style={{
-        marginTop: "1.5rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0.75rem",
-        alignItems: "flex-start",
-      }}
-    >
-      <label style={{ fontWeight: 600 }}>Article</label>
+    <div className="mt-4 flex flex-col items-start gap-3">
+      <label className="text-sm font-semibold">Article</label>
       <select
         value={selectedSlug}
         onChange={(event) => setSelectedSlug(event.target.value)}
-        style={{
-          padding: "0.5rem 0.75rem",
-          border: "1px solid #ccc",
-          borderRadius: "6px",
-          minWidth: "280px",
-        }}
+        className="w-full max-w-md rounded-md border px-3 py-2 text-sm"
+        style={{ borderColor: "var(--border-color)" }}
       >
         {articles.length === 0 && <option>No articles found</option>}
         {articles.map((article) => (
@@ -108,25 +96,19 @@ export default function SendNewsletterForm({ articles }: Props) {
         placeholder="Admin key (optional)"
         value={adminKey}
         onChange={(event) => setAdminKey(event.target.value)}
-        style={{
-          padding: "0.5rem 0.75rem",
-          border: "1px solid #ccc",
-          borderRadius: "6px",
-          width: "100%",
-          maxWidth: "320px",
-        }}
+        className="w-full max-w-md rounded-md border px-3 py-2 text-sm"
+        style={{ borderColor: "var(--border-color)" }}
       />
 
       <button
         type="button"
         onClick={handleSend}
         disabled={status === "loading" || articles.length === 0}
+        className="rounded-md border px-4 py-2 text-sm font-semibold"
         style={{
-          padding: "0.6rem 1.2rem",
-          borderRadius: "6px",
-          border: "1px solid #111",
-          background: "#111",
-          color: "#fff",
+          borderColor: "var(--foreground)",
+          background: "var(--foreground)",
+          color: "var(--background)",
           cursor:
             status === "loading" || articles.length === 0
               ? "not-allowed"

@@ -65,13 +65,15 @@ export default function SendNewsletterPage() {
   const articles = loadArticles();
 
   return (
-    <main style={{ padding: "2rem", maxWidth: "680px" }}>
-      <h1>Send Newsletter</h1>
-      <p style={{ marginTop: "0.5rem", color: "#555" }}>
+    <div className="max-w-2xl space-y-3">
+      <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
+        Send Newsletter
+      </h1>
+      <p style={{ color: "var(--muted-foreground)" }}>
         Select an article and send it as a newsletter.
       </p>
 
       <SendNewsletterForm articles={articles} />
-    </main>
+    </div>
   );
 }

@@ -7,4 +7,4 @@ author: Josiah
 
 ![Test image](/uploads/map3.png "Game")
 
-We all are sinners.
+# We all are sinners.
