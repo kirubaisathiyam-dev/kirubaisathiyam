@@ -13,6 +13,7 @@ export type ArticleMeta = {
   date: string;
   author: string;
   excerpt: string;
+  image?: string;
 };
 
 export type Article = ArticleMeta & {
@@ -29,9 +30,28 @@ function getExcerpt(content: string) {
   const lines = content
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter(
+      (line) =>
+        !line.startsWith("#") &&
+        !line.startsWith("!") &&
+        !line.startsWith(">"),
+    );
 
   return lines.slice(0, 3).join(" ");
+}
+
+function getCoverImage(content: string, data: { image?: unknown }) {
+  if (typeof data.image === "string" && data.image.trim()) {
+    return data.image.trim();
+  }
+
+  const match = content.match(/!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/);
+  if (match?.[1]) {
+    return match[1];
+  }
+
+  return "";
 }
 
 function parseDate(value: unknown, fallback: Date) {
@@ -59,8 +79,10 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
     title?: unknown;
     date?: unknown;
     author?: unknown;
+    image?: unknown;
   };
   const parsedDate = parseDate(date, stats.mtime);
+  const image = getCoverImage(content, { image: data?.image });
 
   return {
     slug,
@@ -71,6 +93,7 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
     excerpt: getExcerpt(content),
+    image: image || undefined,
     sortDate: parsedDate,
   };
 }
@@ -97,8 +120,10 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     title?: unknown;
     date?: unknown;
     author?: unknown;
+    image?: unknown;
   };
   const parsedDate = parseDate(date, stats.mtime);
+  const image = getCoverImage(content, { image: data?.image });
 
   const processedContent = await remark()
     .use(remarkGfm)
@@ -116,6 +141,7 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
     excerpt: getExcerpt(content),
+    image: image || undefined,
     contentHtml: processedContent.toString(),
   };
 }
