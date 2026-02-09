@@ -1,4 +1,3 @@
-import SubscribeForm from "@/components/SubscribeForm";
 import { getAllArticles } from "@/lib/articles";
 import Link from "next/link";
 
@@ -125,13 +124,6 @@ export default function Home() {
             </article>
           ))}
         </div>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">
-          புதிய கட்டுரைகள் உங்கள் மின்னஞ்சலில்
-        </h2>
-        <SubscribeForm />
       </section>
     </div>
   );

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "cookieconsent/build/cookieconsent.min.css";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
-import SiteLayout from "@/components/SiteLayout";
 
 export const metadata: Metadata = {
   title: {
@@ -32,7 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <SiteLayout>{children}</SiteLayout>
+        {children}
         <CookieConsentBanner />
       </body>
     </html>

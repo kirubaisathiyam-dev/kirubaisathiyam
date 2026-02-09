@@ -1,3 +1,4 @@
+import SubscribeForm from "@/components/SubscribeForm";
 import Link from "next/link";
 
 type SiteLayoutProps = {
@@ -6,7 +7,7 @@ type SiteLayoutProps = {
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
   return (
-    <div className="min-h-screen">
+    <div className="flex min-h-screen flex-col">
       <header
         className="border-b"
         style={{ borderColor: "var(--border-color)" }}
@@ -30,7 +31,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-10">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:py-10">
         {children}
       </main>
 
@@ -38,8 +39,17 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         className="border-t"
         style={{ borderColor: "var(--border-color)" }}
       >
-        <div className="mx-auto w-full max-w-4xl px-4 py-6 text-sm">
-          <span style={{ color: "var(--muted-foreground)" }}>
+        <div className="mx-auto w-full max-w-4xl space-y-5 px-4 py-8">
+          <div className="space-y-2">
+            <p className="text-sm font-semibold">
+              புதிய கட்டுரைகள் உங்கள் மின்னஞ்சலில்
+            </p>
+            <SubscribeForm />
+          </div>
+          <span
+            className="block text-xs"
+            style={{ color: "var(--muted-foreground)" }}
+          >
             © {new Date().getFullYear()} Kirubai Sathiyam
           </span>
         </div>
