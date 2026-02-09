@@ -1,5 +1,6 @@
 "use client";
 
+import { parseBibleReference } from "@/lib/bible";
 import { useEffect, useRef, useState } from "react";
 
 type TooltipState = {
@@ -44,6 +45,17 @@ function positionTooltip(
 export default function BibleReferenceTooltip() {
   const [state, setState] = useState<TooltipState>(initialState);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const roots = Array.from(document.querySelectorAll(".prose"));
+    for (const root of roots) {
+      if (root.getAttribute("data-bible-enhanced") === "true") {
+        continue;
+      }
+      enhanceBibleRefs(root);
+      root.setAttribute("data-bible-enhanced", "true");
+    }
+  }, []);
 
   useEffect(() => {
     let activeElement: HTMLElement | null = null;
@@ -218,4 +230,62 @@ export default function BibleReferenceTooltip() {
       </div>
     </div>
   );
+}
+
+function enhanceBibleRefs(root: Element) {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const textNodes: Text[] = [];
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text;
+    if (!node.parentElement) continue;
+    if (node.parentElement.closest(".bible-ref")) continue;
+    textNodes.push(node);
+  }
+
+  const pattern = /\(([^()]+?)\)/g;
+
+  for (const node of textNodes) {
+    const text = node.textContent || "";
+    if (!pattern.test(text)) {
+      continue;
+    }
+
+    pattern.lastIndex = 0;
+    const fragment = document.createDocumentFragment();
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = pattern.exec(text))) {
+      const before = text.slice(lastIndex, match.index);
+      if (before) {
+        fragment.appendChild(document.createTextNode(before));
+      }
+
+      const rawRef = match[1].trim();
+      const parsed = parseBibleReference(rawRef);
+      if (!parsed) {
+        fragment.appendChild(document.createTextNode(match[0]));
+      } else {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "bible-ref";
+        button.dataset.passage = parsed.passageId;
+        button.dataset.ref = rawRef;
+        button.textContent = rawRef;
+        fragment.appendChild(button);
+      }
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    const after = text.slice(lastIndex);
+    if (after) {
+      fragment.appendChild(document.createTextNode(after));
+    }
+
+    if (node.parentNode) {
+      node.parentNode.replaceChild(fragment, node);
+    }
+  }
 }

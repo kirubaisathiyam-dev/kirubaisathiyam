@@ -53,13 +53,19 @@ function escapeHtml(value: string) {
 
 function replaceBibleRefsInHtml(html: string) {
   return html.replace(/\(([^()]+?)\)/g, (match, inner) => {
-    const innerText = inner.replace(/<[^>]+>/g, "").trim();
-    const parsed = parseBibleReference(innerText);
+    const rawText = inner.replace(/<[^>]+>/g, "").trim();
+    const normalizedText = rawText
+      .replace(/&nbsp;|&#160;/g, " ")
+      .replace(/\u00A0/g, " ")
+      .replace(/\s+/g, " ")
+      .replace(/[.,;!?]+$/, "")
+      .trim();
+    const parsed = parseBibleReference(normalizedText);
     if (!parsed) {
       return match;
     }
 
-    const safeRef = escapeHtml(parsed.reference);
+    const safeRef = escapeHtml(rawText);
     const safePassage = escapeHtml(parsed.passageId);
 
     return `(<button type="button" class="bible-ref" data-passage="${safePassage}" data-ref="${safeRef}">${safeRef}</button>)`;

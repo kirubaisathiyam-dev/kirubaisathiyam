@@ -3,7 +3,7 @@ import { parseBibleReference } from "@/lib/bible";
 
 export const runtime = "edge";
 
-const defaultBibleId = "339";
+const defaultBibleId = "2730";
 
 export async function GET(request: Request) {
   const apiKey = process.env.YVP_APP_KEY || process.env.YOUVERSION_APP_KEY;
