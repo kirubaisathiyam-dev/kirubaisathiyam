@@ -2,6 +2,16 @@
 
 import { useEffect } from "react";
 
+type CookieConsentInstance = {
+  initialise?: (options: typeof COOKIE_CONSENT_OPTIONS) => void;
+};
+
+declare global {
+  interface Window {
+    cookieconsent?: CookieConsentInstance;
+  }
+}
+
 const COOKIE_CONSENT_OPTIONS = {
   palette: {
     popup: { background: "#1b1b1b" },
@@ -21,13 +31,19 @@ export default function CookieConsentBanner() {
 
     const init = async () => {
       try {
-        const module = await import("cookieconsent");
+        const cookieModule = (await import("cookieconsent")) as
+          | CookieConsentInstance
+          | { default?: CookieConsentInstance };
         if (cancelled) return;
 
-        const instance =
-          (window as any).cookieconsent ?? (module as any).default ?? module;
+        const maybeInstance =
+          window.cookieconsent ??
+          ("default" in cookieModule ? cookieModule.default : undefined) ??
+          cookieModule;
 
-        if (instance && typeof instance.initialise === "function") {
+        const instance = maybeInstance as CookieConsentInstance | undefined;
+
+        if (instance?.initialise) {
           instance.initialise(COOKIE_CONSENT_OPTIONS);
         }
       } catch {

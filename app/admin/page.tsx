@@ -1,13 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore, useState } from "react";
 
 const storageKey = "ks_admin_auth";
 const authEvent = "ks-admin-auth-change";
 
+function getSnapshot() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  return window.localStorage.getItem(storageKey) === "true";
+}
+
+function subscribe(callback: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  window.addEventListener("storage", callback);
+  window.addEventListener(authEvent, callback);
+
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(authEvent, callback);
+  };
+}
+
 export default function AdminHomePage() {
-  const [isAuthed, setIsAuthed] = useState(false);
+  const isAuthed = useSyncExternalStore(subscribe, getSnapshot, () => false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,16 +36,9 @@ export default function AdminHomePage() {
   const expectedEmail = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "";
   const expectedPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "";
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.localStorage.getItem(storageKey);
-    setIsAuthed(stored === "true");
-  }, []);
-
   function handleLogout() {
     window.localStorage.removeItem(storageKey);
     window.dispatchEvent(new Event(authEvent));
-    setIsAuthed(false);
     setEmail("");
     setPassword("");
   }
@@ -41,7 +55,6 @@ export default function AdminHomePage() {
     if (email.trim() === expectedEmail && password === expectedPassword) {
       window.localStorage.setItem(storageKey, "true");
       window.dispatchEvent(new Event(authEvent));
-      setIsAuthed(true);
       setPassword("");
       return;
     }
