@@ -72,7 +72,7 @@ export default function AdminHomePage() {
             placeholder="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-md border px-3 py-2 text-sm"
+            className="w-full border px-3 py-2 text-sm"
             style={{ borderColor: "var(--border-color)" }}
             required
           />
@@ -81,13 +81,13 @@ export default function AdminHomePage() {
             placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded-md border px-3 py-2 text-sm"
+            className="w-full border px-3 py-2 text-sm"
             style={{ borderColor: "var(--border-color)" }}
             required
           />
           <button
             type="submit"
-            className="rounded-md border px-4 py-2 text-sm font-semibold"
+            className="border px-4 py-2 text-sm font-semibold"
             style={{
               borderColor: "var(--foreground)",
               background: "var(--foreground)",

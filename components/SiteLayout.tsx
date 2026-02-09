@@ -13,12 +13,12 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         className="border-b"
         style={{ borderColor: "var(--border-color)" }}
       >
-        <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-6 px-4 py-5">
+        <div className="mx-auto flex w-full items-center justify-between gap-6 px-4 py-5">
           <Link
             href="/"
             className="text-lg font-semibold tracking-tight sm:text-xl"
           >
-            kirubaisathiyam.org
+            கிருபை சத்தியம்
           </Link>
           <nav className="flex items-center gap-3 text-sm sm:text-base">
             <Link href="/" className="hover:underline">
@@ -34,7 +34,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">
         {children}
       </main>
 
@@ -42,7 +42,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         className="border-t"
         style={{ borderColor: "var(--border-color)" }}
       >
-        <div className="mx-auto w-full max-w-4xl space-y-5 px-4 py-8">
+        <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-8">
           <div className="space-y-2">
             <p className="text-sm font-semibold">
               புதிய கட்டுரைகள் உங்கள் மின்னஞ்சலில்

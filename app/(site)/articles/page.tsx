@@ -6,7 +6,7 @@ export default function ArticlesPage() {
   const articles = getAllArticles();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-4xl mx-auto">
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
           Articles
@@ -21,13 +21,13 @@ export default function ArticlesPage() {
           <li key={article.slug}>
             <Link
               href={`/articles/${article.slug}`}
-              className="block rounded-lg border p-4 sm:p-5"
+              className="block border"
               style={{ borderColor: "var(--border-color)" }}
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+              <div className="flex flex-col sm:flex-row sm:items-start">
                 {article.image && (
                   <div
-                    className="flex-shrink-0 self-start overflow-hidden rounded-md border sm:w-72"
+                    className="flex-shrink-0 self-start overflow-hidden border w-full sm:w-72"
                     style={{ borderColor: "var(--border-color)" }}
                   >
                     <div className="relative aspect-[4/3] w-full">
@@ -41,7 +41,7 @@ export default function ArticlesPage() {
                     </div>
                   </div>
                 )}
-                <div className="space-y-2">
+                <div className="space-y-2 p-4 sm:p-5">
                   <p
                     className="text-xs font-semibold uppercase tracking-wide"
                     style={{ color: "var(--muted-foreground)" }}

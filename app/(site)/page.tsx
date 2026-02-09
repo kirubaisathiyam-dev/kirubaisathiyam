@@ -8,33 +8,33 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
-      <section className="space-y-3">
+      {/* <section className="space-y-3">
         <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
           கிருபை சத்தியம்
         </h1>
         <p style={{ color: "var(--muted-foreground)" }}>
           தமிழில் எழுத்துகள், போதனைகள், மற்றும் சிந்தனைகள்.
         </p>
-      </section>
+      </section> */}
 
       {featured && (
         <section className="space-y-4">
           <Link
             href={`/articles/${featured.slug}`}
-            className="block rounded-lg border p-4 sm:p-6"
+            className="block border"
             style={{ borderColor: "var(--border-color)" }}
           >
             <div
-              className={`grid gap-6 ${
+              className={`grid ${
                 featured.image ? "md:grid-cols-[2fr,1fr]" : ""
               }`}
             >
               {featured.image && (
                 <div
-                  className="overflow-hidden rounded-md border"
+                  className="overflow-hidden border"
                   style={{ borderColor: "var(--border-color)" }}
                 >
-                  <div className="relative aspect-[16/9] w-full">
+                  <div className="relative aspect-[4/3] w-full">
                     <Image
                       src={featured.image}
                       alt={featured.title}
@@ -45,7 +45,7 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              <div className="space-y-3">
+              <div className="space-y-3 p-4 sm:p-6">
                 <p
                   className="text-xs font-semibold uppercase tracking-wide"
                   style={{ color: "var(--muted-foreground)" }}
@@ -84,15 +84,15 @@ export default function Home() {
           {rest.map((article) => (
             <article
               key={article.slug}
-              className="flex h-full flex-col gap-3 rounded-lg border p-4"
+              className="flex h-full flex-col border"
               style={{ borderColor: "var(--border-color)" }}
             >
               {article.image && (
                 <div
-                  className="overflow-hidden rounded-md border"
+                  className="overflow-hidden border"
                   style={{ borderColor: "var(--border-color)" }}
                 >
-                  <div className="relative aspect-[4/3] w-full">
+                  <div className="relative aspect-[16/9] w-full">
                     <Image
                       src={article.image}
                       alt={article.title}
@@ -103,27 +103,26 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              <p
-                className="text-xs font-semibold uppercase tracking-wide"
-                style={{ color: "var(--muted-foreground)" }}
-              >
-                Article
-              </p>
-              <Link
-                href={`/articles/${article.slug}`}
-                className="text-lg font-semibold leading-snug hover:underline"
-              >
-                {article.title}
-              </Link>
-              <p
-                className="text-sm"
-                style={{ color: "var(--muted-foreground)" }}
-              >
-                {article.date} · {article.author}
-              </p>
-              {article.excerpt && (
-                <p className="text-sm leading-relaxed">{article.excerpt}</p>
-              )}
+              <div className="p-4 space-y-2">
+                <p
+                  className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  Article
+                </p>
+                <Link
+                  href={`/articles/${article.slug}`}
+                  className="text-lg font-semibold leading-snug hover:underline"
+                >
+                  {article.title}
+                </Link>
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  {article.date} · {article.author}
+                </p>
+              </div>
             </article>
           ))}
         </div>

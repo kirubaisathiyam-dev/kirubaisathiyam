@@ -59,13 +59,13 @@ export default function SubscribeForm() {
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         required
-        className="min-w-[220px] flex-1 rounded-md border px-3 py-2 text-sm"
+        className="min-w-[220px] flex-1 border px-3 py-2 text-sm"
         style={{ borderColor: "var(--border-color)" }}
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="rounded-md border px-4 py-2 text-sm font-semibold"
+        className="border px-4 py-2 text-sm font-semibold"
         style={{
           borderColor: "var(--foreground)",
           background: "var(--foreground)",

@@ -80,7 +80,7 @@ export default function SendNewsletterForm({ articles }: Props) {
       <select
         value={selectedSlug}
         onChange={(event) => setSelectedSlug(event.target.value)}
-        className="w-full max-w-md rounded-md border px-3 py-2 text-sm"
+        className="w-full max-w-md border px-3 py-2 text-sm"
         style={{ borderColor: "var(--border-color)" }}
       >
         {articles.length === 0 && <option>No articles found</option>}
@@ -96,7 +96,7 @@ export default function SendNewsletterForm({ articles }: Props) {
         placeholder="Admin key (optional)"
         value={adminKey}
         onChange={(event) => setAdminKey(event.target.value)}
-        className="w-full max-w-md rounded-md border px-3 py-2 text-sm"
+        className="w-full max-w-md border px-3 py-2 text-sm"
         style={{ borderColor: "var(--border-color)" }}
       />
 
@@ -104,7 +104,7 @@ export default function SendNewsletterForm({ articles }: Props) {
         type="button"
         onClick={handleSend}
         disabled={status === "loading" || articles.length === 0}
-        className="rounded-md border px-4 py-2 text-sm font-semibold"
+        className="border px-4 py-2 text-sm font-semibold"
         style={{
           borderColor: "var(--foreground)",
           background: "var(--foreground)",

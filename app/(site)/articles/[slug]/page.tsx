@@ -20,8 +20,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticleBySlug(slug);
 
   return (
-    <article className="mx-auto max-w-3xl space-y-6">
-      <header className="space-y-3">
+    <article className="space-y-6">
+      <header className="space-y-3 text-center">
         <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
           {article.title}
         </h1>
@@ -32,7 +32,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {article.image && (
         <div
-          className="overflow-hidden rounded-lg border"
+          className="overflow-hidden border"
           style={{ borderColor: "var(--border-color)" }}
         >
           <div className="relative aspect-[16/9] w-full">
@@ -48,7 +48,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       )}
 
       <div
-        className="prose prose-neutral max-w-none"
+        className="prose prose-neutral max-w-3xl mx-auto"
         dangerouslySetInnerHTML={{ __html: article.contentHtml }}
       />
     </article>
