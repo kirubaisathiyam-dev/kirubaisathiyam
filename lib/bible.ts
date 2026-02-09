@@ -159,6 +159,7 @@ const BOOKS: BookDefinition[] = [
 ];
 
 const BOOK_LOOKUP = new Map<string, BookDefinition>();
+const BOOK_CODE_LOOKUP = new Map<string, BookDefinition>();
 const TAMIL_ALIAS_PREFIXES: Array<{ key: string; book: BookDefinition }> = [];
 
 function hasTamilLetters(value: string) {
@@ -182,6 +183,7 @@ function normalizeBookKey(value: string) {
 for (const book of BOOKS) {
   const canonicalKey = normalizeBookKey(book.name);
   BOOK_LOOKUP.set(canonicalKey, book);
+  BOOK_CODE_LOOKUP.set(book.code, book);
   for (const alias of book.aliases) {
     const normalized = normalizeBookKey(alias);
     BOOK_LOOKUP.set(normalized, book);
@@ -189,6 +191,11 @@ for (const book of BOOKS) {
       TAMIL_ALIAS_PREFIXES.push({ key: normalized, book });
     }
   }
+}
+
+export function getBookByCode(code: string): BookDefinition | null {
+  if (!code) return null;
+  return BOOK_CODE_LOOKUP.get(code.toUpperCase()) ?? null;
 }
 
 export function parseBibleReference(input: string): ParsedBibleReference | null {
