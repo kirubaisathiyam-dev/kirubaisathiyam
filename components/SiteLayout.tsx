@@ -19,7 +19,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             href="/"
             className="text-lg font-semibold tracking-tight sm:text-xl"
           >
-            கிருபை <span style={{ color: "#df9c00" }}>சத்தியம்</span>
+            கிருபை <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
           </Link>
           <nav className="flex items-center gap-3 text-sm sm:text-base">
             <Link href="/articles" className="hover:underline">

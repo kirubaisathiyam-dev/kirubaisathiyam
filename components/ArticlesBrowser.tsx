@@ -3,7 +3,7 @@
 import type { ArticleMeta } from "@/lib/articles";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 type Props = {
   articles: ArticleMeta[];
@@ -79,12 +79,6 @@ export default function ArticlesBrowser({ articles }: Props) {
 
   const totalPages = Math.ceil(filteredArticles.length / PAGE_SIZE);
   const currentPage = totalPages === 0 ? 1 : Math.min(page, totalPages);
-
-  useEffect(() => {
-    if (page !== currentPage) {
-      setPage(currentPage);
-    }
-  }, [page, currentPage]);
 
   const paginatedArticles =
     totalPages === 0
@@ -257,7 +251,9 @@ export default function ArticlesBrowser({ articles }: Props) {
         <nav className="flex flex-wrap items-center justify-center gap-2">
           <button
             type="button"
-            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            onClick={() =>
+              setPage((prev) => Math.max(1, Math.min(totalPages, prev - 1)))
+            }
             disabled={currentPage === 1}
             className="border px-3 py-1 text-sm disabled:cursor-not-allowed"
             style={{
@@ -295,7 +291,7 @@ export default function ArticlesBrowser({ articles }: Props) {
           <button
             type="button"
             onClick={() =>
-              setPage((prev) => Math.min(totalPages, prev + 1))
+              setPage((prev) => Math.max(1, Math.min(totalPages, prev + 1)))
             }
             disabled={currentPage === totalPages}
             className="border px-3 py-1 text-sm disabled:cursor-not-allowed"

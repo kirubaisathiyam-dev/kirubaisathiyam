@@ -35,16 +35,30 @@ function positionTooltip(
   tooltipHeight: number,
 ) {
   const margin = 12;
+  const gap = 8;
   const maxX = window.innerWidth - tooltipWidth - margin;
-  const maxY = window.innerHeight - tooltipHeight - margin;
   const x = clamp(rect.left, margin, maxX);
-  const y = clamp(rect.bottom + 8, margin, maxY);
+  const spaceBelow = window.innerHeight - rect.bottom - margin;
+  const spaceAbove = rect.top - margin;
+  let y = rect.bottom + gap;
+
+  if (spaceBelow < tooltipHeight + gap && spaceAbove >= tooltipHeight + gap) {
+    y = rect.top - tooltipHeight - gap;
+  } else if (spaceBelow < tooltipHeight + gap && spaceAbove < tooltipHeight) {
+    y =
+      spaceBelow >= spaceAbove
+        ? window.innerHeight - tooltipHeight - margin
+        : margin;
+  }
+
+  y = clamp(y, margin, window.innerHeight - tooltipHeight - margin);
   return { x, y };
 }
 
 export default function BibleReferenceTooltip() {
   const [state, setState] = useState<TooltipState>(initialState);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const activeElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const roots = Array.from(document.querySelectorAll(".prose"));
@@ -58,8 +72,6 @@ export default function BibleReferenceTooltip() {
   }, []);
 
   useEffect(() => {
-    let activeElement: HTMLElement | null = null;
-
     async function showTooltip(element: HTMLElement, lock: boolean) {
       const passage = element.dataset.passage;
       const reference = element.dataset.ref || passage || "";
@@ -88,6 +100,7 @@ export default function BibleReferenceTooltip() {
       }
 
       const rect = element.getBoundingClientRect();
+      const estimatedPosition = positionTooltip(rect, 320, 160);
       setState((prev) => ({
         ...prev,
         visible: true,
@@ -95,8 +108,8 @@ export default function BibleReferenceTooltip() {
         locked: lock,
         reference,
         content: "",
-        x: rect.left,
-        y: rect.bottom + 8,
+        x: estimatedPosition.x,
+        y: estimatedPosition.y,
       }));
 
       try {
@@ -139,8 +152,8 @@ export default function BibleReferenceTooltip() {
           locked: lock,
           reference,
           content: "Unable to load verse.",
-          x: rect.left,
-          y: rect.bottom + 8,
+          x: estimatedPosition.x,
+          y: estimatedPosition.y,
         });
       }
     }
@@ -151,7 +164,7 @@ export default function BibleReferenceTooltip() {
       if (!("closest" in target)) return;
       const el = target.closest(".bible-ref") as HTMLElement | null;
       if (!el) return;
-      activeElement = el;
+      activeElementRef.current = el;
       showTooltip(el, false);
     }
 
@@ -162,7 +175,7 @@ export default function BibleReferenceTooltip() {
       const el = target.closest(".bible-ref") as HTMLElement | null;
       if (!el) return;
       if (state.locked) return;
-      if (activeElement === el) {
+      if (activeElementRef.current === el) {
         setState((prev) => ({ ...prev, visible: false, locked: false }));
       }
     }
@@ -184,8 +197,9 @@ export default function BibleReferenceTooltip() {
         return;
       }
       event.preventDefault();
-      showTooltip(el, !state.locked || activeElement !== el);
-      activeElement = el;
+      const isSame = activeElementRef.current === el;
+      showTooltip(el, !state.locked || !isSame);
+      activeElementRef.current = el;
     }
 
     document.addEventListener("pointerenter", handlePointerEnter, true);
@@ -198,6 +212,60 @@ export default function BibleReferenceTooltip() {
       document.removeEventListener("click", handleClick);
     };
   }, [state.locked]);
+
+  useEffect(() => {
+    if (!state.visible) {
+      return;
+    }
+
+    let rafId = 0;
+
+    const updatePosition = () => {
+      const element = activeElementRef.current;
+      const tooltip = tooltipRef.current;
+      if (!element || !tooltip) {
+        return;
+      }
+
+      const rect = element.getBoundingClientRect();
+      if (
+        rect.bottom < 0 ||
+        rect.top > window.innerHeight ||
+        rect.right < 0 ||
+        rect.left > window.innerWidth
+      ) {
+        setState((prev) => ({ ...prev, visible: false, locked: false }));
+        return;
+      }
+
+      const tooltipRect = tooltip.getBoundingClientRect();
+      const { x, y } = positionTooltip(rect, tooltipRect.width, tooltipRect.height);
+
+      setState((prev) =>
+        prev.x === x && prev.y === y ? prev : { ...prev, x, y },
+      );
+    };
+
+    const scheduleUpdate = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        updatePosition();
+      });
+    };
+
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, true);
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+      window.removeEventListener("scroll", scheduleUpdate, true);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
+  }, [state.visible, state.locked, state.content, state.reference]);
 
   if (!state.visible) {
     return null;
@@ -212,12 +280,12 @@ export default function BibleReferenceTooltip() {
         left: state.x,
         top: state.y,
         zIndex: 50,
-        maxWidth: "320px",
+        maxWidth: "480px",
         background: "var(--background)",
-        color: "var(--foreground)",
+        color: "var(--foreground-bible)",
         border: "1px solid var(--border-color)",
         padding: "12px 14px",
-        boxShadow: "0 12px 30px rgba(0, 0, 0, 0.15)",
+        boxShadow: "0 5px 10px rgba(0, 0, 0, 0.20)",
         fontSize: "0.85rem",
       }}
     >
