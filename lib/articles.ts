@@ -14,6 +14,8 @@ export type ArticleMeta = {
   date: string;
   author: string;
   excerpt: string;
+  tags: string[];
+  keywords: string[];
   image?: string;
   summary?: string;
 };
@@ -41,6 +43,28 @@ function getExcerpt(content: string) {
     );
 
   return lines.slice(0, 3).join(" ");
+}
+
+function normalizeStringList(value: unknown) {
+  const items = Array.isArray(value)
+    ? value
+    : typeof value === "string"
+      ? value.split(",")
+      : [];
+
+  const seen = new Set<string>();
+
+  return items
+    .map((item) => (typeof item === "string" ? item.trim() : ""))
+    .filter(Boolean)
+    .filter((item) => {
+      const key = item.toLowerCase();
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
 }
 
 function escapeHtml(value: string) {
@@ -112,10 +136,14 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
     author?: unknown;
     image?: unknown;
     summary?: unknown;
+    tags?: unknown;
+    keywords?: unknown;
   };
   const parsedDate = parseDate(date, stats.mtime);
   const image = getCoverImage(content, { image: data?.image });
   const summary = typeof data?.summary === "string" ? data.summary : "";
+  const tags = normalizeStringList(data?.tags);
+  const keywords = normalizeStringList(data?.keywords);
 
   return {
     slug,
@@ -126,6 +154,8 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
     excerpt: summary || getExcerpt(content),
+    tags,
+    keywords,
     image: image || undefined,
     summary: summary || undefined,
     sortDate: parsedDate,
@@ -156,10 +186,14 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     author?: unknown;
     image?: unknown;
     summary?: unknown;
+    tags?: unknown;
+    keywords?: unknown;
   };
   const parsedDate = parseDate(date, stats.mtime);
   const image = getCoverImage(content, { image: data?.image });
   const summary = typeof data?.summary === "string" ? data.summary : "";
+  const tags = normalizeStringList(data?.tags);
+  const keywords = normalizeStringList(data?.keywords);
 
   const processedContent = await remark()
     .use(remarkGfm)
@@ -178,6 +212,8 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
     excerpt: summary || getExcerpt(content),
+    tags,
+    keywords,
     image: image || undefined,
     summary: summary || undefined,
     contentHtml,
