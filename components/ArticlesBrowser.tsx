@@ -9,7 +9,7 @@ type Props = {
   articles: ArticleMeta[];
 };
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 10;
 
 function normalizeText(value: string) {
   return value.toLowerCase();
@@ -111,7 +111,7 @@ export default function ArticlesBrowser({ articles }: Props) {
             setSearchText(event.target.value);
             setPage(1);
           }}
-          className="w-full rounded-md border bg-transparent px-3 py-2 text-sm"
+          className="w-full border bg-transparent px-3 py-2 text-sm"
           style={{ borderColor: "var(--border-color)" }}
         />
       </div>
@@ -195,7 +195,7 @@ export default function ArticlesBrowser({ articles }: Props) {
       </div>
 
       {paginatedArticles.length === 0 ? (
-        <div className="rounded-md border p-6 text-center text-sm">
+        <div className="border p-6 text-center text-sm">
           No articles found. Try another search or tag.
         </div>
       ) : (
@@ -259,7 +259,7 @@ export default function ArticlesBrowser({ articles }: Props) {
             type="button"
             onClick={() => setPage((prev) => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="rounded-md border px-3 py-1 text-sm disabled:cursor-not-allowed"
+            className="border px-3 py-1 text-sm disabled:cursor-not-allowed"
             style={{
               borderColor: "var(--border-color)",
               opacity: currentPage === 1 ? 0.5 : 1,
@@ -275,7 +275,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                   key={pageNumber}
                   type="button"
                   onClick={() => setPage(pageNumber)}
-                  className="rounded-md border px-3 py-1 text-sm"
+                  className="border px-3 py-1 text-sm"
                   style={{
                     borderColor: isActive
                       ? "var(--foreground)"
@@ -298,7 +298,7 @@ export default function ArticlesBrowser({ articles }: Props) {
               setPage((prev) => Math.min(totalPages, prev + 1))
             }
             disabled={currentPage === totalPages}
-            className="rounded-md border px-3 py-1 text-sm disabled:cursor-not-allowed"
+            className="border px-3 py-1 text-sm disabled:cursor-not-allowed"
             style={{
               borderColor: "var(--border-color)",
               opacity: currentPage === totalPages ? 0.5 : 1,

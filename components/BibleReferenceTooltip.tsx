@@ -216,7 +216,6 @@ export default function BibleReferenceTooltip() {
         background: "var(--background)",
         color: "var(--foreground)",
         border: "1px solid var(--border-color)",
-        borderRadius: "10px",
         padding: "12px 14px",
         boxShadow: "0 12px 30px rgba(0, 0, 0, 0.15)",
         fontSize: "0.85rem",

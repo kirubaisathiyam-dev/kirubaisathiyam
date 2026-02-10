@@ -79,6 +79,8 @@ a {
   text-decoration: underline;
   text-decoration-style: dotted;
   text-underline-offset: 3px;
+  margin: 10px 0;
+  font-style: italic;
 }
 
 .bible-ref:focus-visible {
