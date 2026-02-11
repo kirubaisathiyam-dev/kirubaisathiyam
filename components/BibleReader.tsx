@@ -4,6 +4,7 @@ import { parseBibleReference } from "@/lib/bible";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 
 type BookIndexEntry = {
   book?: {
@@ -515,26 +516,28 @@ export default function BibleReader() {
                           {renderBibleText(note.text)}
                         </div>
                       )}
-                      {note.image && (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setActiveImage({
-                              src: note.image || "",
-                              alt: note.title || note.position,
-                            })
-                          }
-                          className="mt-4 w-full overflow-hidden rounded border"
-                          style={{ borderColor: "var(--border-color)" }}
-                        >
-                          <img
-                            src={note.image}
-                            alt={note.title || note.position}
-                            className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
-                            loading="lazy"
-                          />
-                        </button>
-                      )}
+                        {note.image && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setActiveImage({
+                                src: note.image || "",
+                                alt: note.title || note.position,
+                              })
+                            }
+                            className="mt-4 w-full overflow-hidden rounded border"
+                            style={{ borderColor: "var(--border-color)" }}
+                          >
+                            <Image
+                              src={note.image}
+                              alt={note.title || note.position}
+                              width={1200}
+                              height={800}
+                              sizes="(min-width: 1024px) 720px, 100vw"
+                              className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+                            />
+                          </button>
+                        )}
                     </article>
                   ))}
                   <div className="flex gap-3">
@@ -598,13 +601,16 @@ export default function BibleReader() {
               Close
             </button>
             <div className="max-h-[75vh] max-w-[90vw] overflow-auto">
-              <img
+              <Image
                 src={activeImage.src}
                 alt={activeImage.alt || "Bible note"}
-                onClick={() => setZoomed((prev) => !prev)}
+                width={1600}
+                height={1200}
+                sizes="90vw"
                 className={`w-auto cursor-zoom-in rounded transition-transform duration-300 ${
                   zoomed ? "scale-[1.5] cursor-zoom-out" : ""
                 }`}
+                onClick={() => setZoomed((prev) => !prev)}
               />
             </div>
             <p className="text-xs text-white/80">
