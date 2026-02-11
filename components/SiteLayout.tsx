@@ -22,6 +22,10 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             கிருபை <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
           </Link>
           <nav className="flex items-center gap-3 text-sm sm:text-base">
+            <Link href="/bible" className="hover:underline">
+              Bible
+            </Link>
+            <span style={{ color: "var(--muted-foreground)" }}>|</span>
             <Link href="/articles" className="hover:underline">
               கட்டுரைகள்
             </Link>
