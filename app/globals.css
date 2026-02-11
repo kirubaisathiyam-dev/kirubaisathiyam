@@ -5,6 +5,7 @@
   --background: #ffffff;
   --foreground: #171717;
   --muted-foreground: rgba(23, 23, 23, 0.6);
+  --muted-background: #ebebeb;
   --border-color: rgba(23, 23, 23, 0.12);
   --font-sans: "Noto Serif Tamil", serif;
   --font-mono: "SFMono-Regular", ui-monospace, "SFMono-Regular", SFMono-Regular,
@@ -14,6 +15,7 @@
 html[data-theme="dark"],
 body[data-theme="dark"] {
   --background: #0a0a0a;
+  --muted-background: #151515;
   --foreground: #ededed;
   --foreground-bible: #e9c36a;
   --muted-foreground: rgba(237, 237, 237, 0.7);
@@ -25,6 +27,7 @@ body[data-theme="light"] {
   --background: #ffffff;
   --foreground: #171717;
   --foreground-bible: #c48900;
+  --muted-background: #fafafa;
   --muted-foreground: rgba(23, 23, 23, 0.6);
   --border-color: rgba(23, 23, 23, 0.12);
 }
@@ -32,6 +35,7 @@ body[data-theme="light"] {
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted-background: var(--muted-background);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
@@ -41,6 +45,8 @@ body[data-theme="light"] {
     --background: #0a0a0a;
     --foreground: #ededed;
     --muted-foreground: rgba(237, 237, 237, 0.7);
+    --muted-background: #151515;
+    --foreground-bible: #e9c36a;
     --border-color: rgba(237, 237, 237, 0.16);
   }
 }

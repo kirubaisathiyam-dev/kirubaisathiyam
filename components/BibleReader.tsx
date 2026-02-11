@@ -388,7 +388,7 @@ export default function BibleReader() {
         className="rounded border px-5 py-6 shadow-sm sm:px-6"
         style={{
           borderColor: "var(--border-color)",
-          background: "var(--border-color)",
+          background: "var(--muted-background)",
         }}
       >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -491,7 +491,7 @@ export default function BibleReader() {
                       className="rounded border px-4 py-4 shadow-sm"
                       style={{
                         borderColor: "var(--border-color)",
-                        background: "rgba(223, 156, 0, 0.08)",
+                        background: "var(--muted-background)",
                       }}
                     >
                       <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide">
@@ -557,7 +557,7 @@ export default function BibleReader() {
       )}
 
       {!loading && currentChapter && (
-        <section className="flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <section className="flex flex-col gap-3 border-t mt-12 pt-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--border-color)" }}>
           <button
             type="button"
             onClick={() =>
