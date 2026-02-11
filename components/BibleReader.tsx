@@ -557,7 +557,7 @@ export default function BibleReader() {
       )}
 
       {!loading && currentChapter && (
-        <section className="flex flex-col gap-3 border-t mt-12 pt-6 sm:flex-row sm:items-center sm:justify-between" style={{ borderColor: "var(--border-color)" }}>
+        <section className="flex gap-3 border-t mt-12 pt-6 flex-row items-center justify-between" style={{ borderColor: "var(--border-color)" }}>
           <button
             type="button"
             onClick={() =>
@@ -566,8 +566,12 @@ export default function BibleReader() {
             disabled={!previousChapter}
             className="rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             style={{ borderColor: "var(--border-color)" }}
+            aria-label="Previous chapter"
           >
-            Previous Chapter
+            <span className="md:hidden" aria-hidden="true">
+              <i className="fa-solid fa-arrow-left"></i>
+            </span>
+            <span className="hidden md:inline">Previous Chapter</span>
           </button>
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
             Chapter {selectedChapter} of {chapterOptions.length || "--"}
@@ -578,8 +582,12 @@ export default function BibleReader() {
             disabled={!nextChapter}
             className="rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             style={{ borderColor: "var(--border-color)" }}
+            aria-label="Next chapter"
           >
-            Next Chapter
+            <span className="md:hidden" aria-hidden="true">
+              <i className="fa-solid fa-arrow-right"></i>
+            </span>
+            <span className="hidden md:inline">Next Chapter</span>
           </button>
         </section>
       )}
