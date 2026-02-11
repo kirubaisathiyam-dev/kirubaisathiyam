@@ -1,8 +1,9 @@
 "use client";
 
 import { parseBibleReference } from "@/lib/bible";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type BookIndexEntry = {
   book?: {
@@ -124,6 +125,9 @@ function renderBibleRefs(text: string) {
 }
 
 export default function BibleReader() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [books, setBooks] = useState<BookMeta[]>([]);
   const [notes, setNotes] = useState<BibleNote[]>([]);
   const [selectedBook, setSelectedBook] = useState<string>(defaultBook);
@@ -131,6 +135,9 @@ export default function BibleReader() {
   const [bookData, setBookData] = useState<LocalBibleBook | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
+  const [hasSyncedFromUrl, setHasSyncedFromUrl] = useState(false);
+  const lastSearchKey = useRef<string | null>(null);
+  const topRef = useRef<HTMLDivElement | null>(null);
   const [activeImage, setActiveImage] = useState<{
     src: string;
     alt?: string;
@@ -249,6 +256,84 @@ export default function BibleReader() {
     };
   }, [activeImage]);
 
+  const searchKey = searchParams?.toString() || "";
+
+  useEffect(() => {
+    if (!books.length) return;
+    if (hasSyncedFromUrl && lastSearchKey.current === searchKey) {
+      return;
+    }
+
+    lastSearchKey.current = searchKey;
+
+    const params = new URLSearchParams(searchKey);
+    const bookParamRaw = params.get("book");
+    const chapterParamRaw = params.get("chapter");
+
+    let nextBook = selectedBook;
+    if (bookParamRaw) {
+      const bookParam = bookParamRaw.trim().toLowerCase();
+      const matchedBook = books.find(
+        (book) => book.english.toLowerCase() === bookParam,
+      );
+      if (matchedBook) {
+        nextBook = matchedBook.english;
+      }
+    }
+
+    let nextChapter = selectedChapter;
+    if (chapterParamRaw) {
+      const cleaned = chapterParamRaw.replace(/^0+(?=\d)/, "");
+      if (cleaned) {
+        nextChapter = cleaned;
+      }
+    }
+
+    if (nextBook !== selectedBook) {
+      setSelectedBook(nextBook);
+    }
+    if (nextChapter !== selectedChapter) {
+      setSelectedChapter(nextChapter);
+    }
+
+    if (!hasSyncedFromUrl) {
+      setHasSyncedFromUrl(true);
+    }
+  }, [
+    books,
+    hasSyncedFromUrl,
+    searchKey,
+    selectedBook,
+    selectedChapter,
+  ]);
+
+  useEffect(() => {
+    if (!hasSyncedFromUrl) return;
+    if (!selectedBook || !selectedChapter) return;
+
+    const params = new URLSearchParams(searchKey);
+    const currentBook = params.get("book");
+    const currentChapter = params.get("chapter");
+
+    if (
+      currentBook?.toLowerCase() === selectedBook.toLowerCase() &&
+      currentChapter === selectedChapter
+    ) {
+      return;
+    }
+
+    params.set("book", selectedBook);
+    params.set("chapter", selectedChapter);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [
+    hasSyncedFromUrl,
+    pathname,
+    router,
+    searchKey,
+    selectedBook,
+    selectedChapter,
+  ]);
+
   const chapterOptions = useMemo(() => {
     return bookData?.chapters?.map((chapter) => chapter.chapter) || [];
   }, [bookData]);
@@ -280,14 +365,29 @@ export default function BibleReader() {
   const title = selectedBookMeta?.tamil || selectedBook;
   const subtitle = selectedBookMeta?.tamil ? selectedBook : undefined;
 
+  const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
+    if (!topRef.current) return;
+    topRef.current.scrollIntoView({ behavior, block: "start" });
+  };
+
+  const handleBookChange = (book: string) => {
+    setSelectedBook(book);
+    window.requestAnimationFrame(() => scrollToTop("smooth"));
+  };
+
+  const handleChapterChange = (chapter: string) => {
+    setSelectedChapter(chapter);
+    window.requestAnimationFrame(() => scrollToTop("smooth"));
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-3xl mx-auto">
+      <div ref={topRef} />
       <section
-        className="rounded-3xl border px-5 py-6 shadow-sm sm:px-6"
+        className="rounded border px-5 py-6 shadow-sm sm:px-6"
         style={{
           borderColor: "var(--border-color)",
-          background:
-            "linear-gradient(135deg, rgba(223, 156, 0, 0.08), rgba(223, 156, 0, 0.01))",
+          background: "var(--border-color)",
         }}
       >
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -317,8 +417,8 @@ export default function BibleReader() {
               Book
               <select
                 value={selectedBook}
-                onChange={(event) => setSelectedBook(event.target.value)}
-                className="mt-2 w-full rounded-xl border px-3 py-2 text-sm"
+                onChange={(event) => handleBookChange(event.target.value)}
+                className="mt-2 w-full rounded border px-3 py-2 text-sm"
                 style={{
                   borderColor: "var(--border-color)",
                   background: "var(--background)",
@@ -335,8 +435,8 @@ export default function BibleReader() {
               Chapter
               <select
                 value={selectedChapter}
-                onChange={(event) => setSelectedChapter(event.target.value)}
-                className="mt-2 w-full rounded-xl border px-3 py-2 text-sm"
+                onChange={(event) => handleChapterChange(event.target.value)}
+                className="mt-2 w-full rounded border px-3 py-2 text-sm"
                 style={{
                   borderColor: "var(--border-color)",
                   background: "var(--background)",
@@ -355,7 +455,7 @@ export default function BibleReader() {
 
       {error && (
         <div
-          className="rounded-2xl border px-4 py-3 text-sm"
+          className="rounded border px-4 py-3 text-sm"
           style={{ borderColor: "var(--border-color)" }}
         >
           {error}
@@ -364,7 +464,7 @@ export default function BibleReader() {
 
       {loading && (
         <div
-          className="rounded-2xl border px-4 py-3 text-sm"
+          className="rounded border px-4 py-3 text-sm"
           style={{ borderColor: "var(--border-color)" }}
         >
           Loading chapter...
@@ -387,7 +487,7 @@ export default function BibleReader() {
                   {verseNotes.map((note, idx) => (
                     <article
                       key={`${note.id || note.position}-${idx}`}
-                      className="rounded-2xl border px-4 py-4 shadow-sm"
+                      className="rounded border px-4 py-4 shadow-sm"
                       style={{
                         borderColor: "var(--border-color)",
                         background: "rgba(223, 156, 0, 0.08)",
@@ -424,7 +524,7 @@ export default function BibleReader() {
                               alt: note.title || note.position,
                             })
                           }
-                          className="mt-4 w-full overflow-hidden rounded-xl border"
+                          className="mt-4 w-full overflow-hidden rounded border"
                           style={{ borderColor: "var(--border-color)" }}
                         >
                           <img
@@ -457,9 +557,11 @@ export default function BibleReader() {
         <section className="flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
           <button
             type="button"
-            onClick={() => previousChapter && setSelectedChapter(previousChapter)}
+            onClick={() =>
+              previousChapter && handleChapterChange(previousChapter)
+            }
             disabled={!previousChapter}
-            className="rounded-full border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             style={{ borderColor: "var(--border-color)" }}
           >
             Previous Chapter
@@ -469,9 +571,9 @@ export default function BibleReader() {
           </p>
           <button
             type="button"
-            onClick={() => nextChapter && setSelectedChapter(nextChapter)}
+            onClick={() => nextChapter && handleChapterChange(nextChapter)}
             disabled={!nextChapter}
-            className="rounded-full border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             style={{ borderColor: "var(--border-color)" }}
           >
             Next Chapter
@@ -491,7 +593,7 @@ export default function BibleReader() {
             <button
               type="button"
               onClick={() => setActiveImage(null)}
-              className="self-end rounded-full border border-white/30 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+              className="self-end rounded border border-white/30 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
             >
               Close
             </button>
@@ -500,7 +602,7 @@ export default function BibleReader() {
                 src={activeImage.src}
                 alt={activeImage.alt || "Bible note"}
                 onClick={() => setZoomed((prev) => !prev)}
-                className={`w-auto cursor-zoom-in rounded-2xl transition-transform duration-300 ${
+                className={`w-auto cursor-zoom-in rounded transition-transform duration-300 ${
                   zoomed ? "scale-[1.5] cursor-zoom-out" : ""
                 }`}
               />
