@@ -1,4 +1,5 @@
 import { getAllArticles } from "@/lib/articles";
+import { formatTamilDate } from "@/lib/date";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -59,7 +60,7 @@ export default function Home() {
                   className="text-sm"
                   style={{ color: "var(--muted-foreground)" }}
                 >
-                  {featured.date} · {featured.author}
+                  {formatTamilDate(featured.date)} · {featured.author}
                 </p>
                 {featured.excerpt && (
                   <p className="leading-relaxed">{featured.excerpt}</p>
@@ -120,7 +121,7 @@ export default function Home() {
                   className="text-sm"
                   style={{ color: "var(--muted-foreground)" }}
                 >
-                  {article.date} · {article.author}
+                  {formatTamilDate(article.date)} · {article.author}
                 </p>
               </div>
             </article>

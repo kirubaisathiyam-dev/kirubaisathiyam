@@ -1,6 +1,7 @@
 "use client";
 
 import type { ArticleMeta } from "@/lib/articles";
+import { formatTamilDate } from "@/lib/date";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -232,7 +233,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                       className="text-sm"
                       style={{ color: "var(--muted-foreground)" }}
                     >
-                      {article.date} · {article.author}
+                      {formatTamilDate(article.date)} · {article.author}
                     </p>
                     {article.excerpt && (
                       <p className="text-sm leading-relaxed">

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatTamilDate } from "@/lib/date";
 import { useMemo, useState } from "react";
 
 export type NewsletterArticle = {
@@ -90,7 +91,7 @@ export default function SendNewsletterForm({ articles }: Props) {
         {articles.length === 0 && <option>No articles found</option>}
         {articles.map((article) => (
           <option key={article.slug} value={article.slug}>
-            {article.title} ({article.date})
+            {article.title} ({formatTamilDate(article.date)})
           </option>
         ))}
       </select>

@@ -1,4 +1,5 @@
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
+import { formatTamilDate } from "@/lib/date";
 import Image from "next/image";
 
 export function generateStaticParams() {
@@ -26,7 +27,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {article.title}
         </h1>
         <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
-          {article.date} · {article.author}
+          {article.author}
+        </p>
+        <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
+          {formatTamilDate(article.date)}
         </p>
       </header>
 
