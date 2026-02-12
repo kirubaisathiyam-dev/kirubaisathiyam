@@ -150,8 +150,8 @@ export default function ArticlesBrowser({ articles }: Props) {
           </div>
         </div>
         <div
-          className="flex flex-wrap gap-4 border-b"
-          style={{ borderColor: "var(--border-color)" }}
+          className="flex flex-nowrap gap-4 border-b mt-6"
+          style={{ borderColor: "var(--border-color)", overflowX: "auto" }}
         >
           <button
             type="button"
@@ -159,7 +159,7 @@ export default function ArticlesBrowser({ articles }: Props) {
               setActiveType("all");
               setPage(1);
             }}
-            className="px-1 pb-2 text-sm font-semibold transition border-b-2"
+            className="shrink-0 px-1 pb-2 text-sm font-semibold transition border-b-2"
             style={{
               borderColor:
                 activeType === "all" ? "var(--foreground)" : "transparent",
@@ -170,7 +170,7 @@ export default function ArticlesBrowser({ articles }: Props) {
             }}
             aria-pressed={activeType === "all"}
           >
-            அனைத்து
+            அனைத்தும்
           </button>
           {typeOptions.map((type) => {
             const isActive = activeType === type.key;
@@ -182,7 +182,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                   setActiveType(type.key);
                   setPage(1);
                 }}
-                className="px-1 pb-2 text-sm font-semibold transition border-b-2"
+                className="shrink-0 px-1 pb-2 text-sm font-semibold transition border-b-2"
                 style={{
                   borderColor: isActive
                     ? "var(--foreground)"
@@ -200,14 +200,14 @@ export default function ArticlesBrowser({ articles }: Props) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-nowrap gap-2" style={{ overflowX: "auto" }}>
           <button
             type="button"
             onClick={() => {
               setActiveTag("all");
               setPage(1);
             }}
-            className="rounded-full border px-3 py-1 text-sm transition"
+            className="shrink-0 rounded-full border px-3 py-1 text-xs transition"
             style={{
               borderColor:
                 activeTag === "all"
@@ -219,7 +219,7 @@ export default function ArticlesBrowser({ articles }: Props) {
             }}
             aria-pressed={activeTag === "all"}
           >
-            All
+            அனைத்தும்
           </button>
           {tagOptions.map((tag) => {
             const isActive = activeTag === tag.key;
@@ -231,7 +231,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                   setActiveTag(tag.key);
                   setPage(1);
                 }}
-                className="rounded-full border px-3 py-1 text-sm transition"
+                className="shrink-0 rounded-full border px-3 py-1 text-xs transition"
                 style={{
                   borderColor: isActive
                     ? "var(--foreground)"
