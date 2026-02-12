@@ -3,8 +3,6 @@
   repo: "kirubaisathiyam-dev/kirubaisathiyam"
   branch: "main"
   site_domain: "fb8ea160-3f8b-4243-8b4e-981d1679dc74"
-  auth_type: implicit
-  app_id: Ov23liUveATlqLvpISjv
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
