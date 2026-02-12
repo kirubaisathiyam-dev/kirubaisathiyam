@@ -9,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ? new Date(articles[0].date)
     : new Date();
 
-  return [
+  const staticEntries: MetadataRoute.Sitemap = [
     {
       url: siteUrl,
       lastModified: latestArticleDate,
@@ -28,11 +28,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
-    ...articles.map((article) => ({
-      url: `${siteUrl}/articles/${article.slug}`,
-      lastModified: new Date(article.date),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    })),
   ];
+
+  const articleEntries: MetadataRoute.Sitemap = articles.map((article) => ({
+    url: `${siteUrl}/articles/${article.slug}`,
+    lastModified: new Date(article.date),
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
+  return [...staticEntries, ...articleEntries];
 }
