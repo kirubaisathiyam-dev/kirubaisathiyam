@@ -18,8 +18,35 @@ function normalizeText(value: string) {
 
 export default function ArticlesBrowser({ articles }: Props) {
   const [searchText, setSearchText] = useState("");
+  const [activeType, setActiveType] = useState("all");
   const [activeTag, setActiveTag] = useState("all");
   const [page, setPage] = useState(1);
+
+  const typeOptions = useMemo(() => {
+    const typeMap = new Map<string, { label: string; count: number }>();
+
+    for (const article of articles) {
+      const raw = article.type?.trim();
+      if (!raw) {
+        continue;
+      }
+      const key = normalizeText(raw);
+      const existing = typeMap.get(key);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        typeMap.set(key, { label: raw, count: 1 });
+      }
+    }
+
+    return Array.from(typeMap.entries())
+      .map(([key, value]) => ({
+        key,
+        label: value.label,
+        count: value.count,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [articles]);
 
   const tagOptions = useMemo(() => {
     const tagMap = new Map<string, { label: string; count: number }>();
@@ -53,6 +80,13 @@ export default function ArticlesBrowser({ articles }: Props) {
     const query = normalizeText(searchText.trim());
 
     return articles.filter((article) => {
+      const typeMatch =
+        activeType === "all" ||
+        normalizeText(article.type || "") === activeType;
+      if (!typeMatch) {
+        return false;
+      }
+
       const tagMatch =
         activeTag === "all" ||
         article.tags.some((tag) => normalizeText(tag) === activeTag);
@@ -68,6 +102,7 @@ export default function ArticlesBrowser({ articles }: Props) {
         article.title,
         article.excerpt,
         article.author,
+        article.type,
         ...(article.tags ?? []),
         ...(article.keywords ?? []),
       ]
@@ -76,7 +111,7 @@ export default function ArticlesBrowser({ articles }: Props) {
 
       return normalizeText(haystack).includes(query);
     });
-  }, [articles, activeTag, searchText]);
+  }, [articles, activeTag, activeType, searchText]);
 
   const totalPages = Math.ceil(filteredArticles.length / PAGE_SIZE);
   const currentPage = totalPages === 0 ? 1 : Math.min(page, totalPages);
@@ -89,47 +124,83 @@ export default function ArticlesBrowser({ articles }: Props) {
           currentPage * PAGE_SIZE,
         );
 
-  const showReset = searchText.trim().length > 0 || activeTag !== "all";
+  const showReset =
+    searchText.trim().length > 0 || activeTag !== "all" || activeType !== "all";
 
   return (
     <section className="space-y-6">
-      <div className="space-y-2">
-        <label className="text-sm font-semibold" htmlFor="article-search">
-          Search
-        </label>
-        <input
-          id="article-search"
-          type="search"
-          placeholder="Search by title, tag, or keyword"
-          value={searchText}
-          onChange={(event) => {
-            setSearchText(event.target.value);
-            setPage(1);
-          }}
-          className="w-full border bg-transparent px-3 py-2 text-sm"
-          style={{ borderColor: "var(--border-color)" }}
-        />
-      </div>
-
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold">Tags</p>
-          {showReset && (
-            <button
-              type="button"
-              className="text-xs font-semibold uppercase tracking-wide"
-              style={{ color: "var(--muted-foreground)" }}
-              onClick={() => {
-                setSearchText("");
-                setActiveTag("all");
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex-1 space-y-2">
+            <label className="text-sm font-semibold" htmlFor="article-search">
+              Search
+            </label>
+            <input
+              id="article-search"
+              type="search"
+              placeholder="Search by title, type, tag, or keyword"
+              value={searchText}
+              onChange={(event) => {
+                setSearchText(event.target.value);
                 setPage(1);
               }}
-            >
-              Reset
-            </button>
-          )}
+              className="w-full border bg-transparent px-3 py-2 text-sm"
+              style={{ borderColor: "var(--border-color)" }}
+            />
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div
+          className="flex flex-wrap gap-4 border-b"
+          style={{ borderColor: "var(--border-color)" }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setActiveType("all");
+              setPage(1);
+            }}
+            className="px-1 pb-2 text-sm font-semibold transition border-b-2"
+            style={{
+              borderColor:
+                activeType === "all" ? "var(--foreground)" : "transparent",
+              color:
+                activeType === "all"
+                  ? "var(--foreground)"
+                  : "var(--muted-foreground)",
+            }}
+            aria-pressed={activeType === "all"}
+          >
+            அனைத்து
+          </button>
+          {typeOptions.map((type) => {
+            const isActive = activeType === type.key;
+            return (
+              <button
+                key={type.key}
+                type="button"
+                onClick={() => {
+                  setActiveType(type.key);
+                  setPage(1);
+                }}
+                className="px-1 pb-2 text-sm font-semibold transition border-b-2"
+                style={{
+                  borderColor: isActive
+                    ? "var(--foreground)"
+                    : "transparent",
+                  color: isActive
+                    ? "var(--foreground)"
+                    : "var(--muted-foreground)",
+                }}
+                aria-pressed={isActive}
+              >
+                {type.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => {
@@ -174,7 +245,6 @@ export default function ArticlesBrowser({ articles }: Props) {
               </button>
             );
           })}
-        </div>
       </div>
 
       <div className="flex items-center justify-between text-sm">
@@ -224,7 +294,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                       className="text-xs font-semibold uppercase tracking-wide"
                       style={{ color: "var(--muted-foreground)" }}
                     >
-                      கட்டுரை
+                      {article.type || "கட்டுரை"}
                     </p>
                     <h2 className="text-lg font-semibold leading-snug">
                       {article.title}

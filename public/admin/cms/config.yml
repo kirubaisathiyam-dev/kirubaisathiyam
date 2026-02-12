@@ -19,6 +19,12 @@ collections:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Date", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false }
       - { label: "Author", name: "author", widget: "string" }
+      - label: "Type"
+        name: "type"
+        widget: "select"
+        default: "கட்டுரை"
+        options: ["கட்டுரை", "பிரசங்கம்", "தியானம்", "ஆய்வு", "சாட்சியம்"]
+        allow_add: true
       - label: "Tags"
         name: "tags"
         widget: "list"

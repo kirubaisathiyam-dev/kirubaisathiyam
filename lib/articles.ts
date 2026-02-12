@@ -13,6 +13,7 @@ export type ArticleMeta = {
   title: string;
   date: string;
   author: string;
+  type: string;
   excerpt: string;
   tags: string[];
   keywords: string[];
@@ -29,6 +30,28 @@ const articlesDirectory = path.join(process.cwd(), "content/articles");
 type ArticleMetaWithSort = ArticleMeta & {
   sortDate: Date;
 };
+
+const TYPE_LABELS: Record<string, string> = {
+  article: "கட்டுரை",
+  sermon: "பிரசங்கம்",
+  devotional: "தியானம்",
+  study: "ஆய்வு",
+  testimony: "சாட்சியம்",
+};
+
+function normalizeType(value: unknown) {
+  if (typeof value !== "string") {
+    return "கட்டுரை";
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return "கட்டுரை";
+  }
+
+  const mapped = TYPE_LABELS[trimmed.toLowerCase()];
+  return mapped || trimmed;
+}
 
 function getExcerpt(content: string) {
   const lines = content
@@ -134,11 +157,13 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
     title?: unknown;
     date?: unknown;
     author?: unknown;
+    type?: unknown;
     image?: unknown;
     summary?: unknown;
     tags?: unknown;
     keywords?: unknown;
   };
+  const typeLabel = normalizeType(data?.type);
   const parsedDate = parseDate(date, stats.mtime);
   const image = getCoverImage(content, { image: data?.image });
   const summary = typeof data?.summary === "string" ? data.summary : "";
@@ -153,6 +178,7 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
         ? date
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
+    type: typeLabel,
     excerpt: summary || getExcerpt(content),
     tags,
     keywords,
@@ -184,11 +210,13 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     title?: unknown;
     date?: unknown;
     author?: unknown;
+    type?: unknown;
     image?: unknown;
     summary?: unknown;
     tags?: unknown;
     keywords?: unknown;
   };
+  const typeLabel = normalizeType(data?.type);
   const parsedDate = parseDate(date, stats.mtime);
   const image = getCoverImage(content, { image: data?.image });
   const summary = typeof data?.summary === "string" ? data.summary : "";
@@ -211,6 +239,7 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
         ? date
         : parsedDate.toISOString().slice(0, 10),
     author: typeof author === "string" ? author : "",
+    type: typeLabel,
     excerpt: summary || getExcerpt(content),
     tags,
     keywords,

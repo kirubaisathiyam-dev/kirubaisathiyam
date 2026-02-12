@@ -41,7 +41,11 @@ export async function generateMetadata({
   const title = article.title || "Tamil Article";
   const description =
     article.excerpt || "Tamil Christian article from Kirubai Sathiyam.";
-  const keywords = [...(article.tags || []), ...(article.keywords || [])];
+  const keywords = [
+    ...(article.tags || []),
+    ...(article.keywords || []),
+    article.type,
+  ].filter(Boolean);
   const imageUrl = article.image ? toAbsoluteUrl(article.image) : undefined;
 
   return {
@@ -83,6 +87,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     "@type": "Article",
     headline: article.title,
     description: article.excerpt,
+    articleSection: article.type,
     author: article.author
       ? {
           "@type": "Person",
@@ -110,6 +115,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <header className="space-y-3 text-center">
+        {article.type && (
+          <p
+            className="text-xs font-semibold uppercase tracking-wide"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            {article.type}
+          </p>
+        )}
         <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
           {article.title}
         </h1>
