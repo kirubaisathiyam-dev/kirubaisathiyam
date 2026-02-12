@@ -1,7 +1,43 @@
+import type { Metadata } from "next";
 import { getAllArticles } from "@/lib/articles";
 import { formatTamilDate } from "@/lib/date";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Tamil Christian Articles & Bible",
+  description:
+    "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+  keywords: [
+    "Tamil Christian articles",
+    "Tamil Holy Bible",
+    "Tamil Bible",
+    "Study Bible Tamil",
+    "Illustrated Bible",
+    "Tamil Old Version",
+    "Bible study notes",
+    "Kirubai Sathiyam",
+    "தமிழ் பரிசுத்த வேதாகமம்",
+    "தமிழ் ஆய்வு வேதாகமம்",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    title: "Tamil Christian Articles & Bible",
+    description:
+      "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+    siteName: "Kirubai Sathiyam",
+  },
+  twitter: {
+    card: "summary",
+    title: "Tamil Christian Articles & Bible",
+    description:
+      "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+  },
+};
 
 export default function Home() {
   const articles = getAllArticles();
@@ -9,15 +45,6 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
-      {/* <section className="space-y-3">
-        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
-          கிருபை சத்தியம்
-        </h1>
-        <p style={{ color: "var(--muted-foreground)" }}>
-          தமிழில் எழுத்துகள், போதனைகள், மற்றும் சிந்தனைகள்.
-        </p>
-      </section> */}
-
       {featured && (
         <section className="space-y-4">
           <Link

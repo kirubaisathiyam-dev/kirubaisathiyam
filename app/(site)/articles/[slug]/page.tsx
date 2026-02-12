@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
 import { formatTamilDate } from "@/lib/date";
+import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import Image from "next/image";
 
 export function generateStaticParams() {
@@ -10,18 +12,103 @@ export function generateStaticParams() {
   }));
 }
 
+const siteUrl = getSiteUrl();
+const siteName = "Kirubai Sathiyam";
+
 type ArticlePageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
 
+export async function generateMetadata({
+  params,
+}: ArticlePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const articles = getAllArticles();
+  const article = articles.find((entry) => entry.slug === slug);
+
+  if (!article) {
+    return {
+      title: "Article Not Found",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
+  const title = article.title || "Tamil Article";
+  const description =
+    article.excerpt || "Tamil Christian article from Kirubai Sathiyam.";
+  const keywords = [...(article.tags || []), ...(article.keywords || [])];
+  const imageUrl = article.image ? toAbsoluteUrl(article.image) : undefined;
+
+  return {
+    title,
+    description,
+    keywords: keywords.length ? keywords : undefined,
+    authors: article.author ? [{ name: article.author }] : undefined,
+    alternates: {
+      canonical: `/articles/${article.slug}`,
+    },
+    openGraph: {
+      type: "article",
+      url: `/articles/${article.slug}`,
+      title,
+      description,
+      siteName,
+      locale: "ta-IN",
+      publishedTime: article.date,
+      authors: article.author ? [article.author] : undefined,
+      tags: article.tags?.length ? article.tags : undefined,
+      images: imageUrl ? [{ url: imageUrl }] : undefined,
+    },
+    twitter: {
+      card: imageUrl ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: imageUrl ? [imageUrl] : undefined,
+    },
+  };
+}
+
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
+  const articleUrl = toAbsoluteUrl(`/articles/${article.slug}`);
+  const imageUrl = article.image ? toAbsoluteUrl(article.image) : undefined;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.excerpt,
+    author: article.author
+      ? {
+          "@type": "Person",
+          name: article.author,
+        }
+      : undefined,
+    datePublished: article.date,
+    dateModified: article.date,
+    image: imageUrl ? [imageUrl] : undefined,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": articleUrl,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: siteName,
+      url: siteUrl.toString(),
+    },
+  };
 
   return (
     <article className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="space-y-3 text-center">
         <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
           {article.title}

@@ -1,5 +1,36 @@
+import type { Metadata } from "next";
 import ArticlesBrowser from "@/components/ArticlesBrowser";
 import { getAllArticles } from "@/lib/articles";
+
+export const metadata: Metadata = {
+  title: "Tamil Christian Articles & Bible",
+  description:
+    "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
+  keywords: [
+    "Tamil articles",
+    "Tamil Christian articles",
+    "Tamil Holy Bible",
+    "Bible study notes",
+    "Kirubai Sathiyam",
+  ],
+  alternates: {
+    canonical: "/articles",
+  },
+  openGraph: {
+    type: "website",
+    url: "/articles",
+    title: "Tamil Christian Articles & Bible",
+    description:
+      "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
+    siteName: "Kirubai Sathiyam",
+  },
+  twitter: {
+    card: "summary",
+    title: "Tamil Christian Articles & Bible",
+    description:
+      "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
+  },
+};
 
 export default function ArticlesPage() {
   const articles = getAllArticles();
