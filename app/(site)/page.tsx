@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { getAllArticles } from "@/lib/articles";
 import { formatTamilDate } from "@/lib/date";
+import { toAbsoluteUrl } from "@/lib/seo";
 import Image from "next/image";
 import Link from "next/link";
+
+const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
   title: "Tamil Christian Articles & Bible",
@@ -30,12 +33,14 @@ export const metadata: Metadata = {
     description:
       "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
     siteName: "Kirubai Sathiyam",
+    images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
     title: "Tamil Christian Articles & Bible",
     description:
       "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+    images: [shareImage],
   },
 };
 

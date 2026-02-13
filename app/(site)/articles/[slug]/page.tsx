@@ -3,6 +3,8 @@ import { getAllArticles, getArticleBySlug } from "@/lib/articles";
 import { formatTamilDate } from "@/lib/date";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import Image from "next/image";
+import ShareButton from "@/components/ShareButton";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 
 export function generateStaticParams() {
   const articles = getAllArticles();
@@ -82,6 +84,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const article = await getArticleBySlug(slug);
   const articleUrl = toAbsoluteUrl(`/articles/${article.slug}`);
   const imageUrl = article.image ? toAbsoluteUrl(article.image) : undefined;
+  const shareText =
+    article.excerpt || "Tamil Christian article from Kirubai Sathiyam.";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -155,6 +159,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         className="prose prose-neutral max-w-3xl mx-auto"
         dangerouslySetInnerHTML={{ __html: article.contentHtml }}
       />
+
+      <ShareButton
+        title={article.title}
+        text={shareText}
+        url={articleUrl}
+        className="fixed bottom-12 right-6 z-40 shadow-sm"
+      />
+
+      <ScrollToTopButton />
     </article>
   );
 }

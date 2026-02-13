@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import BibleReader from "@/components/BibleReader";
 import { Suspense } from "react";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
+import { toAbsoluteUrl } from "@/lib/seo";
+
+const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
   title: "Tamil Holy Bible Reader",
@@ -27,12 +31,14 @@ export const metadata: Metadata = {
     description:
       "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
     siteName: "Kirubai Sathiyam",
+    images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
     title: "Tamil Holy Bible Reader",
     description:
       "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
+    images: [shareImage],
   },
 };
 
@@ -60,6 +66,7 @@ export default function BiblePage() {
       >
         <BibleReader />
       </Suspense>
+      <ScrollToTopButton />
     </div>
   );
 }

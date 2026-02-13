@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import ArticlesBrowser from "@/components/ArticlesBrowser";
 import { getAllArticles } from "@/lib/articles";
+import { toAbsoluteUrl } from "@/lib/seo";
+
+const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
   title: "Tamil Christian Articles & Bible",
@@ -23,12 +26,14 @@ export const metadata: Metadata = {
     description:
       "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
     siteName: "Kirubai Sathiyam",
+    images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
     title: "Tamil Christian Articles & Bible",
     description:
       "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
+    images: [shareImage],
   },
 };
 
@@ -50,6 +55,5 @@ export default function ArticlesPage() {
     </div>
   );
 }
-
 
 

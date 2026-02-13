@@ -1,4 +1,5 @@
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
+import StickyHeader from "@/components/StickyHeader";
 import SubscribeForm from "@/components/SubscribeForm";
 import ThemeToggle from "@/components/ThemeToggle";
 import logoDark from "@/app/logo-dark.svg";
@@ -13,7 +14,7 @@ type SiteLayoutProps = {
 export default function SiteLayout({ children }: SiteLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
-      <header
+      <StickyHeader
         className="border-b"
         style={{ borderColor: "var(--border-color)" }}
       >
@@ -54,7 +55,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             <ThemeToggle />
           </nav>
         </div>
-      </header>
+      </StickyHeader>
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">
         {children}

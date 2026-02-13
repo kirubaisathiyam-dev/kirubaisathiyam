@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { getSiteUrl } from "@/lib/seo";
+import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import "./globals.css";
 import "cookieconsent/build/cookieconsent.min.css";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
@@ -9,6 +9,7 @@ const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
 const siteDescription =
   "Tamil Christian articles and the Tamil Holy Bible reader with study notes.";
+const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -37,11 +38,13 @@ export const metadata: Metadata = {
     title: siteName,
     description: siteDescription,
     siteName,
+    images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
     title: siteName,
     description: siteDescription,
+    images: [shareImage],
   },
 };
 
