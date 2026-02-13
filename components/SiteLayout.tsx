@@ -1,6 +1,8 @@
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import SubscribeForm from "@/components/SubscribeForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import logo from "@/app/logo.svg";
+import Image from "next/image";
 import Link from "next/link";
 
 type SiteLayoutProps = {
@@ -17,9 +19,18 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         <div className="mx-auto flex w-full items-center justify-between gap-6 lg:px-6 px-4 py-5">
           <Link
             href="/"
-            className="text-lg font-semibold tracking-tight sm:text-xl"
+            className="flex items-center gap-3 text-lg font-semibold tracking-tight sm:text-xl"
           >
-            கிருபை <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
+            <Image
+              src={logo}
+              alt="Kirubai Sathiyam logo"
+              width={36}
+              height={36}
+              priority
+            />
+            <div>
+              கிருபை <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
+            </div>
           </Link>
           <nav className="flex items-center gap-3 text-sm sm:text-base">
             <Link href="/bible" className="hover:underline">
