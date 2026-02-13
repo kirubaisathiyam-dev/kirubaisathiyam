@@ -53,6 +53,7 @@ export default function RootLayout({
   return (
     <html lang="ta">
       <head>
+        <meta name="apple-mobile-web-app-title" content="Kirubai Sathiyam" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

@@ -1,7 +1,8 @@
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import SubscribeForm from "@/components/SubscribeForm";
 import ThemeToggle from "@/components/ThemeToggle";
-import logo from "@/app/logo.svg";
+import logoDark from "@/app/logo-dark.svg";
+import logoLight from "@/app/logo-light.svg";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,11 +23,20 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             className="flex items-center gap-3 text-lg font-semibold tracking-tight sm:text-xl"
           >
             <Image
-              src={logo}
+              src={logoLight}
               alt="Kirubai Sathiyam logo"
               width={36}
               height={36}
               priority
+              className="block dark:hidden"
+            />
+            <Image
+              src={logoDark}
+              alt="Kirubai Sathiyam logo"
+              width={36}
+              height={36}
+              priority
+              className="hidden dark:block"
             />
             <div>
               கிருபை <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
