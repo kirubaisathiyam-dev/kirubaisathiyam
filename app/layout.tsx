@@ -57,6 +57,10 @@ export default function RootLayout({
     <html lang="ta">
       <head>
         <meta name="apple-mobile-web-app-title" content="Kirubai Sathiyam" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icon0.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icon1.png" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
