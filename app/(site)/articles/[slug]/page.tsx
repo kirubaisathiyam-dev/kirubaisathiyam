@@ -6,6 +6,8 @@ import Image from "next/image";
 import ShareButton from "@/components/ShareButton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   const articles = getAllArticles();
 
