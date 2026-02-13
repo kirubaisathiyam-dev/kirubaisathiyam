@@ -14,8 +14,6 @@ export function generateStaticParams() {
   }));
 }
 
-export const dynamicParams = false;
-
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
 
