@@ -415,7 +415,7 @@ export default function BibleReader() {
           </div>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:min-w-[260px]">
             <label className="text-sm font-semibold">
-              Book
+              புத்தகம்
               <select
                 value={selectedBook}
                 onChange={(event) => handleBookChange(event.target.value)}
@@ -433,7 +433,7 @@ export default function BibleReader() {
               </select>
             </label>
             <label className="text-sm font-semibold">
-              Chapter
+              அதிகாரம்
               <select
                 value={selectedChapter}
                 onChange={(event) => handleChapterChange(event.target.value)}
@@ -571,10 +571,10 @@ export default function BibleReader() {
             <span className="md:hidden" aria-hidden="true">
               <i className="fa-solid fa-arrow-left"></i>
             </span>
-            <span className="hidden md:inline">Previous Chapter</span>
+            <span className="hidden md:inline">முந்தின அதிகாரம்</span>
           </button>
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-            Chapter {selectedChapter} of {chapterOptions.length || "--"}
+            அதிகாரம் {selectedChapter} of {chapterOptions.length || "--"}
           </p>
           <button
             type="button"
@@ -587,7 +587,7 @@ export default function BibleReader() {
             <span className="md:hidden" aria-hidden="true">
               <i className="fa-solid fa-arrow-right"></i>
             </span>
-            <span className="hidden md:inline">Next Chapter</span>
+            <span className="hidden md:inline">அடுத்த அதிகாரம்</span>
           </button>
         </section>
       )}

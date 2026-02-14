@@ -50,12 +50,12 @@ export default function ShareButton({
     <button
       type="button"
       onClick={handleShare}
-      className={`inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80 ${
+      className={`inline-flex cursor-pointer items-center justify-center rounded-full border px-3 py-3.5 text-sm font-semibold transition hover:opacity-80 ${
         className ?? ""
       }`}
       style={{
         borderColor: "var(--border-color)",
-        backgroundColor: "var(--background)",
+        backgroundColor: "var(--foreground-bible)",
       }}
       aria-label={label}
       aria-live="polite"

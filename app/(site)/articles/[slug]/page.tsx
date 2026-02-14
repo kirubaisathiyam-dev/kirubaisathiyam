@@ -162,14 +162,17 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         dangerouslySetInnerHTML={{ __html: article.contentHtml }}
       />
 
-      <ShareButton
-        title={article.title}
-        text={shareText}
-        url={articleUrl}
-        className="fixed bottom-12 right-6 z-40 shadow-sm"
-      />
-
-      <ScrollToTopButton />
+      <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+        <div className="flex flex-col gap-3">
+          <ShareButton
+            title={article.title}
+            text={shareText}
+            url={articleUrl}
+            className="shadow-sm"
+          />
+          <ScrollToTopButton />
+        </div>
+      </div>
     </article>
   );
 }

@@ -94,7 +94,7 @@ export default function SiteHeader() {
         />
         <aside
           id="site-drawer"
-          className={`absolute right-0 top-0 h-full w-72 max-w-[80vw] transform border-l shadow-2xl transition-transform duration-300 ${
+          className={`absolute right-0 top-0 h-full w-72 max-w-[80vw] transform overflow-y-auto border-l shadow-2xl transition-transform duration-300 ${
             open ? "translate-x-0" : "translate-x-full"
           }`}
           style={{
@@ -122,7 +122,7 @@ export default function SiteHeader() {
               className="rounded-md px-3 py-2 hover:opacity-70"
               onClick={() => setOpen(false)}
             >
-              Bible
+              பரிசுத்த வேதாகமம்
             </Link>
             <Link
               href="/articles"

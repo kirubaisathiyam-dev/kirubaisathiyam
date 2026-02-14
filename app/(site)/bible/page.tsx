@@ -47,7 +47,7 @@ export default function BiblePage() {
     <div className="space-y-10">
       <header className="space-y-3 text-center max-w-3xl mx-auto">
         <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
-          Tamil Holy Bible (தமிழ் பரிசுத்த வேதாகமம்)
+          பரிசுத்த வேதாகமம்
         </h1>
         <p style={{ color: "var(--muted-foreground)" }}>
           Read the Tamil Holy Bible online with study Bible notes, illustrated
@@ -65,8 +65,18 @@ export default function BiblePage() {
         }
       >
         <BibleReader />
+        <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+          <div className="flex flex-col gap-3">
+            {/* <ShareButton
+            title={article.title}
+            text={shareText}
+            url={articleUrl}
+            className="shadow-sm"
+          /> */}
+            <ScrollToTopButton />
+          </div>
+        </div>
       </Suspense>
-      <ScrollToTopButton />
     </div>
   );
 }
