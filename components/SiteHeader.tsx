@@ -59,9 +59,7 @@ export default function SiteHeader() {
             />
             <div>
               கிருபை{" "}
-              <span style={{ color: "var(--foreground-bible)" }}>
-                சத்தியம்
-              </span>
+              <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
             </div>
           </Link>
           <button
@@ -102,11 +100,7 @@ export default function SiteHeader() {
             borderColor: "var(--border-color)",
           }}
         >
-          <div
-            className="flex items-center justify-between border-b px-5 py-4"
-            style={{ borderColor: "var(--border-color)" }}
-          >
-            <span className="text-base font-semibold">Menu</span>
+          <div className="flex items-center justify-end px-5 py-4">
             <button
               type="button"
               className="cursor-pointer text-base hover:opacity-70"
@@ -116,29 +110,30 @@ export default function SiteHeader() {
               <i className="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
           </div>
-          <nav className="flex flex-col gap-4 px-5 py-6 text-base">
-            <Link
-              href="/bible"
-              className="rounded-md px-3 py-2 hover:opacity-70"
-              onClick={() => setOpen(false)}
-            >
-              பரிசுத்த வேதாகமம்
-            </Link>
-            <Link
-              href="/articles"
-              className="rounded-md px-3 py-2 hover:opacity-70"
-              onClick={() => setOpen(false)}
-            >
-              கட்டுரைகள்
-            </Link>
+          <div className="flex flex-col justify-between gap-6 px-5 pb-6">
+            <nav className="flex flex-col gap-4 px-5 text-base">
+              <Link
+                href="/bible"
+                className="rounded-md px-3 py-2 hover:opacity-70"
+                onClick={() => setOpen(false)}
+              >
+                பரிசுத்த வேதாகமம்
+              </Link>
+              <Link
+                href="/articles"
+                className="rounded-md px-3 py-2 hover:opacity-70"
+                onClick={() => setOpen(false)}
+              >
+                கட்டுரைகள்
+              </Link>
+            </nav>
             <div
-              className="flex items-center justify-between rounded-md border px-3 py-2"
+              className="flex items-center border-t justify-center px-3 py-4"
               style={{ borderColor: "var(--border-color)" }}
             >
-              <span>Theme</span>
               <ThemeToggle />
             </div>
-          </nav>
+          </div>
         </aside>
       </div>
     </>
