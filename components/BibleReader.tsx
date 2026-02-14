@@ -1,6 +1,7 @@
 "use client";
 
 import { parseBibleReference } from "@/lib/bible";
+import BibleSelectionBar from "@/components/BibleSelectionBar";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -46,7 +47,12 @@ type ParsedNote = BibleNote & {
   reference: string;
 };
 
+type BibleReaderProps = {
+  siteUrl?: string;
+};
+
 const defaultBook = "Genesis";
+const COPY_RESET_MS = 1800;
 
 function getBookCode(bookName: string) {
   const parsed = parseBibleReference(`${bookName} 1:1`);
@@ -125,7 +131,92 @@ function renderBibleRefs(text: string) {
   return parts;
 }
 
-export default function BibleReader() {
+function parseVerseNumbers(value: string | null) {
+  if (!value) return [];
+  const cleaned = value.replace(/\s+/g, "");
+  if (!cleaned) return [];
+
+  const entries = cleaned.split(",");
+  const numbers: number[] = [];
+
+  for (const entry of entries) {
+    if (!entry) continue;
+    if (entry.includes("-")) {
+      const [startRaw, endRaw] = entry.split("-");
+      const start = Number.parseInt(startRaw, 10);
+      const end = Number.parseInt(endRaw, 10);
+      if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
+      const low = Math.min(start, end);
+      const high = Math.max(start, end);
+      for (let idx = low; idx <= high; idx += 1) {
+        numbers.push(idx);
+      }
+    } else {
+      const num = Number.parseInt(entry, 10);
+      if (Number.isFinite(num)) {
+        numbers.push(num);
+      }
+    }
+  }
+
+  return Array.from(new Set(numbers)).sort((a, b) => a - b);
+}
+
+function formatVerseNumbers(values: number[]) {
+  if (!values.length) return "";
+  const sorted = Array.from(new Set(values)).sort((a, b) => a - b);
+  const ranges: string[] = [];
+
+  let rangeStart = sorted[0];
+  let previous = sorted[0];
+
+  for (let idx = 1; idx < sorted.length; idx += 1) {
+    const current = sorted[idx];
+    if (current === previous + 1) {
+      previous = current;
+      continue;
+    }
+    ranges.push(
+      rangeStart === previous ? `${rangeStart}` : `${rangeStart}-${previous}`,
+    );
+    rangeStart = current;
+    previous = current;
+  }
+
+  ranges.push(
+    rangeStart === previous ? `${rangeStart}` : `${rangeStart}-${previous}`,
+  );
+  return ranges.join(",");
+}
+
+async function copyToClipboard(text: string) {
+  if (!text) return false;
+  try {
+    if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // fallback below
+  }
+
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "true");
+    textarea.style.position = "absolute";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(textarea);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+export default function BibleReader({ siteUrl }: BibleReaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -139,6 +230,10 @@ export default function BibleReader() {
   const [hasSyncedFromUrl, setHasSyncedFromUrl] = useState(false);
   const lastSearchKey = useRef<string | null>(null);
   const topRef = useRef<HTMLDivElement | null>(null);
+  const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
+  const [lastClickedVerse, setLastClickedVerse] = useState<number | null>(null);
+  const [copyMessage, setCopyMessage] = useState<string>("");
+  const [scrollToSelection, setScrollToSelection] = useState(false);
   const [activeImage, setActiveImage] = useState<{
     src: string;
     alt?: string;
@@ -270,6 +365,7 @@ export default function BibleReader() {
     const params = new URLSearchParams(searchKey);
     const bookParamRaw = params.get("book");
     const chapterParamRaw = params.get("chapter");
+    const versesParamRaw = params.get("verses");
 
     let nextBook = selectedBook;
     if (bookParamRaw) {
@@ -290,23 +386,30 @@ export default function BibleReader() {
       }
     }
 
+    const parsedVerses = parseVerseNumbers(versesParamRaw);
+    const nextVerses = formatVerseNumbers(parsedVerses);
+    const currentVerses = formatVerseNumbers(selectedVerses);
+
     if (nextBook !== selectedBook) {
       setSelectedBook(nextBook);
     }
     if (nextChapter !== selectedChapter) {
       setSelectedChapter(nextChapter);
     }
+    if (nextVerses !== currentVerses) {
+      setSelectedVerses(parsedVerses);
+      setLastClickedVerse(
+        parsedVerses.length ? parsedVerses[parsedVerses.length - 1] : null,
+      );
+      if (parsedVerses.length) {
+        setScrollToSelection(true);
+      }
+    }
 
     if (!hasSyncedFromUrl) {
       setHasSyncedFromUrl(true);
     }
-  }, [
-    books,
-    hasSyncedFromUrl,
-    searchKey,
-    selectedBook,
-    selectedChapter,
-  ]);
+  }, [books, hasSyncedFromUrl, searchKey, selectedBook, selectedChapter]);
 
   useEffect(() => {
     if (!hasSyncedFromUrl) return;
@@ -315,16 +418,24 @@ export default function BibleReader() {
     const params = new URLSearchParams(searchKey);
     const currentBook = params.get("book");
     const currentChapter = params.get("chapter");
+    const currentVerses = params.get("verses") || "";
+    const nextVerses = formatVerseNumbers(selectedVerses);
 
     if (
       currentBook?.toLowerCase() === selectedBook.toLowerCase() &&
-      currentChapter === selectedChapter
+      currentChapter === selectedChapter &&
+      currentVerses === nextVerses
     ) {
       return;
     }
 
     params.set("book", selectedBook);
     params.set("chapter", selectedChapter);
+    if (nextVerses) {
+      params.set("verses", nextVerses);
+    } else {
+      params.delete("verses");
+    }
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [
     hasSyncedFromUrl,
@@ -333,6 +444,7 @@ export default function BibleReader() {
     searchKey,
     selectedBook,
     selectedChapter,
+    selectedVerses,
   ]);
 
   const chapterOptions = useMemo(() => {
@@ -373,13 +485,113 @@ export default function BibleReader() {
 
   const handleBookChange = (book: string) => {
     setSelectedBook(book);
+    setSelectedVerses([]);
+    setLastClickedVerse(null);
     window.requestAnimationFrame(() => scrollToTop("smooth"));
   };
 
   const handleChapterChange = (chapter: string) => {
     setSelectedChapter(chapter);
+    setSelectedVerses([]);
+    setLastClickedVerse(null);
     window.requestAnimationFrame(() => scrollToTop("smooth"));
   };
+
+  const verseSet = useMemo(() => new Set(selectedVerses), [selectedVerses]);
+  const verseLabel = useMemo(
+    () => formatVerseNumbers(selectedVerses),
+    [selectedVerses],
+  );
+  const bookLabel = selectedBookMeta?.tamil || selectedBook;
+
+  const selectedVerseTexts = useMemo(() => {
+    if (!currentChapter || !selectedVerses.length) return [];
+    return currentChapter.verses
+      .filter((verse) => verseSet.has(Number.parseInt(verse.verse, 10)))
+      .map((verse) => verse.text.trim())
+      .filter(Boolean);
+  }, [currentChapter, selectedVerses, verseSet]);
+
+  const shareUrl = useMemo(() => {
+    if (!selectedBook || !selectedChapter) return "";
+    const baseUrl =
+      siteUrl || (typeof window !== "undefined" ? window.location.origin : "");
+    const normalizedBase = baseUrl ? baseUrl.replace(/\/+$/, "") : "";
+    const params = new URLSearchParams();
+    params.set("book", selectedBook);
+    params.set("chapter", selectedChapter);
+    if (verseLabel) {
+      params.set("verses", verseLabel);
+    }
+    const path = `/bible?${params.toString()}`;
+    return normalizedBase ? `${normalizedBase}${path}` : path;
+  }, [selectedBook, selectedChapter, verseLabel]);
+
+  const shareReference = useMemo(() => {
+    if (!selectedVerses.length) return "";
+    return `${bookLabel} ${selectedChapter}:${verseLabel}`;
+  }, [bookLabel, selectedChapter, selectedVerses.length, verseLabel]);
+
+  const shareText = useMemo(() => {
+    if (!selectedVerseTexts.length) return "";
+    return `${selectedVerseTexts.join(" ")}\n\n${shareReference}\n${shareUrl}`;
+  }, [selectedVerseTexts, shareReference, shareUrl]);
+
+  const handleVerseClick = (event: React.MouseEvent, verseNumber: number) => {
+    setCopyMessage("");
+    setSelectedVerses((prev) => {
+      const next = new Set(prev);
+      if (event.shiftKey && lastClickedVerse !== null) {
+        const start = Math.min(lastClickedVerse, verseNumber);
+        const end = Math.max(lastClickedVerse, verseNumber);
+        for (let idx = start; idx <= end; idx += 1) {
+          next.add(idx);
+        }
+      } else if (next.has(verseNumber)) {
+        next.delete(verseNumber);
+      } else {
+        next.add(verseNumber);
+      }
+      return Array.from(next).sort((a, b) => a - b);
+    });
+    setLastClickedVerse(verseNumber);
+  };
+
+  const handleCopy = async () => {
+    if (!shareText) return;
+    const ok = await copyToClipboard(shareText);
+    setCopyMessage(ok ? "Copied!" : "Unable to copy.");
+    if (ok) {
+      window.setTimeout(() => setCopyMessage(""), COPY_RESET_MS);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!shareText) return;
+    if (navigator?.share) {
+      try {
+        await navigator.share({
+          title: shareReference,
+          text: `${selectedVerseTexts.join(" ")}\n\n${shareReference}`,
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        // fall back to copy
+      }
+    }
+    await handleCopy();
+  };
+
+  useEffect(() => {
+    if (!scrollToSelection || !selectedVerses.length) return;
+    const firstVerse = selectedVerses[0];
+    const target = document.getElementById(`verse-${firstVerse}`);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    setScrollToSelection(false);
+  }, [scrollToSelection, selectedVerses]);
 
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
@@ -427,7 +639,9 @@ export default function BibleReader() {
               >
                 {books.map((book) => (
                   <option key={book.english} value={book.english}>
-                    {book.tamil ? `${book.tamil} (${book.english})` : book.english}
+                    {book.tamil
+                      ? `${book.tamil} (${book.english})`
+                      : book.english}
                   </option>
                 ))}
               </select>
@@ -482,6 +696,8 @@ export default function BibleReader() {
               const verseNotes = passageId
                 ? notesByPassage.get(passageId) || []
                 : [];
+              const verseNumber = Number.parseInt(verse.verse, 10);
+              const isSelected = verseSet.has(verseNumber);
 
               return (
                 <div key={verse.verse} className="space-y-4">
@@ -495,14 +711,10 @@ export default function BibleReader() {
                       }}
                     >
                       <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide">
-                        <span
-                          style={{ color: "var(--muted-foreground)" }}
-                        >
+                        <span style={{ color: "var(--muted-foreground)" }}>
                           Study Note
                         </span>
-                        <span
-                          style={{ color: "var(--muted-foreground)" }}
-                        >
+                        <span style={{ color: "var(--muted-foreground)" }}>
                           {note.position}
                         </span>
                       </div>
@@ -516,48 +728,77 @@ export default function BibleReader() {
                           {renderBibleText(note.text)}
                         </div>
                       )}
-                        {note.image && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setActiveImage({
-                                src: note.image || "",
-                                alt: note.title || note.position,
-                              })
-                            }
-                            className="mt-4 w-full cursor-pointer overflow-hidden rounded border"
-                            style={{ borderColor: "var(--border-color)" }}
-                          >
-                            <Image
-                              src={note.image}
-                              alt={note.title || note.position}
-                              width={1200}
-                              height={800}
-                              sizes="(min-width: 1024px) 720px, 100vw"
-                              className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
-                            />
-                          </button>
-                        )}
+                      {note.image && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActiveImage({
+                              src: note.image || "",
+                              alt: note.title || note.position,
+                            })
+                          }
+                          className="mt-4 w-full cursor-pointer overflow-hidden rounded border"
+                          style={{ borderColor: "var(--border-color)" }}
+                        >
+                          <Image
+                            src={note.image}
+                            alt={note.title || note.position}
+                            width={1200}
+                            height={800}
+                            sizes="(min-width: 1024px) 720px, 100vw"
+                            className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+                          />
+                        </button>
+                      )}
                     </article>
                   ))}
-                  <div className="flex gap-3">
+                  <button
+                    id={`verse-${verse.verse}`}
+                    type="button"
+                    onClick={(event) => handleVerseClick(event, verseNumber)}
+                    className={`bible-verse ${isSelected ? "is-selected" : ""}`}
+                    data-verse={verse.verse}
+                    aria-pressed={isSelected}
+                  >
                     <span
-                      className="w-8 shrink-0 text-right text-sm font-semibold"
+                      className="verse-number"
                       style={{ color: "var(--muted-foreground)" }}
                     >
                       {verse.verse}
                     </span>
-                    <p className="flex-1">{verse.text}</p>
-                  </div>
+                    <span className="verse-text">
+                      <span className="verse-text-inner">{verse.text}</span>
+                    </span>
+                  </button>
                 </div>
               );
             })}
           </div>
+          {selectedVerses.length > 0 && (
+            <div className="sticky bottom-6 z-40 flex flex-col items-center gap-3">
+              <div className="flex flex-col gap-3">
+                <BibleSelectionBar
+                  reference={shareReference}
+                  message={copyMessage}
+                  onCopy={handleCopy}
+                  onShare={handleShare}
+                  onClear={() => {
+                    setSelectedVerses([]);
+                    setLastClickedVerse(null);
+                    setCopyMessage("");
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </section>
       )}
 
       {!loading && currentChapter && (
-        <section className="flex gap-3 border-t mt-12 pt-6 flex-row items-center justify-between" style={{ borderColor: "var(--border-color)" }}>
+        <section
+          className="flex gap-3 border-t mt-12 pt-6 flex-row items-center justify-between"
+          style={{ borderColor: "var(--border-color)" }}
+        >
           <button
             type="button"
             onClick={() =>

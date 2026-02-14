@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import BibleReader from "@/components/BibleReader";
 import { Suspense } from "react";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
-import { toAbsoluteUrl } from "@/lib/seo";
+import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 const shareImage = toAbsoluteUrl("/logo-light.svg");
+const siteUrl = getSiteUrl().toString();
 
 export const metadata: Metadata = {
   title: "Tamil Holy Bible Reader",
@@ -64,7 +65,7 @@ export default function BiblePage() {
           </div>
         }
       >
-        <BibleReader />
+        <BibleReader siteUrl={siteUrl} />
         <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
           <div className="flex flex-col gap-3">
             {/* <ShareButton
