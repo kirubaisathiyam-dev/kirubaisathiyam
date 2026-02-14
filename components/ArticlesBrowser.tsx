@@ -159,7 +159,7 @@ export default function ArticlesBrowser({ articles }: Props) {
               setActiveType("all");
               setPage(1);
             }}
-            className="shrink-0 px-1 pb-2 text-sm font-semibold transition border-b-2"
+            className="shrink-0 cursor-pointer px-1 pb-2 text-sm font-semibold transition border-b-2"
             style={{
               borderColor:
                 activeType === "all" ? "var(--foreground)" : "transparent",
@@ -182,7 +182,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                   setActiveType(type.key);
                   setPage(1);
                 }}
-                className="shrink-0 px-1 pb-2 text-sm font-semibold transition border-b-2"
+                className="shrink-0 cursor-pointer px-1 pb-2 text-sm font-semibold transition border-b-2"
                 style={{
                   borderColor: isActive
                     ? "var(--foreground)"
@@ -207,7 +207,7 @@ export default function ArticlesBrowser({ articles }: Props) {
               setActiveTag("all");
               setPage(1);
             }}
-            className="shrink-0 rounded-full border px-3 py-1 text-xs transition"
+            className="shrink-0 cursor-pointer rounded-full border px-3 py-1 text-xs transition"
             style={{
               borderColor:
                 activeTag === "all"
@@ -231,7 +231,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                   setActiveTag(tag.key);
                   setPage(1);
                 }}
-                className="shrink-0 rounded-full border px-3 py-1 text-xs transition"
+                className="shrink-0 cursor-pointer rounded-full border px-3 py-1 text-xs transition"
                 style={{
                   borderColor: isActive
                     ? "var(--foreground)"
@@ -326,7 +326,7 @@ export default function ArticlesBrowser({ articles }: Props) {
               setPage((prev) => Math.max(1, Math.min(totalPages, prev - 1)))
             }
             disabled={currentPage === 1}
-            className="border px-3 py-1 text-sm disabled:cursor-not-allowed"
+            className="cursor-pointer border px-3 py-1 text-sm disabled:cursor-not-allowed"
             style={{
               borderColor: "var(--border-color)",
               opacity: currentPage === 1 ? 0.5 : 1,
@@ -342,7 +342,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                   key={pageNumber}
                   type="button"
                   onClick={() => setPage(pageNumber)}
-                  className="border px-3 py-1 text-sm"
+                  className="cursor-pointer border px-3 py-1 text-sm"
                   style={{
                     borderColor: isActive
                       ? "var(--foreground)"
@@ -365,7 +365,7 @@ export default function ArticlesBrowser({ articles }: Props) {
               setPage((prev) => Math.max(1, Math.min(totalPages, prev + 1)))
             }
             disabled={currentPage === totalPages}
-            className="border px-3 py-1 text-sm disabled:cursor-not-allowed"
+            className="cursor-pointer border px-3 py-1 text-sm disabled:cursor-not-allowed"
             style={{
               borderColor: "var(--border-color)",
               opacity: currentPage === totalPages ? 0.5 : 1,

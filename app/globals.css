@@ -65,6 +65,14 @@ a {
   text-decoration: none;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .prose {
   --tw-prose-body: var(--foreground);
   --tw-prose-headings: var(--foreground);

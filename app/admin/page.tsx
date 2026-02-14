@@ -87,7 +87,7 @@ export default function AdminHomePage() {
           />
           <button
             type="submit"
-            className="border px-4 py-2 text-sm font-semibold"
+            className="cursor-pointer border px-4 py-2 text-sm font-semibold"
             style={{
               borderColor: "var(--foreground)",
               background: "var(--foreground)",
@@ -126,7 +126,7 @@ export default function AdminHomePage() {
       <button
         type="button"
         onClick={handleLogout}
-        className="text-sm font-semibold hover:underline"
+        className="cursor-pointer text-sm font-semibold hover:underline"
       >
         Logout
       </button>

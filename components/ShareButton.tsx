@@ -50,7 +50,7 @@ export default function ShareButton({
     <button
       type="button"
       onClick={handleShare}
-      className={`inline-flex items-center justify-center rounded-full border px-2 py-3 text-sm font-semibold transition hover:opacity-80 ${
+      className={`inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80 ${
         className ?? ""
       }`}
       style={{

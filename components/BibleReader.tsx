@@ -525,7 +525,7 @@ export default function BibleReader() {
                                 alt: note.title || note.position,
                               })
                             }
-                            className="mt-4 w-full overflow-hidden rounded border"
+                            className="mt-4 w-full cursor-pointer overflow-hidden rounded border"
                             style={{ borderColor: "var(--border-color)" }}
                           >
                             <Image
@@ -564,7 +564,7 @@ export default function BibleReader() {
               previousChapter && handleChapterChange(previousChapter)
             }
             disabled={!previousChapter}
-            className="rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             style={{ borderColor: "var(--border-color)" }}
             aria-label="Previous chapter"
           >
@@ -580,7 +580,7 @@ export default function BibleReader() {
             type="button"
             onClick={() => nextChapter && handleChapterChange(nextChapter)}
             disabled={!nextChapter}
-            className="rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             style={{ borderColor: "var(--border-color)" }}
             aria-label="Next chapter"
           >
@@ -604,7 +604,7 @@ export default function BibleReader() {
             <button
               type="button"
               onClick={() => setActiveImage(null)}
-              className="self-end rounded border border-white/30 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+              className="cursor-pointer self-end rounded border border-white/30 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white"
             >
               Close
             </button>
