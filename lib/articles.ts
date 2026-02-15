@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
 import rehypeHighlight from "rehype-highlight";
 import rehypeStringify from "rehype-stringify";
-import { parseBibleReference } from "@/lib/bible";
+import { replaceBibleRefsInHtml } from "@/lib/bible";
 
 export type ArticleMeta = {
   slug: string;
@@ -88,35 +88,6 @@ function normalizeStringList(value: unknown) {
       seen.add(key);
       return true;
     });
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
-}
-
-function replaceBibleRefsInHtml(html: string) {
-  return html.replace(/\(([^()]+?)\)/g, (match, inner) => {
-    const rawText = inner.replace(/<[^>]+>/g, "").trim();
-    const normalizedText = rawText
-      .replace(/&nbsp;|&#160;/g, " ")
-      .replace(/\u00A0/g, " ")
-      .replace(/\s+/g, " ")
-      .replace(/[.,;!?]+$/, "")
-      .trim();
-    const parsed = parseBibleReference(normalizedText);
-    if (!parsed) {
-      return match;
-    }
-
-    const safeRef = escapeHtml(rawText);
-    const safePassage = escapeHtml(parsed.passageId);
-
-    return `(<button type="button" class="bible-ref" data-passage="${safePassage}" data-ref="${safeRef}">${safeRef}</button>)`;
-  });
 }
 
 function getCoverImage(content: string, data: { image?: unknown }) {
