@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import BibleReader from "@/components/BibleReader";
 import { Suspense } from "react";
-import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 const shareImage = toAbsoluteUrl("/logo-light.svg");
@@ -50,10 +49,10 @@ export default function BiblePage() {
         <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
           பரிசுத்த வேதாகமம்
         </h1>
-        <p style={{ color: "var(--muted-foreground)" }}>
+        {/* <p style={{ color: "var(--muted-foreground)" }}>
           Read the Tamil Holy Bible online with study Bible notes, illustrated
           Bible references, and old Tamil Bible versions.
-        </p>
+        </p> */}
       </header>
       <Suspense
         fallback={
@@ -66,17 +65,6 @@ export default function BiblePage() {
         }
       >
         <BibleReader siteUrl={siteUrl} />
-        <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-          <div className="flex flex-col gap-3">
-            {/* <ShareButton
-            title={article.title}
-            text={shareText}
-            url={articleUrl}
-            className="shadow-sm"
-          /> */}
-            <ScrollToTopButton />
-          </div>
-        </div>
       </Suspense>
     </div>
   );

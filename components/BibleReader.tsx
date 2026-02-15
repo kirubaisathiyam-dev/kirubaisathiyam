@@ -59,6 +59,7 @@ type BibleReaderProps = {
 
 const defaultBook = "Genesis";
 const COPY_RESET_MS = 1800;
+const INTRO_CHAPTER_LABEL = "\u0B85\u0BB1\u0BBF\u0BAE\u0BC1\u0B95\u0BAE\u0BCD";
 
 function getNoteKey(note: BibleNote) {
   if (note.id) return note.id;
@@ -242,11 +243,16 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   const [error, setError] = useState<string>("");
   const [hasSyncedFromUrl, setHasSyncedFromUrl] = useState(false);
   const lastSearchKey = useRef<string | null>(null);
+  const explicitChapterRef = useRef<{
+    book: string | null;
+    chapter: string | null;
+  }>({ book: null, chapter: null });
   const topRef = useRef<HTMLDivElement | null>(null);
   const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
   const [lastClickedVerse, setLastClickedVerse] = useState<number | null>(null);
   const [copyMessage, setCopyMessage] = useState<string>("");
   const [scrollToSelection, setScrollToSelection] = useState(false);
+  const [studyModeEnabled, setStudyModeEnabled] = useState(false);
   const [activeImage, setActiveImage] = useState<{
     src: string;
     alt?: string;
@@ -322,15 +328,36 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         setBookData(data);
 
         const chapters = data.chapters || [];
+        const introChapter = chapters.find((chapter) => {
+          const type = chapter.type?.trim().toLowerCase();
+          if (type === "intro") return true;
+          const title = chapter.chapter?.trim();
+          return title === INTRO_CHAPTER_LABEL;
+        })?.chapter;
         const fallbackChapter =
           chapters.find((chapter) => chapter.chapter === "1")?.chapter ||
           chapters[0]?.chapter ||
           "1";
-        setSelectedChapter((prev) =>
-          chapters.some((chapter) => chapter.chapter === prev)
-            ? prev
-            : fallbackChapter,
-        );
+        const explicitChapter =
+          explicitChapterRef.current.book?.toLowerCase() ===
+          selectedBook.toLowerCase()
+            ? explicitChapterRef.current.chapter
+            : null;
+        const hasExplicitChapter =
+          !!explicitChapter &&
+          chapters.some((chapter) => chapter.chapter === explicitChapter);
+        setSelectedChapter((prev) => {
+          if (hasExplicitChapter && explicitChapter) {
+            return explicitChapter;
+          }
+          if (introChapter) {
+            return introChapter;
+          }
+          if (chapters.some((chapter) => chapter.chapter === prev)) {
+            return prev;
+          }
+          return fallbackChapter;
+        });
       } catch (err) {
         if (active) {
           const message =
@@ -395,12 +422,17 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     }
 
     let nextChapter = selectedChapter;
+    let cleanedChapterParam: string | null = null;
     if (chapterParamRaw) {
       const cleaned = chapterParamRaw.replace(/^0+(?=\d)/, "");
       if (cleaned) {
         nextChapter = cleaned;
+        cleanedChapterParam = cleaned;
       }
     }
+    explicitChapterRef.current = cleanedChapterParam
+      ? { book: nextBook, chapter: cleanedChapterParam }
+      : { book: null, chapter: null };
 
     const parsedVerses = parseVerseNumbers(versesParamRaw);
     const nextVerses = formatVerseNumbers(parsedVerses);
@@ -715,6 +747,22 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                 ))}
               </select>
             </label>
+            <label
+              className="flex items-center justify-between gap-3 rounded border px-3 py-2 text-sm font-semibold"
+              style={{
+                borderColor: "var(--border-color)",
+                background: "var(--background)",
+              }}
+            >
+              <span>விளக்கவுரை</span>
+              <input
+                type="checkbox"
+                checked={studyModeEnabled}
+                onChange={(event) => setStudyModeEnabled(event.target.checked)}
+                className="h-4 w-4 accent-black"
+                aria-label="Toggle study mode"
+              />
+            </label>
           </div>
         </div>
       </section>
@@ -759,72 +807,71 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
 
                 return (
                   <div key={verse.verse} className="space-y-4">
-                    {verseNotes.map((note, idx) => (
-                      <article
-                        key={`${note.id || note.position}-${idx}`}
-                        className="rounded border px-4 py-4 shadow-sm"
-                        style={{
-                          borderColor: "var(--border-color)",
-                          background: "var(--muted-background)",
-                        }}
-                      >
-                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide">
-                          <span style={{ color: "var(--muted-foreground)" }}>
-                            Study Note
-                          </span>
-                          <span style={{ color: "var(--muted-foreground)" }}>
-                            {note.position}
-                          </span>
-                        </div>
-                        {note.title && (
-                          <h3 className="mb-2 text-lg font-semibold">
-                            {note.title}
-                          </h3>
-                        )}
-                        {note.text && (
-                          (() => {
-                            const noteKey = getNoteKey(note);
-                            const noteHtml = notesHtml.get(noteKey);
-                            if (noteHtml) {
-                              return (
-                                <div
-                                  className="prose prose-neutral max-w-none"
-                                  dangerouslySetInnerHTML={{ __html: noteHtml }}
-                                />
-                              );
-                            }
+                    {studyModeEnabled &&
+                      verseNotes.map((note, idx) => (
+                        <article
+                          key={`${note.id || note.position}-${idx}`}
+                          className="rounded border px-4 py-4 shadow-sm"
+                          style={{
+                            borderColor: "var(--border-color)",
+                            background: "var(--muted-background)",
+                          }}
+                        >
+                          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide">
+                            <span style={{ color: "var(--muted-foreground)" }}>
+                              விளக்கவுரை
+                            </span>
+                          </div>
+                          {note.title && (
+                            <h3 className="mb-2 text-lg font-semibold">
+                              {note.title}
+                            </h3>
+                          )}
+                          {note.text &&
+                            (() => {
+                              const noteKey = getNoteKey(note);
+                              const noteHtml = notesHtml.get(noteKey);
+                              if (noteHtml) {
+                                return (
+                                  <div
+                                    className="prose prose-neutral max-w-none"
+                                    dangerouslySetInnerHTML={{
+                                      __html: noteHtml,
+                                    }}
+                                  />
+                                );
+                              }
 
-                            return (
-                              <div className="space-y-3 text-base">
-                                {renderBibleText(note.text)}
-                              </div>
-                            );
-                          })()
-                        )}
-                        {note.image && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setActiveImage({
-                                src: note.image || "",
-                                alt: note.title || note.position,
-                              })
-                            }
-                            className="mt-4 w-full cursor-pointer overflow-hidden rounded border"
-                            style={{ borderColor: "var(--border-color)" }}
-                          >
-                            <Image
-                              src={note.image}
-                              alt={note.title || note.position}
-                              width={1200}
-                              height={800}
-                              sizes="(min-width: 1024px) 720px, 100vw"
-                              className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
-                            />
-                          </button>
-                        )}
-                      </article>
-                    ))}
+                              return (
+                                <div className="space-y-3 text-base">
+                                  {renderBibleText(note.text)}
+                                </div>
+                              );
+                            })()}
+                          {note.image && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setActiveImage({
+                                  src: note.image || "",
+                                  alt: note.title || note.position,
+                                })
+                              }
+                              className="mt-4 w-full cursor-pointer overflow-hidden rounded border"
+                              style={{ borderColor: "var(--border-color)" }}
+                            >
+                              <Image
+                                src={note.image}
+                                alt={note.title || note.position}
+                                width={1200}
+                                height={800}
+                                sizes="(min-width: 1024px) 720px, 100vw"
+                                className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+                              />
+                            </button>
+                          )}
+                        </article>
+                      ))}
                     <button
                       id={`verse-${verse.verse}`}
                       type="button"
