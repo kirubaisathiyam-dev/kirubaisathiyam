@@ -36,7 +36,7 @@ async function cacheAll(cache, paths) {
 
 async function warmContentCache() {
   try {
-    const response = await fetch("/api/pwa-precache", { cache: "no-cache" });
+    const response = await fetch("/pwa-precache.json", { cache: "no-cache" });
     if (!response.ok) return;
     const data = await response.json();
     const routes = [
