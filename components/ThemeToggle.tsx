@@ -36,10 +36,24 @@ type ThemeSnapshot = {
   resolved: ResolvedTheme;
 };
 
+let cachedSnapshot: ThemeSnapshot | null = null;
+let cachedPreference: ThemePreference | null = null;
+let cachedResolved: ResolvedTheme | null = null;
+
 function getSnapshot(): ThemeSnapshot {
   const preference = getStoredPreference() ?? "system";
   const resolved = preference === "system" ? getSystemTheme() : preference;
-  return { preference, resolved };
+  if (
+    cachedSnapshot &&
+    cachedPreference === preference &&
+    cachedResolved === resolved
+  ) {
+    return cachedSnapshot;
+  }
+  cachedPreference = preference;
+  cachedResolved = resolved;
+  cachedSnapshot = { preference, resolved };
+  return cachedSnapshot;
 }
 
 function subscribe(callback: () => void) {
