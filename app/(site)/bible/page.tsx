@@ -3,7 +3,7 @@ import BibleReader from "@/components/BibleReader";
 import { Suspense } from "react";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
-const shareImage = toAbsoluteUrl("/logo-light.svg");
+const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 const siteUrl = getSiteUrl().toString();
 
 export const metadata: Metadata = {
@@ -31,10 +31,17 @@ export const metadata: Metadata = {
     description:
       "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
     siteName: "Kirubai Sathiyam",
-    images: [{ url: shareImage }],
+    images: [
+      {
+        url: shareImage,
+        width: 512,
+        height: 512,
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Tamil Holy Bible Reader",
     description:
       "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
