@@ -4,6 +4,7 @@ import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import "./globals.css";
 import "cookieconsent/build/cookieconsent.min.css";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
+import PwaRegister from "@/components/PwaRegister";
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
@@ -57,6 +58,22 @@ export default function RootLayout({
     <html lang="ta">
       <head>
         <meta name="apple-mobile-web-app-title" content="Kirubai Sathiyam" />
+        <meta name="application-name" content="Kirubai Sathiyam" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="color-scheme" content="dark light" />
+        <meta name="theme-color" content="#000000" />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: dark)"
+          content="#000000"
+        />
+        <meta
+          name="theme-color"
+          media="(prefers-color-scheme: light)"
+          content="#ffffff"
+        />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icon0.svg" type="image/svg+xml" />
         <link rel="icon" href="/icon1.png" />
@@ -80,6 +97,7 @@ export default function RootLayout({
       <body className="antialiased" suppressHydrationWarning>
         {children}
         <CookieConsentBanner />
+        <PwaRegister />
       </body>
     </html>
   );
