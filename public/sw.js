@@ -54,7 +54,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(PRECACHE);
-      await cache.addAll(CORE_ASSETS);
+      await cacheAll(cache, CORE_ASSETS);
       await warmContentCache();
       await self.skipWaiting();
     })(),
