@@ -1,21 +1,28 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 
 const storageKey = "ks_theme";
 const themeEvent = "ks-theme-change";
 
-type Theme = "light" | "dark";
+type ThemePreference = "light" | "dark" | "system";
+type ResolvedTheme = "light" | "dark";
 
-function getStoredTheme(): Theme | null {
+function normalizePreference(value: string | null): ThemePreference | null {
+  if (value === "light" || value === "dark" || value === "system") {
+    return value;
+  }
+  return null;
+}
+
+function getStoredPreference(): ThemePreference | null {
   if (typeof window === "undefined") {
     return null;
   }
-  const value = window.localStorage.getItem(storageKey);
-  return value === "dark" || value === "light" ? value : null;
+  return normalizePreference(window.localStorage.getItem(storageKey));
 }
 
-function getSystemTheme(): Theme {
+function getSystemTheme(): ResolvedTheme {
   if (typeof window === "undefined") {
     return "light";
   }
@@ -24,8 +31,15 @@ function getSystemTheme(): Theme {
     : "light";
 }
 
-function getSnapshot(): Theme {
-  return getStoredTheme() ?? getSystemTheme();
+type ThemeSnapshot = {
+  preference: ThemePreference;
+  resolved: ResolvedTheme;
+};
+
+function getSnapshot(): ThemeSnapshot {
+  const preference = getStoredPreference() ?? "system";
+  const resolved = preference === "system" ? getSystemTheme() : preference;
+  return { preference, resolved };
 }
 
 function subscribe(callback: () => void) {
@@ -48,18 +62,58 @@ function subscribe(callback: () => void) {
 }
 
 export default function ThemeToggle() {
-  const theme = useSyncExternalStore(subscribe, getSnapshot, () => "light");
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => ({
+    preference: "system",
+    resolved: "light",
+  }));
+  const { preference, resolved } = snapshot;
+
+  const labels = useMemo(() => {
+    if (preference === "system") {
+      return {
+        label: `Using device theme (${resolved})`,
+        icon: "fa-circle-half-stroke",
+      };
+    }
+    return preference === "dark"
+      ? {
+          label: "Switch to light mode",
+          icon: "fa-sun",
+        }
+      : {
+          label: "Switch to dark mode",
+          icon: "fa-moon",
+        };
+  }, [preference, resolved]);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
-    if (document.body) {
-      document.body.dataset.theme = theme;
+    const root = document.documentElement;
+    if (preference === "system") {
+      root.removeAttribute("data-theme");
+      root.style.colorScheme = "dark light";
+      if (document.body) {
+        document.body.removeAttribute("data-theme");
+      }
+    } else {
+      root.dataset.theme = resolved;
+      root.style.colorScheme = resolved;
+      if (document.body) {
+        document.body.dataset.theme = resolved;
+      }
     }
-  }, [theme]);
+
+    const themeColor = resolved === "dark" ? "#000000" : "#ffffff";
+    const metas = document.querySelectorAll('meta[name="theme-color"]');
+    metas.forEach((meta) => meta.setAttribute("content", themeColor));
+  }, [preference, resolved]);
 
   function toggleTheme() {
-    const next: Theme = theme === "dark" ? "light" : "dark";
+    const next: ThemePreference =
+      preference === "system"
+        ? "dark"
+        : preference === "dark"
+          ? "light"
+          : "system";
     window.localStorage.setItem(storageKey, next);
     window.dispatchEvent(new Event(themeEvent));
   }
@@ -69,11 +123,11 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       className="cursor-pointer text-base hover:opacity-70"
-      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={labels.label}
+      title={labels.label}
     >
       <i
-        className={`fa-solid ${theme === "dark" ? "fa-sun" : "fa-moon"}`}
+        className={`fa-solid ${labels.icon}`}
         aria-hidden="true"
       ></i>
     </button>
