@@ -198,6 +198,8 @@ export async function POST(request: Request) {
   const safeLink = escapeHtml(readMoreUrl);
   const imageUrl = image ? resolveImageUrl(image, baseUrl) : "";
   const safeImageUrl = imageUrl ? escapeHtml(imageUrl) : "";
+  const logoUrl = baseUrl ? resolveImageUrl("/logo.png", baseUrl) : "";
+  const safeLogoUrl = logoUrl ? escapeHtml(logoUrl) : "";
 
   const htmlContent = [
     `<!doctype html>`,
@@ -214,6 +216,18 @@ export async function POST(request: Request) {
     `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;border:1px solid #e5e7eb;padding:24px;">`,
     `<tr>`,
     `<td>`,
+    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 20px;">`,
+    `<tr>`,
+    `<td style="vertical-align:middle;">`,
+    safeLogoUrl
+      ? `<img src="${safeLogoUrl}" alt="Kirubai Sathiyam logo" width="36" height="36" style="display:block;border:0;outline:none;text-decoration:none;" />`
+      : "",
+    `</td>`,
+    `<td style="vertical-align:middle;padding-left:12px;font-size:20px;line-height:1.2;font-weight:700;color:#111827;letter-spacing:-0.01em;">`,
+    `கிருபை <span style="color:#c48900;">சத்தியம்</span>`,
+    `</td>`,
+    `</tr>`,
+    `</table>`,
     `<h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;font-weight:700;color:#111827;">${safeTitle}</h1>`,
     safeImageUrl
       ? `<img src="${safeImageUrl}" alt="${safeTitle}" style="width:100%;height:auto;display:block;margin:0 0 16px;" />`
