@@ -200,6 +200,8 @@ export async function POST(request: Request) {
   const safeImageUrl = imageUrl ? escapeHtml(imageUrl) : "";
   const logoUrl = baseUrl ? resolveImageUrl("/logo.png", baseUrl) : "";
   const safeLogoUrl = logoUrl ? escapeHtml(logoUrl) : "";
+  const headerLink = baseUrl || "/";
+  const safeHeaderLink = escapeHtml(headerLink);
 
   const htmlContent = [
     `<!doctype html>`,
@@ -209,33 +211,33 @@ export async function POST(request: Request) {
     `<meta name="viewport" content="width=device-width, initial-scale=1" />`,
     `<title>${safeTitle}</title>`,
     `</head>`,
-    `<body style="margin:0;padding:0;background:#ffffff;color:#111827;font-family:'Noto Serif Tamil','Times New Roman',serif;">`,
+    `<body style="margin:0;padding:0;background:#ffffff;color:#171717;font-family:'Noto Serif Tamil','Times New Roman',serif;">`,
     `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#ffffff;">`,
     `<tr>`,
-    `<td align="center" style="padding:24px;">`,
+    `<td align="center">`,
     `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;border:1px solid #e5e7eb;padding:24px;">`,
     `<tr>`,
     `<td>`,
-    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 20px;">`,
+    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 16px;">`,
     `<tr>`,
     `<td style="vertical-align:middle;">`,
     safeLogoUrl
-      ? `<img src="${safeLogoUrl}" alt="Kirubai Sathiyam logo" width="36" height="36" style="display:block;border:0;outline:none;text-decoration:none;" />`
+      ? `<a href="${safeHeaderLink}" style="display:inline-block;text-decoration:none;"><img src="${safeLogoUrl}" alt="Kirubai Sathiyam logo" width="36" height="36" style="display:block;border:0;outline:none;text-decoration:none;" /></a>`
       : "",
     `</td>`,
-    `<td style="vertical-align:middle;padding-left:12px;font-size:20px;line-height:1.2;font-weight:700;color:#111827;letter-spacing:-0.01em;">`,
-    `கிருபை <span style="color:#c48900;">சத்தியம்</span>`,
+    `<td style="vertical-align:middle;padding-left:6px;font-size:20px;line-height:1.2;font-weight:700;color:#171717;letter-spacing:-0.01em;">`,
+    `<a href="${safeHeaderLink}" style="text-decoration:none;color:#171717;">கிருபை <span style="color:#c48900;">சத்தியம்</span></a>`,
     `</td>`,
     `</tr>`,
     `</table>`,
-    `<h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;font-weight:700;color:#111827;">${safeTitle}</h1>`,
+    `<h1 style="margin:0 0 16px;font-size:28px;line-height:1.2;font-weight:700;color:#171717;">${safeTitle}</h1>`,
     safeImageUrl
       ? `<img src="${safeImageUrl}" alt="${safeTitle}" style="width:100%;height:auto;display:block;margin:0 0 16px;" />`
       : "",
     safeExcerpt
-      ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#111827;">${safeExcerpt.replaceAll("\n", "<br />")}</p>`
+      ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#171717;">${safeExcerpt.replaceAll("\n", "<br />")}</p>`
       : "",
-    `<a href="${safeLink}" style="display:inline-block;padding:12px 18px;background:#111827;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">Read more</a>`,
+    `<a href="${safeLink}" style="display:block;width:100%;padding:12px 18px;background:#171717;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;text-align:center;">மேலும் வாசிக்க</a>`,
     `<p style="margin:24px 0 0;font-size:12px;color:#6b7280;">kirubaisathiyam.org</p>`,
     `</td>`,
     `</tr>`,
@@ -252,7 +254,7 @@ export async function POST(request: Request) {
   const textContent = [
     title,
     excerpt,
-    `Read more: ${readMoreUrl}`,
+    `மேலும் வாசிக்க: ${readMoreUrl}`,
   ]
     .filter(Boolean)
     .join("\n\n");
