@@ -61,6 +61,13 @@ const defaultBook = "Genesis";
 const COPY_RESET_MS = 1800;
 const INTRO_CHAPTER_LABEL = "\u0B85\u0BB1\u0BBF\u0BAE\u0BC1\u0B95\u0BAE\u0BCD";
 
+function getBookFileSlug(bookName: string) {
+  return bookName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 function getNoteKey(note: BibleNote) {
   if (note.id) return note.id;
   const title = note.title || "";
@@ -315,10 +322,12 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     const loadBook = async () => {
       if (!selectedBook) return;
       setLoading(true);
-      setError("");
+        setError("");
       try {
         const response = await fetch(
-          `/local-bible/books/${encodeURIComponent(selectedBook)}.json`,
+          `/local-bible/books/${encodeURIComponent(
+            getBookFileSlug(selectedBook),
+          )}.json`,
         );
         if (!response.ok) {
           throw new Error(`Unable to load ${selectedBook}`);

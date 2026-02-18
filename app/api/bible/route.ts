@@ -8,6 +8,13 @@ const defaultBibleId =
 const defaultSource = (process.env.BIBLE_SOURCE || "local").toLowerCase();
 const localBibleBasePath = "/local-bible";
 
+function getBookFileSlug(bookName: string) {
+  return bookName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 type LocalBibleBook = {
   book?: {
     english?: string;
@@ -41,8 +48,9 @@ async function loadLocalBook(bookName: string, requestUrl: string) {
   const cached = localBookCache.get(cacheKey);
   if (cached) return cached;
 
+  const fileSlug = getBookFileSlug(bookName);
   const bookUrl = new URL(
-    `${localBibleBasePath}/books/${encodeURIComponent(bookName)}.json`,
+    `${localBibleBasePath}/books/${encodeURIComponent(fileSlug)}.json`,
     requestUrl,
   );
 
