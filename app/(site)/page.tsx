@@ -115,7 +115,8 @@ export default function Home() {
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((article) => (
-            <article
+            <Link
+              href={`/articles/${article.slug}`}
               key={article.slug}
               className="flex h-full flex-col border"
               style={{ borderColor: "var(--border-color)" }}
@@ -143,12 +144,9 @@ export default function Home() {
                 >
                   {article.type || "கட்டுரை"}
                 </p>
-                <Link
-                  href={`/articles/${article.slug}`}
-                  className="text-lg font-semibold leading-snug hover:underline"
-                >
+                <div className="text-lg font-semibold leading-snug hover:underline">
                   {article.title}
-                </Link>
+                </div>
                 <p
                   className="text-sm"
                   style={{ color: "var(--muted-foreground)" }}
@@ -156,7 +154,7 @@ export default function Home() {
                   {formatTamilDate(article.date)} · {article.author}
                 </p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
