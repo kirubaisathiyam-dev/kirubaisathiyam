@@ -222,7 +222,7 @@ export async function POST(request: Request) {
       ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#111827;">${safeExcerpt.replaceAll("\n", "<br />")}</p>`
       : "",
     `<a href="${safeLink}" style="display:inline-block;padding:12px 18px;background:#111827;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;">Read more</a>`,
-    `<p style="margin:24px 0 0;font-size:12px;color:#6b7280;">Kirubai Sathiyam</p>`,
+    `<p style="margin:24px 0 0;font-size:12px;color:#6b7280;">kirubaisathiyam.org</p>`,
     `</td>`,
     `</tr>`,
     `</table>`,

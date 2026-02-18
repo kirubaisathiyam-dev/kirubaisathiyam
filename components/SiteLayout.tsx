@@ -31,7 +31,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             className="block text-xs"
             style={{ color: "var(--muted-foreground)" }}
           >
-            © {new Date().getFullYear()} Kirubai Sathiyam
+            © {new Date().getFullYear()} kirubaisathiyam.org
           </span>
         </div>
       </footer>
