@@ -165,31 +165,16 @@ export default function BibleReferenceTooltip() {
       }
     }
 
-    function handlePointerEnter(event: Event) {
-      const target = event.target as Element | null;
-      if (!target) return;
-      if (!("closest" in target)) return;
-      const el = target.closest(".bible-ref") as HTMLElement | null;
-      if (!el) return;
-      activeElementRef.current = el;
-      showTooltip(el, false);
-    }
-
-    function handlePointerLeave(event: Event) {
-      const target = event.target as Element | null;
-      if (!target) return;
-      if (!("closest" in target)) return;
-      const el = target.closest(".bible-ref") as HTMLElement | null;
-      if (!el) return;
-      if (state.locked) return;
-      if (activeElementRef.current === el) {
-        setState((prev) => ({ ...prev, visible: false, locked: false }));
-      }
-    }
-
     function handleClick(event: Event) {
       const target = event.target as Element | null;
       if (!target) return;
+      if (target.closest('[data-tooltip-close="true"]')) {
+        setState((prev) => ({ ...prev, visible: false, locked: false }));
+        return;
+      }
+      if (tooltipRef.current?.contains(target)) {
+        return;
+      }
       if (!("closest" in target)) {
         if (state.locked) {
           setState((prev) => ({ ...prev, visible: false, locked: false }));
@@ -209,13 +194,9 @@ export default function BibleReferenceTooltip() {
       activeElementRef.current = el;
     }
 
-    document.addEventListener("pointerenter", handlePointerEnter, true);
-    document.addEventListener("pointerleave", handlePointerLeave, true);
     document.addEventListener("click", handleClick);
 
     return () => {
-      document.removeEventListener("pointerenter", handlePointerEnter, true);
-      document.removeEventListener("pointerleave", handlePointerLeave, true);
       document.removeEventListener("click", handleClick);
     };
   }, [state.locked]);
@@ -246,7 +227,11 @@ export default function BibleReferenceTooltip() {
       }
 
       const tooltipRect = tooltip.getBoundingClientRect();
-      const { x, y } = positionTooltip(rect, tooltipRect.width, tooltipRect.height);
+      const { x, y } = positionTooltip(
+        rect,
+        tooltipRect.width,
+        tooltipRect.height,
+      );
 
       setState((prev) =>
         prev.x === x && prev.y === y ? prev : { ...prev, x, y },
@@ -287,20 +272,61 @@ export default function BibleReferenceTooltip() {
         left: state.x,
         top: state.y,
         zIndex: 50,
-        maxWidth: "480px",
+        width: "min(90vw, 420px)",
         background: "var(--background)",
         color: "var(--foreground-bible)",
         border: "1px solid var(--border-color)",
-        padding: "12px 14px",
         boxShadow: "0 5px 10px rgba(0, 0, 0, 0.20)",
         fontSize: "0.85rem",
+        boxSizing: "border-box",
+        overflow: "visible",
       }}
     >
-      <div className="text-xs font-semibold" style={{ marginBottom: "0.4rem" }}>
-        {state.reference}
-      </div>
-      <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
-        {state.loading ? "Loading..." : state.content || "No verse found."}
+      <button
+        type="button"
+        aria-label="Close"
+        data-tooltip-close="true"
+        onClick={() =>
+          setState((prev) => ({ ...prev, visible: false, locked: false }))
+        }
+        style={{
+          position: "absolute",
+          top: "-10px",
+          right: "-10px",
+          width: "24px",
+          height: "24px",
+          borderRadius: "999px",
+          background: "var(--background)",
+          color: "var(--foreground-bible)",
+          border: "1px solid var(--border-color)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "0.75rem",
+          lineHeight: 1,
+        }}
+      >
+        <i className="fa-solid fa-xmark" aria-hidden="true" />
+      </button>
+      <div
+        style={{
+          maxHeight: "calc(100vh - 32px)",
+          overflowY: "auto",
+          padding: "12px 14px",
+          overflowWrap: "anywhere",
+          boxSizing: "border-box",
+        }}
+      >
+        <div
+          style={{
+            marginBottom: "0.4rem",
+          }}
+        >
+          <div className="text-xs font-semibold">{state.reference}</div>
+        </div>
+        <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
+          {state.loading ? "Loading..." : state.content || "No verse found."}
+        </div>
       </div>
     </div>
   );
