@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 const defaultBibleId =
   process.env.YOUVERSION_BIBLE_ID || process.env.YVP_BIBLE_ID || "339";
 const defaultSource = (process.env.BIBLE_SOURCE || "local").toLowerCase();
-const localBibleBasePath = "/local-bible";
+const localBibleDir = path.join(process.cwd(), "public", "local-bible");
+const localBibleBooksDir = path.join(localBibleDir, "books");
 
 type LocalBibleBook = {
   book?: {
@@ -36,42 +39,40 @@ function parsePassageId(passageId: string) {
   return { bookCode, chapter, verse };
 }
 
-async function loadLocalBook(bookName: string, requestUrl: string) {
+async function loadLocalBook(bookName: string) {
   const cacheKey = bookName.toLowerCase();
   const cached = localBookCache.get(cacheKey);
   if (cached) return cached;
 
-  const bookUrl = new URL(
-    `${localBibleBasePath}/books/${encodeURIComponent(bookName)}.json`,
-    requestUrl,
-  );
+  const safeName = bookName.replace(/[\\/]/g, "");
+  const filePath = path.join(localBibleBooksDir, `${safeName}.json`);
 
-  const promise = fetch(bookUrl.toString())
-    .then(async (response) => {
-      if (!response.ok) {
-        throw new Error(`Missing local book: ${bookName}`);
-      }
-      return (await response.json()) as LocalBibleBook;
-    })
+  const promise = fs
+    .readFile(filePath, "utf8")
+    .then((content) => JSON.parse(content) as LocalBibleBook)
     .catch((error) => {
       localBookCache.delete(cacheKey);
-      throw error;
+      if (error && typeof error === "object" && "code" in error) {
+        const code = (error as { code?: string }).code;
+        if (code === "ENOENT") {
+          throw new Error(`Missing local book: ${bookName}`);
+        }
+      }
+      throw error instanceof Error ? error : new Error("Local book read failed");
     });
 
   localBookCache.set(cacheKey, promise);
   return promise;
 }
 
-async function loadLocalBooksIndex(requestUrl: string) {
+async function loadLocalBooksIndex() {
   if (localBooksIndexPromise) return localBooksIndexPromise;
 
-  const indexUrl = new URL(`${localBibleBasePath}/Books.json`, requestUrl);
-  localBooksIndexPromise = fetch(indexUrl.toString())
-    .then(async (response) => {
-      if (!response.ok) {
-        throw new Error("Missing local Books.json");
-      }
-      const data = (await response.json()) as Array<{
+  const indexPath = path.join(localBibleDir, "Books.json");
+  localBooksIndexPromise = fs
+    .readFile(indexPath, "utf8")
+    .then((content) => {
+      const data = JSON.parse(content) as Array<{
         book?: { english?: string; tamil?: string };
       }>;
       const map = new Map<string, { english?: string; tamil?: string }>();
@@ -84,7 +85,13 @@ async function loadLocalBooksIndex(requestUrl: string) {
     })
     .catch((error) => {
       localBooksIndexPromise = null;
-      throw error;
+      if (error && typeof error === "object" && "code" in error) {
+        const code = (error as { code?: string }).code;
+        if (code === "ENOENT") {
+          throw new Error("Missing local Books.json");
+        }
+      }
+      throw error instanceof Error ? error : new Error("Local index read failed");
     });
 
   return localBooksIndexPromise;
@@ -160,12 +167,12 @@ export async function GET(request: Request) {
     }
 
     try {
-      const booksIndex = await loadLocalBooksIndex(request.url);
+      const booksIndex = await loadLocalBooksIndex();
       const bookMeta = booksIndex.get(book.name.toLowerCase());
       const localBookName = bookMeta?.english?.trim() || book.name;
       const displayName = bookMeta?.tamil?.trim() || book.name;
 
-      const localBook = await loadLocalBook(localBookName, request.url);
+      const localBook = await loadLocalBook(localBookName);
       const content = findLocalVerseText(
         localBook,
         parsed.chapter,

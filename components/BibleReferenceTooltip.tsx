@@ -118,9 +118,14 @@ export default function BibleReferenceTooltip() {
         );
         const data = (await response.json()) as {
           ok?: boolean;
+          error?: string;
           reference?: string;
           content?: string;
         };
+
+        if (!response.ok || data.ok === false) {
+          throw new Error(data.error || "Unable to load verse.");
+        }
 
         const verse = {
           reference: data.reference || reference,
@@ -145,13 +150,15 @@ export default function BibleReferenceTooltip() {
           x,
           y,
         });
-      } catch {
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unable to load verse.";
         setState({
           visible: true,
           loading: false,
           locked: lock,
           reference,
-          content: "Unable to load verse.",
+          content: message,
           x: estimatedPosition.x,
           y: estimatedPosition.y,
         });
