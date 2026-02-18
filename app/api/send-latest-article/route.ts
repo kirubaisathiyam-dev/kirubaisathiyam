@@ -237,7 +237,13 @@ export async function POST(request: Request) {
     safeExcerpt
       ? `<p style="margin:0 0 20px;font-size:16px;line-height:1.7;color:#171717;">${safeExcerpt.replaceAll("\n", "<br />")}</p>`
       : "",
-    `<a href="${safeLink}" style="display:block;width:100%;padding:12px 18px;background:#171717;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;text-align:center;">மேலும் வாசிக்க</a>`,
+    `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0;">`,
+    `<tr>`,
+    `<td align="center" style="background:#171717;padding:12px 18px;">`,
+    `<a href="${safeLink}" style="display:block;text-decoration:none;font-size:14px;font-weight:600;color:#ffffff;">மேலும் வாசிக்க</a>`,
+    `</td>`,
+    `</tr>`,
+    `</table>`,
     `<p style="margin:24px 0 0;font-size:12px;color:#6b7280;">kirubaisathiyam.org</p>`,
     `</td>`,
     `</tr>`,
