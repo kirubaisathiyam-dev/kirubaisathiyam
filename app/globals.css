@@ -85,10 +85,10 @@ body {
   font-family: var(--font-sans);
   line-height: 1.7;
   min-height: 100vh;
-  overflow-wrap: anywhere;
+  /* overflow-wrap: anywhere;
   word-break: break-word;
   hyphens: auto;
-  hyphenate-character: "-";
+  hyphenate-character: "-"; */
 }
 
 a {
@@ -133,14 +133,14 @@ button:disabled {
   background: var(--background);
 }
 
-pre,
+/* pre,
 code,
 kbd,
 samp {
   overflow-wrap: normal;
   word-break: normal;
   hyphens: manual;
-}
+} */
 
 .hljs {
   background: transparent;
