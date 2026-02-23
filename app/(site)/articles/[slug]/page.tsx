@@ -129,7 +129,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {article.type}
           </p>
         )}
-        <h1 className="text-2xl font-semibold leading-tight sm:text-4xl">
+        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl md:text-4xl">
           {article.title}
         </h1>
         <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
