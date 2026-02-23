@@ -85,6 +85,10 @@ body {
   font-family: var(--font-sans);
   line-height: 1.7;
   min-height: 100vh;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
+  hyphenate-character: "-";
 }
 
 a {
@@ -127,6 +131,15 @@ button:disabled {
 .prose pre {
   border: 1px solid var(--border-color);
   background: var(--background);
+}
+
+pre,
+code,
+kbd,
+samp {
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
 }
 
 .hljs {
