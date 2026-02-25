@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const storageKey = "ks_theme";
 const themeEvent = "ks-theme-change";
@@ -36,50 +36,19 @@ type ThemeSnapshot = {
   resolved: ResolvedTheme;
 };
 
-let cachedSnapshot: ThemeSnapshot | null = null;
-let cachedPreference: ThemePreference | null = null;
-let cachedResolved: ResolvedTheme | null = null;
+const defaultSnapshot: ThemeSnapshot = {
+  preference: "system",
+  resolved: "light",
+};
 
 function getSnapshot(): ThemeSnapshot {
   const preference = getStoredPreference() ?? "system";
   const resolved = preference === "system" ? getSystemTheme() : preference;
-  if (
-    cachedSnapshot &&
-    cachedPreference === preference &&
-    cachedResolved === resolved
-  ) {
-    return cachedSnapshot;
-  }
-  cachedPreference = preference;
-  cachedResolved = resolved;
-  cachedSnapshot = { preference, resolved };
-  return cachedSnapshot;
-}
-
-function subscribe(callback: () => void) {
-  if (typeof window === "undefined") {
-    return () => {};
-  }
-
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
-  const handler = () => callback();
-
-  window.addEventListener("storage", handler);
-  window.addEventListener(themeEvent, handler);
-  media.addEventListener("change", handler);
-
-  return () => {
-    window.removeEventListener("storage", handler);
-    window.removeEventListener(themeEvent, handler);
-    media.removeEventListener("change", handler);
-  };
+  return { preference, resolved };
 }
 
 export default function ThemeToggle() {
-  const snapshot = useSyncExternalStore(subscribe, getSnapshot, () => ({
-    preference: "system",
-    resolved: "light",
-  }));
+  const [snapshot, setSnapshot] = useState<ThemeSnapshot>(defaultSnapshot);
   const { preference, resolved } = snapshot;
 
   const labels = useMemo(() => {
@@ -99,6 +68,27 @@ export default function ThemeToggle() {
           icon: "fa-moon",
         };
   }, [preference, resolved]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncSnapshot = () => setSnapshot(getSnapshot());
+    const handler = () => syncSnapshot();
+
+    syncSnapshot();
+    window.addEventListener("storage", handler);
+    window.addEventListener(themeEvent, handler);
+    media.addEventListener("change", handler);
+
+    return () => {
+      window.removeEventListener("storage", handler);
+      window.removeEventListener(themeEvent, handler);
+      media.removeEventListener("change", handler);
+    };
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;

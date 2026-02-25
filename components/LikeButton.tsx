@@ -9,10 +9,16 @@ type LikeButtonProps = {
 };
 
 export default function LikeButton({ articleId }: LikeButtonProps) {
-  const [likeCount, setLikeCount] = useState<number | null>(null);
+  const [state, setState] = useState<{
+    articleId: string;
+    likeCount: number | null;
+    hasServerSnapshot: boolean;
+  }>({
+    articleId,
+    likeCount: null,
+    hasServerSnapshot: false,
+  });
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [hasServerSnapshot, setHasServerSnapshot] = useState(false);
 
   const articleRef = useMemo(
     () => doc(db, "articles", articleId),
@@ -20,37 +26,43 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
   );
 
   useEffect(() => {
-    setLoading(true);
-    setHasServerSnapshot(false);
+    let hasServerSnapshot = false;
     const unsubscribe = onSnapshot(
       articleRef,
+      { includeMetadataChanges: true },
       (snapshot) => {
         if (snapshot.metadata.fromCache && !hasServerSnapshot) {
           return;
         }
 
-        setHasServerSnapshot(true);
+        if (!snapshot.metadata.fromCache) {
+          hasServerSnapshot = true;
+        }
 
         if (!snapshot.exists()) {
-          setLikeCount(0);
+          setState({
+            articleId,
+            likeCount: 0,
+            hasServerSnapshot,
+          });
         } else {
           const data = snapshot.data();
           const value =
             typeof data.likeCount === "number" ? data.likeCount : 0;
-          setLikeCount(value);
+          setState({
+            articleId,
+            likeCount: value,
+            hasServerSnapshot,
+          });
         }
-
-        setLoading(false);
       },
       () => {
         setError("Unable to load likes.");
-        setLoading(false);
       },
-      { includeMetadataChanges: true },
     );
 
     return () => unsubscribe();
-  }, [articleRef, hasServerSnapshot]);
+  }, [articleRef, articleId]);
 
   const handleLike = async () => {
     setError(null);
@@ -69,22 +81,30 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
 
   return (
     <div className="inline-flex flex-col gap-2">
-      <button
-        type="button"
-        onClick={handleLike}
-        className="inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition hover:opacity-80 shadow-sm"
-        style={{
-          borderColor: "var(--border-color)",
-          backgroundColor: "var(--background)",
-          color: "var(--foreground)",
-        }}
-        aria-label="Like this article"
-      >
-        <span aria-hidden="true" className="text-base" >
-          <i className="fa-solid fa-heart text-[color:var(--foreground-bible)]" ></i>
-        </span>
-        <span>{loading ? "..." : likeCount ?? 0}</span>
-      </button>
+      {(() => {
+        const isLoading =
+          state.articleId !== articleId || !state.hasServerSnapshot;
+        const displayCount = state.likeCount ?? 0;
+
+        return (
+          <button
+            type="button"
+            onClick={handleLike}
+            className="inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition hover:opacity-80 shadow-sm"
+            style={{
+              borderColor: "var(--border-color)",
+              backgroundColor: "var(--background)",
+              color: "var(--foreground)",
+            }}
+            aria-label="Like this article"
+          >
+            <span aria-hidden="true" className="text-base">
+              <i className="fa-solid fa-heart text-[color:var(--foreground-bible)]" />
+            </span>
+            <span>{isLoading ? "..." : displayCount}</span>
+          </button>
+        );
+      })()}
       {error && (
         <p className="text-xs font-medium text-red-600" role="alert">
           {error}
