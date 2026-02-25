@@ -5,6 +5,8 @@ import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import Image from "next/image";
 import ShareButton from "@/components/ShareButton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import Comments from "@/components/Comments";
+import LikeButton from "@/components/LikeButton";
 
 export const dynamicParams = false;
 
@@ -161,6 +163,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         className="prose prose-neutral max-w-3xl mx-auto"
         dangerouslySetInnerHTML={{ __html: article.contentHtml }}
       />
+
+      <div className="mx-auto flex max-w-3xl justify-end">
+        <LikeButton articleId={slug} />
+      </div>
+
+      <Comments articleId={slug} />
 
       <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
         <div className="flex flex-col gap-3">
