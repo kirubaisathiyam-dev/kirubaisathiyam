@@ -105,8 +105,7 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
     try {
       const userName =
         user.displayName ?? user.providerData[0]?.displayName ?? "Anonymous";
-      const userPhoto =
-        user.photoURL ?? user.providerData[0]?.photoURL ?? null;
+      const userPhoto = user.photoURL ?? user.providerData[0]?.photoURL ?? null;
 
       await addDoc(repliesRef, {
         text: trimmed,
@@ -128,7 +127,15 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
     setError(null);
     try {
       await deleteDoc(
-        doc(db, "articles", articleId, "comments", commentId, "replies", replyId),
+        doc(
+          db,
+          "articles",
+          articleId,
+          "comments",
+          commentId,
+          "replies",
+          replyId,
+        ),
       );
     } catch {
       setError("Unable to delete right now. Please try again.");
@@ -151,7 +158,15 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
     setSavingReplyId(replyId);
     try {
       await updateDoc(
-        doc(db, "articles", articleId, "comments", commentId, "replies", replyId),
+        doc(
+          db,
+          "articles",
+          articleId,
+          "comments",
+          commentId,
+          "replies",
+          replyId,
+        ),
         { text: trimmed },
       );
       setEditingReplyId(null);
@@ -164,15 +179,23 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
   };
 
   return (
-    <div className="mt-3 space-y-3 border-l pl-4" style={{ borderColor: "var(--border-color)" }}>
+    <div
+      className="mt-3 space-y-3 border-l p-4 "
+      style={{
+        borderColor: "var(--border-color)",
+        backgroundColor: "var(--muted-background)",
+      }}
+    >
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wide">Replies</p>
+        <p className="text-xs font-semibold tracking-wide"></p>
         {user && (
           <button
             type="button"
             onClick={() => setReplying((prev) => !prev)}
-            className="text-xs font-semibold uppercase tracking-wide"
-            style={{ color: "var(--muted-foreground)" }}
+            className="text-xs tracking-wide transition opacity-80 hover:opacity-100"
+            style={{
+              color: "var(--foreground-bible)",
+            }}
           >
             {replying ? "Cancel" : "Reply"}
           </button>
@@ -180,12 +203,12 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
       </div>
 
       {replying && user && (
-        <div className="space-y-2">
+        <div className="">
           <textarea
             rows={3}
             value={text}
             onChange={(event) => setText(event.target.value)}
-            className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-offset-2"
+            className="w-full border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
             style={{
               borderColor: "var(--border-color)",
               backgroundColor: "var(--background)",
@@ -193,19 +216,21 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
             }}
             placeholder="Write a reply..."
           />
-          <button
-            type="button"
-            onClick={handleReply}
-            disabled={replyStatus === "posting" || !text.trim()}
-            className="rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
-            style={{
-              borderColor: "var(--border-color)",
-              backgroundColor: "var(--foreground-bible)",
-              color: "var(--foreground-contrast)",
-            }}
-          >
-            {replyStatus === "posting" ? "Posting..." : "Post reply"}
-          </button>
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={handleReply}
+              disabled={replyStatus === "posting" || !text.trim()}
+              className="border px-4 py-1.5 text-xs font-semibold tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
+              style={{
+                borderColor: "var(--border-color)",
+                backgroundColor: "var(--foreground-bible)",
+                color: "var(--foreground-contrast)",
+              }}
+            >
+              {replyStatus === "posting" ? "Posting..." : "Post reply"}
+            </button>
+          </div>
         </div>
       )}
 
@@ -225,116 +250,115 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
             );
 
             return (
-            <li
-              key={reply.id}
-              className="rounded-lg border px-3 py-2"
-              style={{ borderColor: "var(--border-color)" }}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  {avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={avatarUrl}
-                      alt={reply.name ?? "Reply author"}
-                      className="h-5 w-5 rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full border text-[10px]">
-                      {reply.name?.charAt(0)?.toUpperCase() ?? "A"}
-                    </span>
-                  )}
-                  <p className="text-xs font-semibold">
-                    {reply.name ?? "Anonymous"}
+              <li
+                key={reply.id}
+                className="px-3 py-2"
+                style={{ backgroundColor: "var(--background)" }}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    {avatarUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={avatarUrl}
+                        alt={reply.name ?? "Reply author"}
+                        className="h-5 w-5 rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full border text-[10px]">
+                        {reply.name?.charAt(0)?.toUpperCase() ?? "A"}
+                      </span>
+                    )}
+                    <p className="text-xs font-semibold">
+                      {reply.name ?? "Anonymous"}
+                    </p>
+                  </div>
+                  <p
+                    className="text-[10px]"
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
+                    {formatTimestamp(reply.createdAt)}
                   </p>
                 </div>
-                <p
-                  className="text-[10px]"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {formatTimestamp(reply.createdAt)}
-                </p>
-              </div>
 
-              {editingReplyId === reply.id ? (
-                <div className="mt-2 space-y-2">
-                  <textarea
-                    rows={2}
-                    value={editingText}
-                    onChange={(event) => setEditingText(event.target.value)}
-                    className="w-full rounded-lg border px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-offset-2"
-                    style={{
-                      borderColor: "var(--border-color)",
-                      backgroundColor: "var(--background)",
-                      color: "var(--foreground)",
-                    }}
-                  />
-                  <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide">
-                    <button
-                      type="button"
-                      onClick={() => handleEditSave(reply.id)}
-                      disabled={savingReplyId === reply.id}
-                      className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
-                      style={{
-                        borderColor: "var(--border-color)",
-                        backgroundColor: "var(--foreground-bible)",
-                        color: "var(--foreground-contrast)",
-                      }}
-                    >
-                      {savingReplyId === reply.id ? "Saving..." : "Save"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingReplyId(null);
-                        setEditingText("");
-                      }}
-                      className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
+                {editingReplyId === reply.id ? (
+                  <div className="mt-4">
+                    <textarea
+                      rows={2}
+                      value={editingText}
+                      onChange={(event) => setEditingText(event.target.value)}
+                      className="w-full border px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
                       style={{
                         borderColor: "var(--border-color)",
                         backgroundColor: "var(--background)",
                         color: "var(--foreground)",
                       }}
-                    >
-                      Cancel
-                    </button>
+                    />
+                    <div className="flex items-center justify-end gap-2 text-[10px] font-semibold uppercase tracking-wide">
+                      <button
+                        type="button"
+                        onClick={() => handleEditSave(reply.id)}
+                        disabled={savingReplyId === reply.id}
+                        className="border px-3 py-1 transition hover:opacity-80"
+                        style={{
+                          borderColor: "var(--border-color)",
+                          backgroundColor: "var(--foreground-bible)",
+                          color: "var(--foreground-contrast)",
+                        }}
+                      >
+                        {savingReplyId === reply.id ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingReplyId(null);
+                          setEditingText("");
+                        }}
+                        disabled={savingReplyId === reply.id}
+                        className="border px-3 py-1 transition hover:opacity-80"
+                        style={{
+                          borderColor: "var(--border-color)",
+                          backgroundColor: "var(--background)",
+                          color: "var(--foreground)",
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <p className="mt-2 text-xs leading-relaxed">
-                  {reply.text ?? ""}
-                </p>
-              )}
+                ) : (
+                  <p className="mt-2 text-xs leading-relaxed">
+                    {reply.text ?? ""}
+                  </p>
+                )}
 
-              {user && user.uid === reply.uid && (
-                <div className="mt-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide">
-                  <button
-                    type="button"
-                    onClick={() => handleEdit(reply)}
-                    className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
-                    style={{
-                      borderColor: "var(--border-color)",
-                      backgroundColor: "var(--background)",
-                      color: "var(--foreground)",
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(reply.id)}
-                    className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
-                    style={{
-                      borderColor: "var(--border-color)",
-                      backgroundColor: "var(--background)",
-                      color: "var(--foreground)",
-                    }}
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-            </li>
+                {user &&
+                  user.uid === reply.uid &&
+                  editingReplyId != reply.id && (
+                    <div className="mt-2 flex items-center justify-end gap-2 text-[11px] tracking-wide">
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(reply)}
+                        className="px-1 transition opacity-50 hover:opacity-100 "
+                        style={{
+                          color: "var(--foreground)",
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(reply.id)}
+                        className="transition opacity-50 hover:opacity-100 "
+                        style={{
+                          color: "var(--foreground)",
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+              </li>
             );
           })}
         </ul>

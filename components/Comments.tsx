@@ -144,8 +144,7 @@ export default function Comments({ articleId }: CommentsProps) {
     try {
       const userName =
         user.displayName ?? user.providerData[0]?.displayName ?? "Anonymous";
-      const userPhoto =
-        user.photoURL ?? user.providerData[0]?.photoURL ?? null;
+      const userPhoto = user.photoURL ?? user.providerData[0]?.photoURL ?? null;
 
       await addDoc(commentsRef, {
         text: trimmed,
@@ -200,27 +199,30 @@ export default function Comments({ articleId }: CommentsProps) {
 
   return (
     <section className="mx-auto max-w-3xl space-y-4">
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold">Comments</h2>
-        <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Share your thoughts below.
-        </p>
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <h2 className="text-lg font-semibold">Comments</h2>
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+            Share your thoughts below.
+          </p>
+        </div>
+        {!user && (
+          <button
+            type="button"
+            onClick={handleLogin}
+            className="inline-flex items-center justify-center border px-4 py-2 text-sm font-semibold transition hover:opacity-80"
+            style={{
+              borderColor: "var(--border-color)",
+              backgroundColor: "var(--foreground-bible)",
+              color: "var(--foreground-contrast)",
+            }}
+          >
+            Continue with Google
+          </button>
+        )}
       </div>
 
-      {!user ? (
-        <button
-          type="button"
-          onClick={handleLogin}
-          className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition hover:opacity-80"
-          style={{
-            borderColor: "var(--border-color)",
-            backgroundColor: "var(--foreground-bible)",
-            color: "var(--foreground-contrast)",
-          }}
-        >
-          Continue with Google
-        </button>
-      ) : (
+      {user && (
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
             <div className="flex items-center gap-2">
@@ -241,7 +243,7 @@ export default function Comments({ articleId }: CommentsProps) {
             <button
               type="button"
               onClick={handleLogout}
-              className="text-xs font-semibold uppercase tracking-wide"
+              className="text-xs font-semibold underline tracking-wide"
               style={{ color: "var(--muted-foreground)" }}
             >
               Sign out
@@ -257,7 +259,7 @@ export default function Comments({ articleId }: CommentsProps) {
               rows={4}
               value={text}
               onChange={(event) => setText(event.target.value)}
-              className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-offset-2"
+              className="w-full border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
               style={{
                 borderColor: "var(--border-color)",
                 backgroundColor: "var(--background)",
@@ -276,7 +278,7 @@ export default function Comments({ articleId }: CommentsProps) {
                 type="button"
                 onClick={handlePost}
                 disabled={status === "posting" || !text.trim()}
-                className="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
                 style={{
                   borderColor: "var(--border-color)",
                   backgroundColor: "var(--foreground-bible)",
@@ -306,9 +308,10 @@ export default function Comments({ articleId }: CommentsProps) {
             No comments yet. Be the first to share.
           </p>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-3 py-6">
             {comments.map((comment) => {
-              const displayName = comment.name ?? comment.authorName ?? "Anonymous";
+              const displayName =
+                comment.name ?? comment.authorName ?? "Anonymous";
               const isOwner =
                 !!user &&
                 (user.uid === comment.uid || user.uid === comment.authorId);
@@ -321,7 +324,7 @@ export default function Comments({ articleId }: CommentsProps) {
               return (
                 <li
                   key={comment.id}
-                  className="rounded-lg border px-4 py-3"
+                  className="border px-4 py-3"
                   style={{ borderColor: "var(--border-color)" }}
                 >
                   <div className="flex items-center justify-between gap-3">
@@ -348,31 +351,33 @@ export default function Comments({ articleId }: CommentsProps) {
                     </p>
                   </div>
                   {editingCommentId === comment.id ? (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-3">
                       <textarea
                         rows={3}
                         value={editingText}
                         onChange={(event) => setEditingText(event.target.value)}
-                        className="w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-offset-2"
+                        className="w-full border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
                         style={{
                           borderColor: "var(--border-color)",
                           backgroundColor: "var(--background)",
                           color: "var(--foreground)",
                         }}
                       />
-                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
+                      <div className="flex items-center justify-end gap-2 text-[10px] font-semibold uppercase tracking-wide">
                         <button
                           type="button"
                           onClick={() => handleEditSave(comment.id)}
                           disabled={savingCommentId === comment.id}
-                          className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
+                          className="border px-3 py-1 transition hover:opacity-80"
                           style={{
                             borderColor: "var(--border-color)",
                             backgroundColor: "var(--foreground-bible)",
                             color: "var(--foreground-contrast)",
                           }}
                         >
-                          {savingCommentId === comment.id ? "Saving..." : "Save"}
+                          {savingCommentId === comment.id
+                            ? "Saving..."
+                            : "Save"}
                         </button>
                         <button
                           type="button"
@@ -380,7 +385,7 @@ export default function Comments({ articleId }: CommentsProps) {
                             setEditingCommentId(null);
                             setEditingText("");
                           }}
-                          className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
+                          className="border px-3 py-1 transition hover:opacity-80"
                           style={{
                             borderColor: "var(--border-color)",
                             backgroundColor: "var(--background)",
@@ -397,15 +402,13 @@ export default function Comments({ articleId }: CommentsProps) {
                     </p>
                   )}
 
-                  {isOwner && (
-                    <div className="mt-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
+                  {isOwner && editingCommentId !== comment.id &&(
+                    <div className="flex items-center justify-end gap-2 text-[11px] tracking-wide">
                       <button
                         type="button"
                         onClick={() => handleEdit(comment)}
-                        className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
+                        className="transition opacity-50 hover:opacity-100 "
                         style={{
-                          borderColor: "var(--border-color)",
-                          backgroundColor: "var(--background)",
                           color: "var(--foreground)",
                         }}
                       >
@@ -414,10 +417,8 @@ export default function Comments({ articleId }: CommentsProps) {
                       <button
                         type="button"
                         onClick={() => handleDelete(comment.id)}
-                        className="rounded-full border px-3 py-1.5 transition hover:opacity-80"
+                        className="transition opacity-50 hover:opacity-100"
                         style={{
-                          borderColor: "var(--border-color)",
-                          backgroundColor: "var(--background)",
                           color: "var(--foreground)",
                         }}
                       >

@@ -72,7 +72,7 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
       <button
         type="button"
         onClick={handleLike}
-        className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-semibold transition hover:opacity-80"
+        className="inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition hover:opacity-80 shadow-sm"
         style={{
           borderColor: "var(--border-color)",
           backgroundColor: "var(--background)",
@@ -80,8 +80,8 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
         }}
         aria-label="Like this article"
       >
-        <span aria-hidden="true" className="text-base">
-          ♥
+        <span aria-hidden="true" className="text-base" >
+          <i className="fa-solid fa-heart text-[color:var(--foreground-bible)]" ></i>
         </span>
         <span>{loading ? "..." : likeCount ?? 0}</span>
       </button>
