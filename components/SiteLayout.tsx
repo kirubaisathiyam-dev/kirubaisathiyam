@@ -35,7 +35,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             >
               © {new Date().getFullYear()} kirubaisathiyam.org
             </span>
-            <div className="flex flex-wrap items-center gap-4 text-xs opacity-80 hover:opacity-100 hover:underline">
+            <div className="flex flex-wrap items-center gap-4 text-xs opacity-80 hover:opacity-100">
               <Link
                 href="/privacy-terms"
                 style={{ color: "var(--muted-foreground)" }}

@@ -50,36 +50,7 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
-      <section
-        className="space-y-4 border p-5 sm:p-6"
-        style={{
-          borderColor: "var(--border-color)",
-          backgroundColor: "var(--muted-background)",
-        }}
-      >
-        <p
-          className="text-xs font-semibold uppercase tracking-wide"
-          style={{ color: "var(--muted-foreground)" }}
-        >
-          Purpose
-        </p>
-        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
-          Tamil Christian Articles and Holy Bible Study Notes
-        </h1>
-        <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Kirubai Sathiyam is a Tamil Christian resource where you can read
-          articles, explore the Holy Bible, and share reflections through
-          comments using Google sign-in.
-        </p>
-        <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Learn how we handle data in our{" "}
-          <Link href="/privacy-terms" className="underline">
-            Privacy Policy & Terms
-          </Link>
-          .
-        </p>
-      </section>
-
+      
       {featured && (
         <section className="space-y-4">
           <Link
