@@ -1,55 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
-const storageKey = "ks_theme";
-const themeEvent = "ks-theme-change";
-
-type ThemePreference = "light" | "dark" | "system";
-type ResolvedTheme = "light" | "dark";
-
-function normalizePreference(value: string | null): ThemePreference | null {
-  if (value === "light" || value === "dark" || value === "system") {
-    return value;
-  }
-  return null;
-}
-
-function getStoredPreference(): ThemePreference | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  return normalizePreference(window.localStorage.getItem(storageKey));
-}
-
-function getSystemTheme(): ResolvedTheme {
-  if (typeof window === "undefined") {
-    return "light";
-  }
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-}
-
-type ThemeSnapshot = {
-  preference: ThemePreference;
-  resolved: ResolvedTheme;
-};
-
-const defaultSnapshot: ThemeSnapshot = {
-  preference: "system",
-  resolved: "light",
-};
-
-function getSnapshot(): ThemeSnapshot {
-  const preference = getStoredPreference() ?? "system";
-  const resolved = preference === "system" ? getSystemTheme() : preference;
-  return { preference, resolved };
-}
+import { useEffect, useMemo, useSyncExternalStore } from "react";
+import {
+  getThemeServerSnapshot,
+  getThemeSnapshot,
+  setThemePreference,
+  subscribeTheme,
+  type ThemePreference,
+} from "@/lib/theme";
 
 export default function ThemeToggle() {
-  const [snapshot, setSnapshot] = useState<ThemeSnapshot>(defaultSnapshot);
-  const { preference, resolved } = snapshot;
+  const { preference, resolved } = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot,
+  );
 
   const labels = useMemo(() => {
     if (preference === "system") {
@@ -68,27 +33,6 @@ export default function ThemeToggle() {
           icon: "fa-moon",
         };
   }, [preference, resolved]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const syncSnapshot = () => setSnapshot(getSnapshot());
-    const handler = () => syncSnapshot();
-
-    syncSnapshot();
-    window.addEventListener("storage", handler);
-    window.addEventListener(themeEvent, handler);
-    media.addEventListener("change", handler);
-
-    return () => {
-      window.removeEventListener("storage", handler);
-      window.removeEventListener(themeEvent, handler);
-      media.removeEventListener("change", handler);
-    };
-  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -118,8 +62,7 @@ export default function ThemeToggle() {
         : preference === "dark"
           ? "light"
           : "system";
-    window.localStorage.setItem(storageKey, next);
-    window.dispatchEvent(new Event(themeEvent));
+    setThemePreference(next);
   }
 
   return (

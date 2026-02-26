@@ -1,47 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import StickyHeader from "@/components/StickyHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import logoDark from "@/app/logo-dark.svg";
 import logoLight from "@/app/logo-light.svg";
+import {
+  getThemeServerSnapshot,
+  getThemeSnapshot,
+  subscribeTheme,
+} from "@/lib/theme";
 
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    const storageKey = "ks_theme";
-    const themeEvent = "ks-theme-change";
-
-    const getResolvedTheme = () => {
-      const stored = window.localStorage.getItem(storageKey);
-      const preference =
-        stored === "light" || stored === "dark" || stored === "system"
-          ? stored
-          : "system";
-      const system = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-      return preference === "system" ? system : preference;
-    };
-
-    const update = () => setResolvedTheme(getResolvedTheme());
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-
-    update();
-    window.addEventListener("storage", update);
-    window.addEventListener(themeEvent, update);
-    media.addEventListener("change", update);
-
-    return () => {
-      window.removeEventListener("storage", update);
-      window.removeEventListener(themeEvent, update);
-      media.removeEventListener("change", update);
-    };
-  }, []);
+  const { resolved: resolvedTheme } = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot,
+  );
 
   useEffect(() => {
     if (!open) {
