@@ -28,6 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${siteUrl}/privacy-terms`,
+      lastModified: new Date("2026-02-26"),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 
   const articleEntries: MetadataRoute.Sitemap = articles.map((article) => ({

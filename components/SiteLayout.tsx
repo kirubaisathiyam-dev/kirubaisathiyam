@@ -1,3 +1,4 @@
+import Link from "next/link";
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeForm from "@/components/SubscribeForm";
@@ -27,12 +28,22 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             </p>
             <SubscribeForm />
           </div>
-          <span
-            className="block text-xs"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            © {new Date().getFullYear()} kirubaisathiyam.org
-          </span>
+          <div className="flex flex wrap gap-4 justify-between">
+            <span
+              className="block text-xs opacity-80 hover:opacity-100"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              © {new Date().getFullYear()} kirubaisathiyam.org
+            </span>
+            <div className="flex flex-wrap items-center gap-4 text-xs opacity-80 hover:opacity-100 hover:underline">
+              <Link
+                href="/privacy-terms"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                Privacy & Terms
+              </Link>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
