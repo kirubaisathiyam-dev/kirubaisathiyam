@@ -199,7 +199,7 @@ export default function Comments({ articleId }: CommentsProps) {
 
   return (
     <section className="mx-auto max-w-3xl space-y-4">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold">Comments</h2>
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
