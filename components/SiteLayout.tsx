@@ -40,7 +40,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
                 href="/privacy-terms"
                 style={{ color: "var(--muted-foreground)" }}
               >
-                Privacy & Terms
+                Privacy Policy & Terms
               </Link>
             </div>
           </div>
