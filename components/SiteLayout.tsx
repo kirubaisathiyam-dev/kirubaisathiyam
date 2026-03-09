@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeForm from "@/components/SubscribeForm";
@@ -28,6 +28,24 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             </p>
             <SubscribeForm />
           </div>
+          <div className="space-y-2 text-sm">
+            <p className="font-semibold">WhatsApp Channel</p>
+            <a
+              href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 font-medium hover:opacity-70"
+              style={{ color: "var(--foreground-bible)" }}
+            >
+              பரிசுத்த வாழ்க்கை - அனுதின தியானம்
+            </a>
+            <p
+              className="text-xs opacity-80"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              WhatsApp-இல் தினந்தோறும் தியானம் மற்றும் செய்திகள்.
+            </p>
+          </div>
           <div className="flex flex wrap gap-4 justify-between">
             <span
               className="block text-xs opacity-80 hover:opacity-100"
@@ -49,3 +67,5 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
     </div>
   );
 }
+
+

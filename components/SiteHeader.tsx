@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
@@ -127,6 +127,15 @@ export default function SiteHeader() {
               >
                 கட்டுரைகள்
               </Link>
+              <Link
+                href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-md px-3 py-2 hover:opacity-70"
+                onClick={() => setOpen(false)}
+              >
+                பரிசுத்த வாழ்க்கை - அனுதின தியானம்
+              </Link>
             </nav>
             <div
               className="flex items-center border-t justify-center px-3 py-4"
@@ -140,3 +149,5 @@ export default function SiteHeader() {
     </>
   );
 }
+
+
