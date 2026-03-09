@@ -19,15 +19,26 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
 
       <footer
         className="border-t"
-        style={{ borderColor: "var(--border-color)" }}
+        style={{ borderColor: "var(--border-color)", marginTop: "80px" }}
       >
-        <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-8">
-          <div className="space-y-2">
-            <p className="text-sm font-semibold">
-              புதிய கட்டுரைகள் உங்கள் மின்னஞ்சலில்
-            </p>
-            <SubscribeForm />
+        <div
+          style={{
+            background: "var(--muted-background)",
+            borderColor: "var(--border-color)",
+          }}
+          className="border-b"
+        >
+          <div className="mx-auto w-full max-w-5xl px-4 py-8">
+            <div className="space-y-2 py-8">
+              <p className="text-sm font-semibold">
+                புதிய கட்டுரைகள் உங்கள் மின்னஞ்சலில்
+              </p>
+              <SubscribeForm />
+            </div>
           </div>
+        </div>
+
+        <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-8">
           <div className="space-y-2 text-sm">
             <p className="font-semibold">WhatsApp Channel</p>
             <a
@@ -67,5 +78,3 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
     </div>
   );
 }
-
-
