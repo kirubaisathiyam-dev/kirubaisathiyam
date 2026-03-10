@@ -91,7 +91,7 @@ function mapBookEntries(entries: BookIndexEntry[]): BookMeta[] {
       english: entry.book?.english?.trim() || "",
       tamil: entry.book?.tamil?.trim(),
     }))
-    .filter((entry): entry is BookMeta => Boolean(entry.english));
+    .filter((entry) => Boolean(entry.english));
 }
 
 function parseNotes(notes: BibleNote[]) {
