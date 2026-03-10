@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import StickyHeader from "@/components/StickyHeader";
 import ThemeToggle from "@/components/ThemeToggle";
+import OfflineDownloader from "@/components/OfflineDownloader";
 import logoDark from "@/app/logo-dark.svg";
 import logoLight from "@/app/logo-light.svg";
 import {
@@ -111,37 +112,48 @@ export default function SiteHeader() {
               <i className="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
           </div>
-          <div className="flex flex-col justify-between gap-6 px-5 pb-6">
-            <nav className="flex flex-col gap-4 px-5 text-base">
-              <Link
-                href="/bible"
-                className="rounded-md px-3 py-2 hover:opacity-70"
-                onClick={() => setOpen(false)}
-              >
-                பரிசுத்த வேதாகமம்
-              </Link>
-              <Link
-                href="/articles"
-                className="rounded-md px-3 py-2 hover:opacity-70"
-                onClick={() => setOpen(false)}
-              >
-                கட்டுரைகள்
-              </Link>
-              <Link
-                href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-md px-3 py-2 hover:opacity-70"
-                onClick={() => setOpen(false)}
-              >
-                பரிசுத்த வாழ்க்கை - அனுதின தியானம்
-              </Link>
-            </nav>
+          <div
+            className="flex flex-col justify-between gap-6 px-5"
+            style={{ height: "calc(100% - 60px)" }}
+          >
+            <div className="space-y-5">
+              <nav className="flex flex-col gap-4 px-5 text-base">
+                <Link
+                  href="/bible"
+                  className="rounded-md px-3 py-2 hover:opacity-70"
+                  onClick={() => setOpen(false)}
+                >
+                  பரிசுத்த வேதாகமம்
+                </Link>
+                <Link
+                  href="/articles"
+                  className="rounded-md px-3 py-2 hover:opacity-70"
+                  onClick={() => setOpen(false)}
+                >
+                  கட்டுரைகள்
+                </Link>
+                <Link
+                  href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-md px-3 py-2 hover:opacity-70"
+                  onClick={() => setOpen(false)}
+                >
+                  பரிசுத்த வாழ்க்கை - அனுதின தியானம்
+                </Link>
+              </nav>
+            </div>
             <div
-              className="flex items-center border-t justify-center px-3 py-4"
+              className="flex flex-col gap-6 items-center border-t justify-center px-3 py-4"
               style={{ borderColor: "var(--border-color)" }}
             >
-              <ThemeToggle />
+              <OfflineDownloader className="px-4" />
+              <div
+                className="flex w-full items-center border-t justify-center px-3 py-4"
+                style={{ borderColor: "var(--border-color)" }}
+              >
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         </aside>
@@ -149,5 +161,3 @@ export default function SiteHeader() {
     </>
   );
 }
-
-
