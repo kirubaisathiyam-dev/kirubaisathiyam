@@ -142,6 +142,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const isNextData = pathname.startsWith("/_next/data/");
   const isStaticAsset =
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/images/") ||
@@ -161,7 +162,7 @@ self.addEventListener("fetch", (event) => {
     pathname.endsWith(".ttf") ||
     pathname.endsWith(".otf");
 
-  if (isStaticAsset) {
+  if (isStaticAsset || isNextData) {
     event.respondWith(cacheFirst(request, PRECACHE));
   }
 });
