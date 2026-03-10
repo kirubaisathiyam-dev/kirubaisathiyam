@@ -97,8 +97,9 @@ async function cacheFirst(request, cacheName) {
 
 async function networkFirst(request, cacheName, fallbackUrl) {
   const cache = await caches.open(cacheName);
+  const noCacheRequest = new Request(request, { cache: "no-cache" });
   try {
-    const response = await fetch(request);
+    const response = await fetch(noCacheRequest);
     if (response && response.ok) {
       await cache.put(request, response.clone());
     }
@@ -128,8 +129,11 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (pathname.startsWith("/local-bible/") || pathname === "/bible-notes.json") {
-    event.respondWith(cacheFirst(request, CONTENT));
+  const isDynamicContent =
+    pathname === "/bible-notes.json" || pathname.startsWith("/local-bible/");
+
+  if (isDynamicContent) {
+    event.respondWith(networkFirst(request, CONTENT));
     return;
   }
 

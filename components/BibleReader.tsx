@@ -1,5 +1,6 @@
 "use client";
 
+import { fetchWithOffline, getOfflineData } from "@/lib/offline";
 import { parseBibleReference, replaceBibleRefsInHtml } from "@/lib/bible";
 import BibleSelectionBar from "@/components/BibleSelectionBar";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -60,6 +61,9 @@ type BibleReaderProps = {
 const defaultBook = "Genesis";
 const COPY_RESET_MS = 1800;
 const INTRO_CHAPTER_LABEL = "\u0B85\u0BB1\u0BBF\u0BAE\u0BC1\u0B95\u0BAE\u0BCD";
+const BOOKS_CACHE_KEY = "local-bible-books";
+const NOTES_CACHE_KEY = "bible-notes";
+const BOOK_CACHE_PREFIX = "local-book:";
 
 function getBookFileSlug(bookName: string) {
   return bookName
@@ -79,6 +83,15 @@ function getBookCode(bookName: string) {
   const parsed = parseBibleReference(`${bookName} 1:1`);
   if (!parsed) return null;
   return parsed.passageId.split(".")[0] || null;
+}
+
+function mapBookEntries(entries: BookIndexEntry[]): BookMeta[] {
+  return (entries || [])
+    .map((entry) => ({
+      english: entry.book?.english?.trim() || "",
+      tamil: entry.book?.tamil?.trim(),
+    }))
+    .filter((entry): entry is BookMeta => Boolean(entry.english));
 }
 
 function parseNotes(notes: BibleNote[]) {
@@ -268,39 +281,57 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
 
   useEffect(() => {
     let active = true;
+
+    const applyBooks = (list: BookMeta[]) => {
+      if (!active || !list.length) {
+        return;
+      }
+      setBooks(list);
+      const defaultSelection =
+        list.find((entry) => entry.english === defaultBook)?.english ||
+        list[0]?.english ||
+        defaultBook;
+      setSelectedBook(defaultSelection);
+    };
+
     const loadIndex = async () => {
       try {
-        const [booksResponse, notesResponse] = await Promise.all([
-          fetch("/local-bible/Books.json"),
-          fetch("/bible-notes.json"),
+        const cachedBooks = await getOfflineData<BookMeta[]>(BOOKS_CACHE_KEY);
+        if (active && cachedBooks?.length) {
+          applyBooks(cachedBooks);
+        }
+
+        const cachedNotes = await getOfflineData<BibleNote[]>(NOTES_CACHE_KEY);
+        if (active && cachedNotes?.length) {
+          setNotes(cachedNotes);
+        }
+
+        const [bookList, notesList] = await Promise.all([
+          fetchWithOffline<BookMeta[]>(BOOKS_CACHE_KEY, async () => {
+            const response = await fetch("/local-bible/Books.json", {
+              cache: "no-cache",
+            });
+            if (!response.ok) {
+              throw new Error("Unable to load Books.json");
+            }
+            const data = (await response.json()) as BookIndexEntry[];
+            return mapBookEntries(data);
+          }),
+          fetchWithOffline<BibleNote[]>(NOTES_CACHE_KEY, async () => {
+            const response = await fetch("/bible-notes.json", {
+              cache: "no-cache",
+            });
+            if (!response.ok) {
+              throw new Error("Unable to load bible notes.");
+            }
+            const data = (await response.json()) as BibleNote[];
+            return Array.isArray(data) ? data : [];
+          }),
         ]);
 
-        if (!booksResponse.ok) {
-          throw new Error("Unable to load Books.json");
-        }
-
-        const booksData = (await booksResponse.json()) as BookIndexEntry[];
-        const bookList = (booksData || [])
-          .map((entry) => ({
-            english: entry.book?.english?.trim() || "",
-            tamil: entry.book?.tamil?.trim(),
-          }))
-          .filter((entry) => entry.english);
-
         if (active) {
-          setBooks(bookList);
-          const defaultSelection =
-            bookList.find((entry) => entry.english === defaultBook)?.english ||
-            bookList[0]?.english ||
-            defaultBook;
-          setSelectedBook(defaultSelection);
-        }
-
-        if (notesResponse.ok) {
-          const notesData = (await notesResponse.json()) as BibleNote[];
-          if (active) {
-            setNotes(Array.isArray(notesData) ? notesData : []);
-          }
+          applyBooks(bookList);
+          setNotes(notesList);
         }
       } catch (err) {
         if (active) {
@@ -322,53 +353,34 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     const loadBook = async () => {
       if (!selectedBook) return;
       setLoading(true);
-        setError("");
-      try {
-        const response = await fetch(
-          `/local-bible/books/${encodeURIComponent(
-            getBookFileSlug(selectedBook),
-          )}.json`,
-        );
-        if (!response.ok) {
-          throw new Error(`Unable to load ${selectedBook}`);
-        }
-        const data = (await response.json()) as LocalBibleBook;
-        if (!active) return;
-        setBookData(data);
+      setError("");
+      const slug = getBookFileSlug(selectedBook);
+      const cacheKey = `${BOOK_CACHE_PREFIX}${slug}`;
 
-        const chapters = data.chapters || [];
-        const introChapter = chapters.find((chapter) => {
-          const type = chapter.type?.trim().toLowerCase();
-          if (type === "intro") return true;
-          const title = chapter.chapter?.trim();
-          return title === INTRO_CHAPTER_LABEL;
-        })?.chapter;
-        const fallbackChapter =
-          chapters.find((chapter) => chapter.chapter === "1")?.chapter ||
-          chapters[0]?.chapter ||
-          "1";
-        const explicitChapter =
-          explicitChapterRef.current.book?.toLowerCase() ===
-          selectedBook.toLowerCase()
-            ? explicitChapterRef.current.chapter
-            : null;
-        const hasExplicitChapter =
-          !!explicitChapter &&
-          chapters.some((chapter) => chapter.chapter === explicitChapter);
-        setSelectedChapter((prev) => {
-          if (hasExplicitChapter && explicitChapter) {
-            return explicitChapter;
-          }
-          if (introChapter) {
-            return introChapter;
-          }
-          if (chapters.some((chapter) => chapter.chapter === prev)) {
-            return prev;
-          }
-          return fallbackChapter;
-        });
-      } catch (err) {
+      const cachedBook = await getOfflineData<LocalBibleBook>(cacheKey);
+      if (active && cachedBook) {
+        setBookData(cachedBook);
+      }
+
+      try {
+        const data = await fetchWithOffline<LocalBibleBook>(
+          cacheKey,
+          async () => {
+            const response = await fetch(
+              `/local-bible/books/${encodeURIComponent(slug)}.json`,
+              { cache: "no-cache" },
+            );
+            if (!response.ok) {
+              throw new Error(`Unable to load ${selectedBook}`);
+            }
+            return (await response.json()) as LocalBibleBook;
+          },
+        );
         if (active) {
+          setBookData(data);
+        }
+      } catch (err) {
+        if (active && !cachedBook) {
           const message =
             err instanceof Error ? err.message : "Unable to load bible.";
           setError(message);

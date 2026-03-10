@@ -1,5 +1,6 @@
 "use client";
 
+import { getOfflineData, setOfflineData } from "@/lib/offline";
 import { parseBibleReference } from "@/lib/bible";
 import { useEffect, useRef, useState } from "react";
 
@@ -23,7 +24,13 @@ const initialState: TooltipState = {
   y: 0,
 };
 
-const verseCache = new Map<string, { reference: string; content: string }>();
+type VerseCacheEntry = {
+  reference: string;
+  content: string;
+};
+
+const VERSE_CACHE_PREFIX = "verse:";
+const verseCache = new Map<string, VerseCacheEntry>();
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -77,44 +84,56 @@ export default function BibleReferenceTooltip() {
       const reference = element.dataset.ref || passage || "";
       if (!passage) return;
 
-      const cached = verseCache.get(passage);
-      if (cached) {
-        const rect = element.getBoundingClientRect();
-        const tooltipSize = tooltipRef.current?.getBoundingClientRect();
-        const { x, y } = positionTooltip(
-          rect,
-          tooltipSize?.width || 320,
-          tooltipSize?.height || 160,
-        );
+      const storageKey = `${VERSE_CACHE_PREFIX}${passage}`;
+      const cachedSession = verseCache.get(passage);
+      const persisted = await getOfflineData<VerseCacheEntry>(storageKey);
 
+      const rect = element.getBoundingClientRect();
+      const tooltipSize = tooltipRef.current?.getBoundingClientRect();
+      const initialPosition = positionTooltip(
+        rect,
+        tooltipSize?.width || 320,
+        tooltipSize?.height || 160,
+      );
+
+      if (cachedSession) {
         setState({
           visible: true,
           loading: false,
           locked: lock,
-          reference: cached.reference,
-          content: cached.content,
-          x,
-          y,
+          reference: cachedSession.reference,
+          content: cachedSession.content,
+          x: initialPosition.x,
+          y: initialPosition.y,
         });
-        return;
+      } else if (persisted) {
+        verseCache.set(passage, persisted);
+        setState({
+          visible: true,
+          loading: false,
+          locked: lock,
+          reference: persisted.reference || reference,
+          content: persisted.content,
+          x: initialPosition.x,
+          y: initialPosition.y,
+        });
+      } else {
+        setState((prev) => ({
+          ...prev,
+          visible: true,
+          loading: true,
+          locked: lock,
+          reference,
+          content: "",
+          x: initialPosition.x,
+          y: initialPosition.y,
+        }));
       }
-
-      const rect = element.getBoundingClientRect();
-      const estimatedPosition = positionTooltip(rect, 320, 160);
-      setState((prev) => ({
-        ...prev,
-        visible: true,
-        loading: true,
-        locked: lock,
-        reference,
-        content: "",
-        x: estimatedPosition.x,
-        y: estimatedPosition.y,
-      }));
 
       try {
         const response = await fetch(
           `/api/bible?passage=${encodeURIComponent(passage)}`,
+          { cache: "no-cache" },
         );
         const data = (await response.json()) as {
           ok?: boolean;
@@ -133,12 +152,13 @@ export default function BibleReferenceTooltip() {
         };
 
         verseCache.set(passage, verse);
+        void setOfflineData(storageKey, verse);
 
-        const tooltipSize = tooltipRef.current?.getBoundingClientRect();
+        const updatedSize = tooltipRef.current?.getBoundingClientRect();
         const { x, y } = positionTooltip(
           rect,
-          tooltipSize?.width || 320,
-          tooltipSize?.height || 160,
+          updatedSize?.width || 320,
+          updatedSize?.height || 160,
         );
 
         setState({
@@ -151,6 +171,9 @@ export default function BibleReferenceTooltip() {
           y,
         });
       } catch (error) {
+        if (cachedSession || persisted) {
+          return;
+        }
         const message =
           error instanceof Error ? error.message : "Unable to load verse.";
         setState({
@@ -159,8 +182,8 @@ export default function BibleReferenceTooltip() {
           locked: lock,
           reference,
           content: message,
-          x: estimatedPosition.x,
-          y: estimatedPosition.y,
+          x: initialPosition.x,
+          y: initialPosition.y,
         });
       }
     }
