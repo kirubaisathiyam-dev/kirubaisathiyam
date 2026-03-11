@@ -84,13 +84,17 @@ self.addEventListener("message", (event) => {
   }
 });
 
+function isRangeRequest(request) {
+  return request.headers.has("range");
+}
+
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   if (cached) return cached;
   const response = await fetch(request);
   if (response && response.ok) {
-    if (response.status === 206) {
+    if (response.status === 206 || isRangeRequest(request)) {
       return response;
     }
     await cache.put(request, response.clone());
@@ -104,6 +108,9 @@ async function networkFirst(request, cacheName, fallbackUrl) {
   try {
     const response = await fetch(noCacheRequest);
     if (response && response.ok) {
+      if (response.status === 206 || isRangeRequest(request)) {
+        return response;
+      }
       await cache.put(request, response.clone());
     }
     return response;

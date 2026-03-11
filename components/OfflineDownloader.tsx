@@ -138,22 +138,28 @@ export default function OfflineDownloader({ className }: OfflineDownloaderProps)
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [current, setCurrent] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isOnline, setIsOnline] = useState(
-    typeof navigator !== "undefined" ? navigator.onLine : true,
-  );
-  const [lastSynced, setLastSynced] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return window.localStorage.getItem(OFFLINE_PREFETCH_FLAG);
-  });
+  const [isOnline, setIsOnline] = useState(true);
+  const [lastSynced, setLastSynced] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    const handleConnectionChange = () => {
+      setIsOnline(navigator.onLine);
+    };
+
+    window.addEventListener("online", handleConnectionChange);
+    window.addEventListener("offline", handleConnectionChange);
+    handleConnectionChange();
+
+    const stored = window.localStorage.getItem(OFFLINE_PREFETCH_FLAG);
+    if (stored) {
+      setLastSynced(stored);
+    }
+    setIsMounted(true);
+
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleConnectionChange);
+      window.removeEventListener("offline", handleConnectionChange);
     };
   }, []);
 
@@ -285,14 +291,31 @@ export default function OfflineDownloader({ className }: OfflineDownloaderProps)
           </button>
         </div>
       )}
-      {error && (
-        <div style={{ color: "#c00" }}>Error: {error}</div>
-      )}
-      {lastSynced && (
-        <div style={{ fontSize: "0.7rem", color: "var(--muted-foreground)" }}>
-          Last synced: {new Date(lastSynced).toLocaleString()}
-        </div>
-      )}
+      <div
+        suppressHydrationWarning
+        style={{
+          color: "#c00",
+          minHeight: 18,
+          visibility: isMounted && error ? "visible" : "hidden",
+        }}
+        aria-live="polite"
+      >
+        {isMounted && error ? `Error: ${error}` : ""}
+      </div>
+      <div
+        suppressHydrationWarning
+        style={{
+          fontSize: "0.7rem",
+          color: "var(--muted-foreground)",
+          minHeight: 18,
+          visibility: isMounted && lastSynced ? "visible" : "hidden",
+        }}
+        aria-live="polite"
+      >
+        {isMounted && lastSynced
+          ? `Last synced: ${new Date(lastSynced).toLocaleString()}`
+          : ""}
+      </div>
     </div>
   );
 }
