@@ -90,6 +90,9 @@ async function cacheFirst(request, cacheName) {
   if (cached) return cached;
   const response = await fetch(request);
   if (response && response.ok) {
+    if (response.status === 206) {
+      return response;
+    }
     await cache.put(request, response.clone());
   }
   return response;
