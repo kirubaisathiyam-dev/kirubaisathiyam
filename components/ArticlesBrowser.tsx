@@ -184,9 +184,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                 }}
                 className="shrink-0 cursor-pointer px-1 pb-2 text-sm font-semibold transition border-b-2"
                 style={{
-                  borderColor: isActive
-                    ? "var(--foreground)"
-                    : "transparent",
+                  borderColor: isActive ? "var(--foreground)" : "transparent",
                   color: isActive
                     ? "var(--foreground)"
                     : "var(--muted-foreground)",
@@ -201,50 +199,48 @@ export default function ArticlesBrowser({ articles }: Props) {
       </div>
 
       <div className="flex flex-nowrap gap-2" style={{ overflowX: "auto" }}>
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTag("all");
-              setPage(1);
-            }}
-            className="shrink-0 cursor-pointer rounded-full border px-3 py-1 text-xs transition"
-            style={{
-              borderColor:
-                activeTag === "all"
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTag("all");
+            setPage(1);
+          }}
+          className="shrink-0 cursor-pointer rounded-full border px-3 py-1 text-xs transition"
+          style={{
+            borderColor:
+              activeTag === "all" ? "var(--foreground)" : "var(--border-color)",
+            background:
+              activeTag === "all" ? "var(--foreground)" : "transparent",
+            color: activeTag === "all" ? "var(--background)" : "inherit",
+          }}
+          aria-pressed={activeTag === "all"}
+        >
+          அனைத்தும்
+        </button>
+        {tagOptions.map((tag) => {
+          const isActive = activeTag === tag.key;
+          return (
+            <button
+              key={tag.key}
+              type="button"
+              onClick={() => {
+                setActiveTag(tag.key);
+                setPage(1);
+              }}
+              className="shrink-0 cursor-pointer rounded-full border px-3 py-1 text-xs transition"
+              style={{
+                borderColor: isActive
                   ? "var(--foreground)"
                   : "var(--border-color)",
-              background:
-                activeTag === "all" ? "var(--foreground)" : "transparent",
-              color: activeTag === "all" ? "var(--background)" : "inherit",
-            }}
-            aria-pressed={activeTag === "all"}
-          >
-            அனைத்தும்
-          </button>
-          {tagOptions.map((tag) => {
-            const isActive = activeTag === tag.key;
-            return (
-              <button
-                key={tag.key}
-                type="button"
-                onClick={() => {
-                  setActiveTag(tag.key);
-                  setPage(1);
-                }}
-                className="shrink-0 cursor-pointer rounded-full border px-3 py-1 text-xs transition"
-                style={{
-                  borderColor: isActive
-                    ? "var(--foreground)"
-                    : "var(--border-color)",
-                  background: isActive ? "var(--foreground)" : "transparent",
-                  color: isActive ? "var(--background)" : "inherit",
-                }}
-                aria-pressed={isActive}
-              >
-                {tag.label}
-              </button>
-            );
-          })}
+                background: isActive ? "var(--foreground)" : "transparent",
+                color: isActive ? "var(--background)" : "inherit",
+              }}
+              aria-pressed={isActive}
+            >
+              {tag.label}
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex items-center justify-between text-sm">
@@ -290,12 +286,24 @@ export default function ArticlesBrowser({ articles }: Props) {
                     </div>
                   )}
                   <div className="space-y-2 p-4 sm:p-5">
-                    <p
-                      className="text-xs font-semibold uppercase tracking-wide"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
-                      {article.type || "கட்டுரை"}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      {article.audio && (
+                        <span
+                          className="text-[0.8rem] opacity-70"
+                          style={{
+                            color: "var(--muted-foreground)",
+                          }}
+                        >
+                          <i className="fa-solid fa-volume-up"></i>
+                        </span>
+                      )}
+                      <p
+                        className="text-xs font-semibold uppercase tracking-wide"
+                        style={{ color: "var(--muted-foreground)" }}
+                      >
+                        {article.type || "கட்டுரை"}
+                      </p>
+                    </div>
                     <h2 className="text-lg font-semibold leading-snug">
                       {article.title}
                     </h2>
@@ -347,9 +355,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                     borderColor: isActive
                       ? "var(--foreground)"
                       : "var(--border-color)",
-                    background: isActive
-                      ? "var(--foreground)"
-                      : "transparent",
+                    background: isActive ? "var(--foreground)" : "transparent",
                     color: isActive ? "var(--background)" : "inherit",
                   }}
                   aria-current={isActive ? "page" : undefined}

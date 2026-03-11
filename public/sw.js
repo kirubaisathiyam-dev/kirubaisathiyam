@@ -153,6 +153,11 @@ self.addEventListener("fetch", (event) => {
     pathname.endsWith(".png") ||
     pathname.endsWith(".jpg") ||
     pathname.endsWith(".jpeg") ||
+    pathname.endsWith(".mp3") ||
+    pathname.endsWith(".wav") ||
+    pathname.endsWith(".ogg") ||
+    pathname.endsWith(".aac") ||
+    pathname.endsWith(".m4a") ||
     pathname.endsWith(".svg") ||
     pathname.endsWith(".gif") ||
     pathname.endsWith(".webp") ||

@@ -50,7 +50,6 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
-      
       {featured && (
         <section className="space-y-4">
           <Link
@@ -80,12 +79,24 @@ export default function Home() {
                 </div>
               )}
               <div className="space-y-3 p-4 sm:p-6">
-                <p
-                  className="text-xs font-semibold uppercase tracking-wide"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {featured.type || "கட்டுரை"}
-                </p>
+                <div className="flex items-center gap-2">
+                  {featured.audio && (
+                    <span
+                      className="text-[0.8rem] opacity-70"
+                      style={{
+                        color: "var(--muted-foreground)",
+                      }}
+                    >
+                      <i className="fa-solid fa-volume-up"></i>
+                    </span>
+                  )}
+                  <p
+                    className="text-xs font-semibold uppercase tracking-wide"
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
+                    {featured.type || "கட்டுரை"}
+                  </p>
+                </div>
                 <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">
                   {featured.title}
                 </h2>
@@ -139,12 +150,24 @@ export default function Home() {
                 </div>
               )}
               <div className="p-4 space-y-2">
-                <p
-                  className="text-xs font-semibold uppercase tracking-wide"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {article.type || "கட்டுரை"}
-                </p>
+                <div className="flex items-center gap-2">
+                  {article.audio && (
+                    <span
+                      className="text-[0.8rem] opacity-70"
+                      style={{
+                        color: "var(--muted-foreground)",
+                      }}
+                    >
+                      <i className="fa-solid fa-volume-up"></i>
+                    </span>
+                  )}
+                  <p
+                    className="text-xs font-semibold uppercase tracking-wide"
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
+                    {article.type || "கட்டுரை"}
+                  </p>
+                </div>
                 <div className="text-lg font-semibold leading-snug hover:underline">
                   {article.title}
                 </div>

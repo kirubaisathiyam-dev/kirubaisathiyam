@@ -39,4 +39,9 @@ collections:
         field: { label: "Keyword", name: "keyword", widget: "string" }
       - { label: "Summary", name: "summary", widget: "text", required: false }
       - { label: "Cover Image", name: "image", widget: "image", required: false }
+      - label: "Audio"
+        name: "audio"
+        widget: "file"
+        required: false
+        allow_multiple: false
       - { label: "Body", name: "body", widget: "markdown" }

@@ -90,6 +90,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const imageUrl = article.image ? toAbsoluteUrl(article.image) : undefined;
   const shareText =
     article.excerpt || "Tamil Christian article from Kirubai Sathiyam.";
+  const audioUrl = article.audio ? toAbsoluteUrl(article.audio) : undefined;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -114,6 +115,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       name: siteName,
       url: siteUrl.toString(),
     },
+    audio: audioUrl
+      ? {
+          "@type": "AudioObject",
+          name: article.title ? `${article.title} (audio)` : undefined,
+          url: audioUrl,
+          contentUrl: audioUrl,
+        }
+      : undefined,
   };
 
   return (
@@ -141,6 +150,31 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {formatTamilDate(article.date)}
         </p>
       </header>
+
+      {article.audio && (
+        <div
+          className="mx-auto max-w-5xl px-5 py-8"
+          style={{ borderColor: "var(--border-color)" }}
+        >
+          <audio
+            className="w-full"
+            controls
+            src={article.audio}
+            preload="metadata"
+          >
+            Your browser does not support audio playback. Download the file{" "}
+            <a
+              href={article.audio}
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              here
+            </a>
+            .
+          </audio>
+        </div>
+      )}
 
       {article.image && (
         <div

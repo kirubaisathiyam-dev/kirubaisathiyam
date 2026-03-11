@@ -8,7 +8,8 @@
     "/articles/2026-02-19-071317",
     "/articles/2026-02-22-184321",
     "/articles/2026-02-26-162006",
-    "/articles/2026-03-07-064947"
+    "/articles/2026-03-07-064947",
+    "/articles/2026-03-11-055530"
   ],
   "bibleBooks": [
     "/local-bible/books/1-chronicles.json",
@@ -78,5 +79,5 @@
     "/local-bible/books/zechariah.json",
     "/local-bible/books/zephaniah.json"
   ],
-  "generatedAt": "2026-03-10T05:31:37.151Z"
+  "generatedAt": "2026-03-11T09:46:05.589Z"
 }

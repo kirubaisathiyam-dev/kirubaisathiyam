@@ -18,6 +18,7 @@ export type ArticleMeta = {
   tags: string[];
   keywords: string[];
   image?: string;
+  audio?: string;
   summary?: string;
 };
 
@@ -103,6 +104,14 @@ function getCoverImage(content: string, data: { image?: unknown }) {
   return "";
 }
 
+function getAudioPath(value: unknown) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  return value.trim();
+}
+
 function parseDate(value: unknown, fallback: Date) {
   if (typeof value === "string") {
     const parsed = new Date(value);
@@ -133,6 +142,7 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
     summary?: unknown;
     tags?: unknown;
     keywords?: unknown;
+    audio?: unknown;
   };
   const typeLabel = normalizeType(data?.type);
   const parsedDate = parseDate(date, stats.mtime);
@@ -140,6 +150,7 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
   const summary = typeof data?.summary === "string" ? data.summary : "";
   const tags = normalizeStringList(data?.tags);
   const keywords = normalizeStringList(data?.keywords);
+  const audio = getAudioPath(data?.audio);
 
   return {
     slug,
@@ -154,6 +165,7 @@ function readArticleMeta(fileName: string): ArticleMetaWithSort {
     tags,
     keywords,
     image: image || undefined,
+    audio: audio || undefined,
     summary: summary || undefined,
     sortDate: parsedDate,
   };
@@ -186,6 +198,7 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     summary?: unknown;
     tags?: unknown;
     keywords?: unknown;
+    audio?: unknown;
   };
   const typeLabel = normalizeType(data?.type);
   const parsedDate = parseDate(date, stats.mtime);
@@ -193,6 +206,7 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
   const summary = typeof data?.summary === "string" ? data.summary : "";
   const tags = normalizeStringList(data?.tags);
   const keywords = normalizeStringList(data?.keywords);
+  const audio = getAudioPath(data?.audio);
 
   const processedContent = await remark()
     .use(remarkGfm)
@@ -215,6 +229,7 @@ export async function getArticleBySlug(slug: string): Promise<Article> {
     tags,
     keywords,
     image: image || undefined,
+    audio: audio || undefined,
     summary: summary || undefined,
     contentHtml,
   };
