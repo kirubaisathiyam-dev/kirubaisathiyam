@@ -153,7 +153,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {article.audio && (
         <div
-          className="mx-auto max-w-5xl px-5 py-8"
+          className="mx-auto max-w-5xl md:px-5 py-8"
           style={{ borderColor: "var(--border-color)" }}
         >
           <audio

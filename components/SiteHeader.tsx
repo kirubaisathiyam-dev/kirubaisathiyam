@@ -113,21 +113,26 @@ export default function SiteHeader() {
             </button>
           </div>
           <div
-            className="flex flex-col justify-between gap-6 px-5"
+            className="flex flex-col justify-between gap-6 "
             style={{ height: "calc(100% - 60px)" }}
           >
             <div className="space-y-5">
-              <nav className="flex flex-col gap-4 px-5 text-base">
+              <nav
+                className="flex flex-col px-5 text-base border-t"
+                style={{ borderColor: "var(--border-color)" }}
+              >
                 <Link
                   href="/bible"
-                  className="rounded-md px-3 py-2 hover:opacity-70"
+                  className="px-3 py-4 hover:opacity-70 "
+                  style={{ borderColor: "var(--border-color)" }}
                   onClick={() => setOpen(false)}
                 >
                   பரிசுத்த வேதாகமம்
                 </Link>
                 <Link
                   href="/articles"
-                  className="rounded-md px-3 py-2 hover:opacity-70"
+                  className="px-3 py-4 hover:opacity-70 border-t"
+                  style={{ borderColor: "var(--border-color)" }}
                   onClick={() => setOpen(false)}
                 >
                   கட்டுரைகள்
@@ -136,7 +141,8 @@ export default function SiteHeader() {
                   href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-md px-3 py-2 hover:opacity-70"
+                  className="px-3 py-4 hover:opacity-70 border-t"
+                  style={{ borderColor: "var(--border-color)" }}
                   onClick={() => setOpen(false)}
                 >
                   பரிசுத்த வாழ்க்கை - அனுதின தியானம்
