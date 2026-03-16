@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "public/admin/**",
+    "public/tina-admin/**",
+    "tina/__generated__/**",
+    "tailwind.config.js",
   ]),
 ]);
 

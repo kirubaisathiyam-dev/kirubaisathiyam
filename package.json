@@ -3,15 +3,20 @@
   "version": "0.1.3",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "npm run cms:dev",
+    "dev:site": "next dev",
+    "cms:dev": "cross-env TINA_PUBLIC_IS_LOCAL=true tinacms dev -c \"next dev\" --noTelemetry",
+    "cms:build": "cross-env TINA_PUBLIC_IS_LOCAL=true tinacms build --local --skip-cloud-checks --noTelemetry",
     "prebuild": "node scripts/generate-pwa-precache.mjs",
-    "build": "next build",
+    "build": "npm run cms:build && next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@tinacms/cli": "^2.1.9",
     "cookieconsent": "^3.1.1",
     "firebase": "^12.9.0",
+    "graphql": "^16.13.1",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "react": "19.2.3",
@@ -20,7 +25,8 @@
     "rehype-stringify": "^10.0.1",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
-    "remark-rehype": "^11.1.1"
+    "remark-rehype": "^11.1.1",
+    "tinacms": "^3.6.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -28,9 +34,13 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

@@ -109,12 +109,18 @@ export default function AdminHomePage() {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Admin Dashboard</h2>
-      <p style={{ color: "var(--muted-foreground)" }}>
-        Choose where you want to go next.
-      </p>
+      <div className="space-y-2">
+        <p style={{ color: "var(--muted-foreground)" }}>
+          Choose where you want to go next.
+        </p>
+        <p className="max-w-2xl text-sm" style={{ color: "var(--muted-foreground)" }}>
+          TinaCMS editing is enabled for local development. Production write
+          access stays disabled until a dedicated Tina backend is configured.
+        </p>
+      </div>
       <div className="flex flex-col items-start gap-2">
         <Link href="/admin/cms" className="text-sm font-semibold hover:underline">
-          Go to content management
+          Open TinaCMS
         </Link>
         <Link
           href="/admin/send-newsletter"

@@ -1,0 +1,13 @@
+fragment ArticleParts on Article {
+  __typename
+  title
+  date
+  author
+  type
+  tags
+  keywords
+  summary
+  image
+  audio
+  body
+}
