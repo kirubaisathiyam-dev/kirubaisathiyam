@@ -16,7 +16,7 @@ Open [http://localhost:3000](http://localhost:3000) for the site and [http://loc
 - `npm run dev` starts Next.js with Tina's local editing backend enabled.
 - `npm run dev:site` starts plain Next.js without Tina's local backend.
 - `npm run cms:build:local` regenerates the Tina admin bundle in local mode.
-- `npm run cms:build` generates the production Tina admin bundle for TinaCloud.
+- `npm run cms:build` generates the production Tina admin bundle for TinaCloud and skips TinaCloud schema gate checks during CI builds.
 - `npm run build` runs the production Tina build, then the Next.js production build.
 - `npm run build:local` keeps the previous local-only build flow for local testing.
 
@@ -43,6 +43,7 @@ Notes:
 - `NEXT_PUBLIC_TINA_BRANCH` is useful if you want to force a specific production branch.
 - `TINA_SEARCH_INDEXER_TOKEN` is optional unless you want Tina search indexing.
 - Production builds should use `npm run build`, not `npm run build:local`.
+- Cloudflare builds can start before TinaCloud finishes syncing the latest schema for the branch. The production Tina build therefore uses `--skip-cloud-checks` so deploys do not fail on that temporary mismatch.
 - The current `/admin` login gate is still a lightweight client-side gate. For real production protection on Cloudflare, put `/admin*` behind Cloudflare Access as well.
 
 ## Tina Search
