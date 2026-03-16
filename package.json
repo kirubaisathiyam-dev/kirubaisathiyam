@@ -6,9 +6,11 @@
     "dev": "npm run cms:dev",
     "dev:site": "next dev",
     "cms:dev": "cross-env TINA_PUBLIC_IS_LOCAL=true tinacms dev -c \"next dev\" --noTelemetry",
-    "cms:build": "cross-env TINA_PUBLIC_IS_LOCAL=true tinacms build --local --skip-cloud-checks --noTelemetry",
+    "cms:build:local": "cross-env TINA_PUBLIC_IS_LOCAL=true tinacms build --local --skip-cloud-checks --noTelemetry",
+    "cms:build": "tinacms build --noTelemetry",
     "prebuild": "node scripts/generate-pwa-precache.mjs",
     "build": "npm run cms:build && next build",
+    "build:local": "npm run cms:build:local && next build",
     "start": "next start",
     "lint": "eslint"
   },

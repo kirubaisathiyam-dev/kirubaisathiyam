@@ -21,10 +21,17 @@ function createArticleSlug(dateValue) {
     pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds())
   ].join("-");
 }
-var branch = process.env.GITHUB_BRANCH || process.env.VERCEL_GIT_COMMIT_REF || process.env.HEAD || "main";
+var branch = process.env.NEXT_PUBLIC_TINA_BRANCH || process.env.CF_PAGES_BRANCH || process.env.GITHUB_BRANCH || process.env.VERCEL_GIT_COMMIT_REF || process.env.HEAD || "main";
+var isLocal = process.env.TINA_PUBLIC_IS_LOCAL === "true";
+var tinaClientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID;
+var tinaToken = process.env.TINA_TOKEN;
 var searchIndexerToken = process.env.TINA_SEARCH_INDEXER_TOKEN;
 var config_default = defineConfig({
   branch,
+  ...!isLocal ? {
+    clientId: tinaClientId,
+    token: tinaToken
+  } : {},
   build: {
     outputFolder: "tina-admin",
     publicFolder: "public"

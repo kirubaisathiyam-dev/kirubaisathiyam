@@ -15,14 +15,35 @@ Open [http://localhost:3000](http://localhost:3000) for the site and [http://loc
 
 - `npm run dev` starts Next.js with Tina's local editing backend enabled.
 - `npm run dev:site` starts plain Next.js without Tina's local backend.
-- `npm run cms:build` regenerates the Tina admin bundle and generated client files.
-- `npm run build` rebuilds Tina first, then runs the Next.js production build.
+- `npm run cms:build:local` regenerates the Tina admin bundle in local mode.
+- `npm run cms:build` generates the production Tina admin bundle for TinaCloud.
+- `npm run build` runs the production Tina build, then the Next.js production build.
+- `npm run build:local` keeps the previous local-only build flow for local testing.
 
 ## Content Editing
 
 Articles remain in `content/articles` as Markdown with frontmatter. Tina writes to the same files the site already reads, so the frontend rendering path stays unchanged.
 
-Tina is configured in local mode right now. Run `npm run dev` so Tina can serve its local GraphQL endpoint on port `4001`; otherwise the editor UI will load without a working backend.
+Tina uses local mode during `npm run dev`. Run that command so Tina can serve its local GraphQL endpoint on port `4001`; otherwise the editor UI will load without a working backend.
+
+## Cloudflare Deploy
+
+To make `/admin` and `/admin/cms` work after a Cloudflare deployment, set these environment variables in Cloudflare:
+
+```bash
+NEXT_PUBLIC_TINA_CLIENT_ID=your_tinacloud_client_id
+TINA_TOKEN=your_tinacloud_readonly_token
+TINA_SEARCH_INDEXER_TOKEN=your_tinacloud_search_token
+NEXT_PUBLIC_TINA_BRANCH=main
+```
+
+Notes:
+
+- `CF_PAGES_BRANCH` is provided automatically by Cloudflare Pages, and `tina/config.ts` will use it if `NEXT_PUBLIC_TINA_BRANCH` is not set.
+- `NEXT_PUBLIC_TINA_BRANCH` is useful if you want to force a specific production branch.
+- `TINA_SEARCH_INDEXER_TOKEN` is optional unless you want Tina search indexing.
+- Production builds should use `npm run build`, not `npm run build:local`.
+- The current `/admin` login gate is still a lightweight client-side gate. For real production protection on Cloudflare, put `/admin*` behind Cloudflare Access as well.
 
 ## Tina Search
 

@@ -113,9 +113,13 @@ export default function AdminHomePage() {
         <p style={{ color: "var(--muted-foreground)" }}>
           Choose where you want to go next.
         </p>
-        <p className="max-w-2xl text-sm" style={{ color: "var(--muted-foreground)" }}>
-          TinaCMS editing is enabled for local development. Production write
-          access stays disabled until a dedicated Tina backend is configured.
+        <p
+          className="max-w-2xl text-sm"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          TinaCMS uses local mode in development and TinaCloud in production.
+          On Cloudflare, `/admin/cms` works after the Tina env vars are set for
+          the deployed app.
         </p>
       </div>
       <div className="flex flex-col items-start gap-2">
