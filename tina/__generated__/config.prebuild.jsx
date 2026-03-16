@@ -25,7 +25,22 @@ var branch = process.env.NEXT_PUBLIC_TINA_BRANCH || process.env.CF_PAGES_BRANCH 
 var isLocal = process.env.TINA_PUBLIC_IS_LOCAL === "true";
 var tinaClientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID;
 var tinaToken = process.env.TINA_TOKEN;
-var searchIndexerToken = process.env.TINA_SEARCH_INDEXER_TOKEN;
+var searchIndexerToken = process.env.TINA_SEARCH_INDEXER_TOKEN || "";
+var searchConfig = {
+  tina: {
+    indexerToken: searchIndexerToken,
+    stopwordLanguages: ["eng"],
+    fuzzyEnabled: true,
+    fuzzyOptions: {
+      maxDistance: 2,
+      minSimilarity: 0.6,
+      maxTermExpansions: 10,
+      useTranspositions: true
+    }
+  },
+  indexBatchSize: 100,
+  maxSearchIndexFieldLength: 300
+};
 var config_default = defineConfig({
   branch,
   ...!isLocal ? {
@@ -42,23 +57,7 @@ var config_default = defineConfig({
       publicFolder: "public"
     }
   },
-  ...searchIndexerToken ? {
-    search: {
-      tina: {
-        indexerToken: searchIndexerToken,
-        stopwordLanguages: ["eng"],
-        fuzzyEnabled: true,
-        fuzzyOptions: {
-          maxDistance: 2,
-          minSimilarity: 0.6,
-          maxTermExpansions: 10,
-          useTranspositions: true
-        }
-      },
-      indexBatchSize: 100,
-      maxSearchIndexFieldLength: 300
-    }
-  } : {},
+  search: searchConfig,
   schema: {
     collections: [
       {
