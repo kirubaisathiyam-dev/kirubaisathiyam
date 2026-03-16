@@ -38,7 +38,23 @@ const branch =
 const isLocal = process.env.TINA_PUBLIC_IS_LOCAL === "true";
 const tinaClientId = process.env.NEXT_PUBLIC_TINA_CLIENT_ID;
 const tinaToken = process.env.TINA_TOKEN;
-const searchIndexerToken = process.env.TINA_SEARCH_INDEXER_TOKEN;
+const searchIndexerToken = process.env.TINA_SEARCH_INDEXER_TOKEN || "";
+
+const searchConfig = {
+  tina: {
+    indexerToken: searchIndexerToken,
+    stopwordLanguages: ["eng"],
+    fuzzyEnabled: true,
+    fuzzyOptions: {
+      maxDistance: 2,
+      minSimilarity: 0.6,
+      maxTermExpansions: 10,
+      useTranspositions: true,
+    },
+  },
+  indexBatchSize: 100,
+  maxSearchIndexFieldLength: 300,
+};
 
 export default defineConfig({
   branch,
@@ -58,25 +74,7 @@ export default defineConfig({
       publicFolder: "public",
     },
   },
-  ...(searchIndexerToken
-    ? {
-        search: {
-          tina: {
-            indexerToken: searchIndexerToken,
-            stopwordLanguages: ["eng"],
-            fuzzyEnabled: true,
-            fuzzyOptions: {
-              maxDistance: 2,
-              minSimilarity: 0.6,
-              maxTermExpansions: 10,
-              useTranspositions: true,
-            },
-          },
-          indexBatchSize: 100,
-          maxSearchIndexFieldLength: 300,
-        },
-      }
-    : {}),
+  search: searchConfig,
   schema: {
     collections: [
       {
