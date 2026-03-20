@@ -12,6 +12,7 @@
     "/articles/2026-03-11-055530",
     "/articles/2026-03-12-180758"
   ],
+  "theologyTopics": [],
   "bibleBooks": [
     "/local-bible/books/1-chronicles.json",
     "/local-bible/books/1-corinthians.json",
@@ -80,5 +81,5 @@
     "/local-bible/books/zechariah.json",
     "/local-bible/books/zephaniah.json"
   ],
-  "generatedAt": "2026-03-16T00:25:40.512Z"
+  "generatedAt": "2026-03-20T18:56:52.420Z"
 }

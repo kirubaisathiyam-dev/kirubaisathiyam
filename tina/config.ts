@@ -12,7 +12,7 @@ function pad(value: number) {
   return value.toString().padStart(2, "0");
 }
 
-function createArticleSlug(dateValue?: string) {
+function createTimestampSlug(dateValue?: string) {
   const baseDate =
     typeof dateValue === "string" && dateValue
       ? new Date(dateValue)
@@ -26,6 +26,120 @@ function createArticleSlug(dateValue?: string) {
     pad(safeDate.getUTCDate()),
     pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()),
   ].join("-");
+}
+
+function createArticleSlug(dateValue?: string) {
+  return createTimestampSlug(dateValue);
+}
+
+function createTopicSlug(titleValue?: string, dateValue?: string) {
+  if (typeof titleValue === "string" && titleValue.trim()) {
+    const cleaned = titleValue
+      .trim()
+      .toLowerCase()
+      .normalize("NFKC")
+      .replace(/[^\p{Letter}\p{Number}]+/gu, "-")
+      .replace(/^-+|-+$/g, "");
+
+    if (cleaned) {
+      return cleaned;
+    }
+  }
+
+  return `thalappu-${createTimestampSlug(dateValue)}`;
+}
+
+function createDateField() {
+  return {
+    type: "datetime" as const,
+    name: "date",
+    label: "Date",
+    required: true,
+  };
+}
+
+function createAuthorField() {
+  return {
+    type: "string" as const,
+    name: "author",
+    label: "Author",
+    required: true,
+  };
+}
+
+function createTagsField() {
+  return {
+    type: "string" as const,
+    name: "tags",
+    label: "Tags",
+    list: true,
+    required: true,
+  };
+}
+
+function createKeywordsField() {
+  return {
+    type: "string" as const,
+    name: "keywords",
+    label: "Keywords",
+    list: true,
+    required: true,
+  };
+}
+
+function createSummaryField() {
+  return {
+    type: "string" as const,
+    name: "summary",
+    label: "Summary",
+    maxSearchIndexFieldLength: 240,
+    ui: {
+      component: "textarea",
+    },
+  };
+}
+
+function createImageField() {
+  return {
+    type: "image" as const,
+    name: "image",
+    label: "Cover Image",
+  };
+}
+
+function createAudioField() {
+  return {
+    type: "string" as const,
+    name: "audio",
+    label: "Audio Path",
+    searchable: false,
+    description:
+      "Store the uploaded audio file path, for example /uploads/sermon.mp3.",
+  };
+}
+
+function createBodyField() {
+  return {
+    type: "rich-text" as const,
+    name: "body",
+    label: "Body",
+    isBody: true,
+    required: true,
+    maxSearchIndexFieldLength: 500,
+  };
+}
+
+function createSharedContentFields() {
+  return [
+    createDateField(),
+    createAuthorField(),
+    createTagsField(),
+    createKeywordsField(),
+    createSummaryField(),
+    createImageField(),
+    createAudioField(),
+    createBodyField(),
+  ];
 }
 
 const branch =
@@ -98,18 +212,8 @@ export default defineConfig({
             isTitle: true,
             required: true,
           },
-          {
-            type: "datetime",
-            name: "date",
-            label: "Date",
-            required: true,
-          },
-          {
-            type: "string",
-            name: "author",
-            label: "Author",
-            required: true,
-          },
+          createDateField(),
+          createAuthorField(),
           {
             type: "string",
             name: "type",
@@ -117,50 +221,58 @@ export default defineConfig({
             options: articleTypeOptions,
             required: true,
           },
-          {
-            type: "string",
-            name: "tags",
-            label: "Tags",
-            list: true,
-            required: true,
-          },
-          {
-            type: "string",
-            name: "keywords",
-            label: "Keywords",
-            list: true,
-            required: true,
-          },
-          {
-            type: "string",
-            name: "summary",
-            label: "Summary",
-            maxSearchIndexFieldLength: 240,
-            ui: {
-              component: "textarea",
-            },
-          },
-          {
-            type: "image",
-            name: "image",
-            label: "Cover Image",
-          },
-          {
-            type: "string",
-            name: "audio",
-            label: "Audio Path",
-            searchable: false,
+          createTagsField(),
+          createKeywordsField(),
+          createSummaryField(),
+          createImageField(),
+          createAudioField(),
+          createBodyField(),
+        ],
+      },
+      {
+        name: "systematicTheology",
+        label: "முறையியல் இறையியல்",
+        path: "content/theology/muraimai-iraiyiyal",
+        format: "md",
+        ui: {
+          filename: {
+            slugify: (values) => createTopicSlug(values.title, values.date),
             description:
-              "Store the uploaded audio file path, for example /uploads/sermon.mp3.",
+              "ஒவ்வொரு தலைப்பும் தனித்தனி markdown file ஆகச் சேமிக்கப்படும்.",
           },
+        },
+        fields: [
           {
-            type: "rich-text",
-            name: "body",
-            label: "Body",
-            isBody: true,
+            type: "string",
+            name: "title",
+            label: "Title",
+            isTitle: true,
             required: true,
-            maxSearchIndexFieldLength: 500,
           },
+          ...createSharedContentFields(),
+        ],
+      },
+      {
+        name: "reformedTheology",
+        label: "சீர்திருத்த இறையியல்",
+        path: "content/theology/seerthirutha-iraiyiyal",
+        format: "md",
+        ui: {
+          filename: {
+            slugify: (values) => createTopicSlug(values.title, values.date),
+            description:
+              "ஒவ்வொரு தலைப்பும் தனித்தனி markdown file ஆகச் சேமிக்கப்படும்.",
+          },
+        },
+        fields: [
+          {
+            type: "string",
+            name: "title",
+            label: "Title",
+            isTitle: true,
+            required: true,
+          },
+          ...createSharedContentFields(),
         ],
       },
     ],

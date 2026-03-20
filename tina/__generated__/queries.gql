@@ -52,3 +52,113 @@ query articleConnection($before: String, $after: String, $first: Float, $last: F
     }
   }
 }
+
+query systematicTheology($relativePath: String!) {
+  systematicTheology(relativePath: $relativePath) {
+    ... on Document {
+      _sys {
+        filename
+        basename
+        hasReferences
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
+    }
+    ...SystematicTheologyParts
+  }
+}
+
+query systematicTheologyConnection($before: String, $after: String, $first: Float, $last: Float, $sort: String, $filter: SystematicTheologyFilter) {
+  systematicTheologyConnection(
+    before: $before
+    after: $after
+    first: $first
+    last: $last
+    sort: $sort
+    filter: $filter
+  ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+    totalCount
+    edges {
+      cursor
+      node {
+        ... on Document {
+          _sys {
+            filename
+            basename
+            hasReferences
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
+        }
+        ...SystematicTheologyParts
+      }
+    }
+  }
+}
+
+query reformedTheology($relativePath: String!) {
+  reformedTheology(relativePath: $relativePath) {
+    ... on Document {
+      _sys {
+        filename
+        basename
+        hasReferences
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
+    }
+    ...ReformedTheologyParts
+  }
+}
+
+query reformedTheologyConnection($before: String, $after: String, $first: Float, $last: Float, $sort: String, $filter: ReformedTheologyFilter) {
+  reformedTheologyConnection(
+    before: $before
+    after: $after
+    first: $first
+    last: $last
+    sort: $sort
+    filter: $filter
+  ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+    totalCount
+    edges {
+      cursor
+      node {
+        ... on Document {
+          _sys {
+            filename
+            basename
+            hasReferences
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
+        }
+        ...ReformedTheologyParts
+      }
+    }
+  }
+}

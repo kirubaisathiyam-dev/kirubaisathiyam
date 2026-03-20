@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getAllArticles } from "@/lib/articles";
 import { formatTamilDate } from "@/lib/date";
 import { toAbsoluteUrl } from "@/lib/seo";
+import { getTheologySectionsWithTopics } from "@/lib/theology";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -46,7 +47,9 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const articles = getAllArticles();
+  const theologySections = getTheologySectionsWithTopics();
   const [featured, ...rest] = articles;
+  const recentArticles = rest.slice(0, 6);
 
   return (
     <div className="space-y-12">
@@ -126,7 +129,7 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {rest.map((article) => (
+          {recentArticles.map((article) => (
             <Link
               href={`/articles/${article.slug}`}
               key={article.slug}
@@ -179,6 +182,90 @@ export default function Home() {
                 </p>
               </div>
             </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">இறையியல்</h2>
+          <Link
+            href="/theology"
+            className="text-sm font-semibold hover:underline"
+          >
+            மேலும் →
+          </Link>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          {theologySections.map((section) => (
+            <section
+              key={section.slug}
+              className="flex h-full flex-col border"
+              style={{ borderColor: "var(--border-color)" }}
+            >
+              <div className="space-y-3 p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold">{section.label}</h3>
+                    <p
+                      className="text-sm leading-relaxed"
+                      style={{ color: "var(--muted-foreground)" }}
+                    >
+                      {section.description}
+                    </p>
+                  </div>
+                  <span
+                    className="shrink-0 rounded-full border px-3 py-1 text-xs font-semibold"
+                    style={{ borderColor: "var(--border-color)" }}
+                  >
+                    {section.topics.length} தலைப்புகள்
+                  </span>
+                </div>
+
+                {section.topics.length === 0 ? (
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
+                    இன்னும் தலைப்புகள் சேர்க்கப்படவில்லை.
+                  </p>
+                ) : (
+                  <ul className="space-y-3">
+                    {section.topics.slice(0, 3).map((topic) => (
+                      <li key={topic.slug}>
+                        <Link
+                          href={`/theology/${section.slug}/${topic.slug}`}
+                          className="block rounded border px-4 py-3 transition hover:opacity-80"
+                          style={{ borderColor: "var(--border-color)" }}
+                        >
+                          <p className="font-medium leading-snug">
+                            {topic.title}
+                          </p>
+                          <p
+                            className="mt-1 text-xs"
+                            style={{ color: "var(--muted-foreground)" }}
+                          >
+                            {formatTamilDate(topic.date)} · {topic.author}
+                          </p>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div
+                className="mt-auto border-t p-5"
+                style={{ borderColor: "var(--border-color)" }}
+              >
+                <Link
+                  href={`/theology/${section.slug}`}
+                  className="text-sm font-semibold hover:underline"
+                >
+                  பகுதியைப் பார் →
+                </Link>
+              </div>
+            </section>
           ))}
         </div>
       </section>

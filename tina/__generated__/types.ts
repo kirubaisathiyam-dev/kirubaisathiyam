@@ -84,6 +84,10 @@ export type Query = {
   document: DocumentNode;
   article: Article;
   articleConnection: ArticleConnection;
+  systematicTheology: SystematicTheology;
+  systematicTheologyConnection: SystematicTheologyConnection;
+  reformedTheology: ReformedTheology;
+  reformedTheologyConnection: ReformedTheologyConnection;
 };
 
 
@@ -122,8 +126,40 @@ export type QueryArticleConnectionArgs = {
   filter?: InputMaybe<ArticleFilter>;
 };
 
+
+export type QuerySystematicTheologyArgs = {
+  relativePath?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QuerySystematicTheologyConnectionArgs = {
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Float']['input']>;
+  last?: InputMaybe<Scalars['Float']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<SystematicTheologyFilter>;
+};
+
+
+export type QueryReformedTheologyArgs = {
+  relativePath?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryReformedTheologyConnectionArgs = {
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Float']['input']>;
+  last?: InputMaybe<Scalars['Float']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ReformedTheologyFilter>;
+};
+
 export type DocumentFilter = {
   article?: InputMaybe<ArticleFilter>;
+  systematicTheology?: InputMaybe<SystematicTheologyFilter>;
+  reformedTheology?: InputMaybe<ReformedTheologyFilter>;
 };
 
 export type DocumentConnectionEdges = {
@@ -163,7 +199,7 @@ export type CollectionDocumentsArgs = {
   folder?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type DocumentNode = Article | Folder;
+export type DocumentNode = Article | SystematicTheology | ReformedTheology | Folder;
 
 export type Article = Node & Document & {
   __typename?: 'Article';
@@ -236,6 +272,88 @@ export type ArticleConnection = Connection & {
   edges?: Maybe<Array<Maybe<ArticleConnectionEdges>>>;
 };
 
+export type SystematicTheology = Node & Document & {
+  __typename?: 'SystematicTheology';
+  title: Scalars['String']['output'];
+  date: Scalars['String']['output'];
+  author: Scalars['String']['output'];
+  tags: Array<Scalars['String']['output']>;
+  keywords: Array<Scalars['String']['output']>;
+  summary?: Maybe<Scalars['String']['output']>;
+  image?: Maybe<Scalars['String']['output']>;
+  audio?: Maybe<Scalars['String']['output']>;
+  body: Scalars['JSON']['output'];
+  id: Scalars['ID']['output'];
+  _sys: SystemInfo;
+  _values: Scalars['JSON']['output'];
+};
+
+export type SystematicTheologyFilter = {
+  title?: InputMaybe<StringFilter>;
+  date?: InputMaybe<DatetimeFilter>;
+  author?: InputMaybe<StringFilter>;
+  tags?: InputMaybe<StringFilter>;
+  keywords?: InputMaybe<StringFilter>;
+  summary?: InputMaybe<StringFilter>;
+  image?: InputMaybe<ImageFilter>;
+  audio?: InputMaybe<StringFilter>;
+  body?: InputMaybe<RichTextFilter>;
+};
+
+export type SystematicTheologyConnectionEdges = {
+  __typename?: 'SystematicTheologyConnectionEdges';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<SystematicTheology>;
+};
+
+export type SystematicTheologyConnection = Connection & {
+  __typename?: 'SystematicTheologyConnection';
+  pageInfo: PageInfo;
+  totalCount: Scalars['Float']['output'];
+  edges?: Maybe<Array<Maybe<SystematicTheologyConnectionEdges>>>;
+};
+
+export type ReformedTheology = Node & Document & {
+  __typename?: 'ReformedTheology';
+  title: Scalars['String']['output'];
+  date: Scalars['String']['output'];
+  author: Scalars['String']['output'];
+  tags: Array<Scalars['String']['output']>;
+  keywords: Array<Scalars['String']['output']>;
+  summary?: Maybe<Scalars['String']['output']>;
+  image?: Maybe<Scalars['String']['output']>;
+  audio?: Maybe<Scalars['String']['output']>;
+  body: Scalars['JSON']['output'];
+  id: Scalars['ID']['output'];
+  _sys: SystemInfo;
+  _values: Scalars['JSON']['output'];
+};
+
+export type ReformedTheologyFilter = {
+  title?: InputMaybe<StringFilter>;
+  date?: InputMaybe<DatetimeFilter>;
+  author?: InputMaybe<StringFilter>;
+  tags?: InputMaybe<StringFilter>;
+  keywords?: InputMaybe<StringFilter>;
+  summary?: InputMaybe<StringFilter>;
+  image?: InputMaybe<ImageFilter>;
+  audio?: InputMaybe<StringFilter>;
+  body?: InputMaybe<RichTextFilter>;
+};
+
+export type ReformedTheologyConnectionEdges = {
+  __typename?: 'ReformedTheologyConnectionEdges';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<ReformedTheology>;
+};
+
+export type ReformedTheologyConnection = Connection & {
+  __typename?: 'ReformedTheologyConnection';
+  pageInfo: PageInfo;
+  totalCount: Scalars['Float']['output'];
+  edges?: Maybe<Array<Maybe<ReformedTheologyConnectionEdges>>>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   addPendingDocument: DocumentNode;
@@ -245,6 +363,10 @@ export type Mutation = {
   createFolder: DocumentNode;
   updateArticle: Article;
   createArticle: Article;
+  updateSystematicTheology: SystematicTheology;
+  createSystematicTheology: SystematicTheology;
+  updateReformedTheology: ReformedTheology;
+  createReformedTheology: ReformedTheology;
 };
 
 
@@ -292,13 +414,41 @@ export type MutationCreateArticleArgs = {
   params: ArticleMutation;
 };
 
+
+export type MutationUpdateSystematicTheologyArgs = {
+  relativePath: Scalars['String']['input'];
+  params: SystematicTheologyMutation;
+};
+
+
+export type MutationCreateSystematicTheologyArgs = {
+  relativePath: Scalars['String']['input'];
+  params: SystematicTheologyMutation;
+};
+
+
+export type MutationUpdateReformedTheologyArgs = {
+  relativePath: Scalars['String']['input'];
+  params: ReformedTheologyMutation;
+};
+
+
+export type MutationCreateReformedTheologyArgs = {
+  relativePath: Scalars['String']['input'];
+  params: ReformedTheologyMutation;
+};
+
 export type DocumentUpdateMutation = {
   article?: InputMaybe<ArticleMutation>;
+  systematicTheology?: InputMaybe<SystematicTheologyMutation>;
+  reformedTheology?: InputMaybe<ReformedTheologyMutation>;
   relativePath?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type DocumentMutation = {
   article?: InputMaybe<ArticleMutation>;
+  systematicTheology?: InputMaybe<SystematicTheologyMutation>;
+  reformedTheology?: InputMaybe<ReformedTheologyMutation>;
 };
 
 export type ArticleMutation = {
@@ -314,7 +464,35 @@ export type ArticleMutation = {
   body?: InputMaybe<Scalars['JSON']['input']>;
 };
 
+export type SystematicTheologyMutation = {
+  title?: InputMaybe<Scalars['String']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  keywords?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  summary?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  audio?: InputMaybe<Scalars['String']['input']>;
+  body?: InputMaybe<Scalars['JSON']['input']>;
+};
+
+export type ReformedTheologyMutation = {
+  title?: InputMaybe<Scalars['String']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
+  author?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  keywords?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  summary?: InputMaybe<Scalars['String']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
+  audio?: InputMaybe<Scalars['String']['input']>;
+  body?: InputMaybe<Scalars['JSON']['input']>;
+};
+
 export type ArticlePartsFragment = { __typename: 'Article', title: string, date: string, author: string, type: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any };
+
+export type SystematicTheologyPartsFragment = { __typename: 'SystematicTheology', title: string, date: string, author: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any };
+
+export type ReformedTheologyPartsFragment = { __typename: 'ReformedTheology', title: string, date: string, author: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any };
 
 export type ArticleQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -335,6 +513,44 @@ export type ArticleConnectionQueryVariables = Exact<{
 
 export type ArticleConnectionQuery = { __typename?: 'Query', articleConnection: { __typename?: 'ArticleConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ArticleConnectionEdges', cursor: string, node?: { __typename: 'Article', id: string, title: string, date: string, author: string, type: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
+export type SystematicTheologyQueryVariables = Exact<{
+  relativePath: Scalars['String']['input'];
+}>;
+
+
+export type SystematicTheologyQuery = { __typename?: 'Query', systematicTheology: { __typename: 'SystematicTheology', id: string, title: string, date: string, author: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+
+export type SystematicTheologyConnectionQueryVariables = Exact<{
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Float']['input']>;
+  last?: InputMaybe<Scalars['Float']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<SystematicTheologyFilter>;
+}>;
+
+
+export type SystematicTheologyConnectionQuery = { __typename?: 'Query', systematicTheologyConnection: { __typename?: 'SystematicTheologyConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'SystematicTheologyConnectionEdges', cursor: string, node?: { __typename: 'SystematicTheology', id: string, title: string, date: string, author: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+
+export type ReformedTheologyQueryVariables = Exact<{
+  relativePath: Scalars['String']['input'];
+}>;
+
+
+export type ReformedTheologyQuery = { __typename?: 'Query', reformedTheology: { __typename: 'ReformedTheology', id: string, title: string, date: string, author: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+
+export type ReformedTheologyConnectionQueryVariables = Exact<{
+  before?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Float']['input']>;
+  last?: InputMaybe<Scalars['Float']['input']>;
+  sort?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ReformedTheologyFilter>;
+}>;
+
+
+export type ReformedTheologyConnectionQuery = { __typename?: 'Query', reformedTheologyConnection: { __typename?: 'ReformedTheologyConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ReformedTheologyConnectionEdges', cursor: string, node?: { __typename: 'ReformedTheology', id: string, title: string, date: string, author: string, tags: Array<string>, keywords: Array<string>, summary?: string | null, image?: string | null, audio?: string | null, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+
 export const ArticlePartsFragmentDoc = gql`
     fragment ArticleParts on Article {
   __typename
@@ -342,6 +558,34 @@ export const ArticlePartsFragmentDoc = gql`
   date
   author
   type
+  tags
+  keywords
+  summary
+  image
+  audio
+  body
+}
+    `;
+export const SystematicTheologyPartsFragmentDoc = gql`
+    fragment SystematicTheologyParts on SystematicTheology {
+  __typename
+  title
+  date
+  author
+  tags
+  keywords
+  summary
+  image
+  audio
+  body
+}
+    `;
+export const ReformedTheologyPartsFragmentDoc = gql`
+    fragment ReformedTheologyParts on ReformedTheology {
+  __typename
+  title
+  date
+  author
   tags
   keywords
   summary
@@ -407,6 +651,120 @@ export const ArticleConnectionDocument = gql`
   }
 }
     ${ArticlePartsFragmentDoc}`;
+export const SystematicTheologyDocument = gql`
+    query systematicTheology($relativePath: String!) {
+  systematicTheology(relativePath: $relativePath) {
+    ... on Document {
+      _sys {
+        filename
+        basename
+        hasReferences
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
+    }
+    ...SystematicTheologyParts
+  }
+}
+    ${SystematicTheologyPartsFragmentDoc}`;
+export const SystematicTheologyConnectionDocument = gql`
+    query systematicTheologyConnection($before: String, $after: String, $first: Float, $last: Float, $sort: String, $filter: SystematicTheologyFilter) {
+  systematicTheologyConnection(
+    before: $before
+    after: $after
+    first: $first
+    last: $last
+    sort: $sort
+    filter: $filter
+  ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+    totalCount
+    edges {
+      cursor
+      node {
+        ... on Document {
+          _sys {
+            filename
+            basename
+            hasReferences
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
+        }
+        ...SystematicTheologyParts
+      }
+    }
+  }
+}
+    ${SystematicTheologyPartsFragmentDoc}`;
+export const ReformedTheologyDocument = gql`
+    query reformedTheology($relativePath: String!) {
+  reformedTheology(relativePath: $relativePath) {
+    ... on Document {
+      _sys {
+        filename
+        basename
+        hasReferences
+        breadcrumbs
+        path
+        relativePath
+        extension
+      }
+      id
+    }
+    ...ReformedTheologyParts
+  }
+}
+    ${ReformedTheologyPartsFragmentDoc}`;
+export const ReformedTheologyConnectionDocument = gql`
+    query reformedTheologyConnection($before: String, $after: String, $first: Float, $last: Float, $sort: String, $filter: ReformedTheologyFilter) {
+  reformedTheologyConnection(
+    before: $before
+    after: $after
+    first: $first
+    last: $last
+    sort: $sort
+    filter: $filter
+  ) {
+    pageInfo {
+      hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+    }
+    totalCount
+    edges {
+      cursor
+      node {
+        ... on Document {
+          _sys {
+            filename
+            basename
+            hasReferences
+            breadcrumbs
+            path
+            relativePath
+            extension
+          }
+          id
+        }
+        ...ReformedTheologyParts
+      }
+    }
+  }
+}
+    ${ReformedTheologyPartsFragmentDoc}`;
 export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) => Promise<R>
   export function getSdk<C>(requester: Requester<C>) {
     return {
@@ -415,6 +773,18 @@ export type Requester<C= {}> = <R, V>(doc: DocumentNode, vars?: V, options?: C) 
       },
     articleConnection(variables?: ArticleConnectionQueryVariables, options?: C): Promise<{data: ArticleConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ArticleConnectionQueryVariables, query: string}> {
         return requester<{data: ArticleConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ArticleConnectionQueryVariables, query: string}, ArticleConnectionQueryVariables>(ArticleConnectionDocument, variables, options);
+      },
+    systematicTheology(variables: SystematicTheologyQueryVariables, options?: C): Promise<{data: SystematicTheologyQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: SystematicTheologyQueryVariables, query: string}> {
+        return requester<{data: SystematicTheologyQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: SystematicTheologyQueryVariables, query: string}, SystematicTheologyQueryVariables>(SystematicTheologyDocument, variables, options);
+      },
+    systematicTheologyConnection(variables?: SystematicTheologyConnectionQueryVariables, options?: C): Promise<{data: SystematicTheologyConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: SystematicTheologyConnectionQueryVariables, query: string}> {
+        return requester<{data: SystematicTheologyConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: SystematicTheologyConnectionQueryVariables, query: string}, SystematicTheologyConnectionQueryVariables>(SystematicTheologyConnectionDocument, variables, options);
+      },
+    reformedTheology(variables: ReformedTheologyQueryVariables, options?: C): Promise<{data: ReformedTheologyQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ReformedTheologyQueryVariables, query: string}> {
+        return requester<{data: ReformedTheologyQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ReformedTheologyQueryVariables, query: string}, ReformedTheologyQueryVariables>(ReformedTheologyDocument, variables, options);
+      },
+    reformedTheologyConnection(variables?: ReformedTheologyConnectionQueryVariables, options?: C): Promise<{data: ReformedTheologyConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ReformedTheologyConnectionQueryVariables, query: string}> {
+        return requester<{data: ReformedTheologyConnectionQuery, errors?: { message: string, locations: { line: number, column: number }[], path: string[] }[], variables: ReformedTheologyConnectionQueryVariables, query: string}, ReformedTheologyConnectionQueryVariables>(ReformedTheologyConnectionDocument, variables, options);
       }
     };
   }

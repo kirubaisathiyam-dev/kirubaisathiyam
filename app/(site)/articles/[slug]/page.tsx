@@ -1,12 +1,7 @@
 import type { Metadata } from "next";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
-import { formatTamilDate } from "@/lib/date";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
-import Image from "next/image";
-import ShareButton from "@/components/ShareButton";
-import ScrollToTopButton from "@/components/ScrollToTopButton";
-import Comments from "@/components/Comments";
-import LikeButton from "@/components/LikeButton";
+import ContentReader from "@/components/ContentReader";
 
 export const dynamicParams = false;
 
@@ -126,95 +121,19 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   };
 
   return (
-    <article className="space-y-6">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <header className="space-y-3 text-center">
-        {article.type && (
-          <p
-            className="text-xs font-semibold uppercase tracking-wide"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            {article.type}
-          </p>
-        )}
-        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl md:text-4xl">
-          {article.title}
-        </h1>
-        <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
-          {article.author}
-        </p>
-        <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
-          {formatTamilDate(article.date)}
-        </p>
-      </header>
-
-      {article.audio && (
-        <div
-          className="mx-auto max-w-5xl md:px-5 py-8"
-          style={{ borderColor: "var(--border-color)" }}
-        >
-          <audio
-            className="w-full"
-            controls
-            src={article.audio}
-            preload="metadata"
-          >
-            Your browser does not support audio playback. Download the file{" "}
-            <a
-              href={article.audio}
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
-            >
-              here
-            </a>
-            .
-          </audio>
-        </div>
-      )}
-
-      {article.image && (
-        <div
-          className="overflow-hidden border"
-          style={{ borderColor: "var(--border-color)" }}
-        >
-          <div className="relative aspect-[16/9] w-full">
-            <Image
-              src={article.image}
-              alt={article.title}
-              fill
-              sizes="(min-width: 1024px) 48rem, 100vw"
-              className="object-cover"
-            />
-          </div>
-        </div>
-      )}
-
-      <div
-        className="prose prose-neutral max-w-3xl mx-auto"
-        dangerouslySetInnerHTML={{ __html: article.contentHtml }}
-      />
-
-      <div className="mx-auto flex max-w-3xl justify-end">
-        <LikeButton articleId={slug} />
-      </div>
-
-      <Comments articleId={slug} />
-
-      <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-        <div className="flex flex-col gap-3">
-          <ShareButton
-            title={article.title}
-            text={shareText}
-            url={articleUrl}
-            className="shadow-sm"
-          />
-          <ScrollToTopButton />
-        </div>
-      </div>
-    </article>
+    <ContentReader
+      itemId={slug}
+      title={article.title}
+      author={article.author}
+      date={article.date}
+      eyebrow={article.type}
+      image={article.image}
+      audio={article.audio}
+      contentHtml={article.contentHtml}
+      shareTitle={article.title}
+      shareText={shareText}
+      shareUrl={articleUrl}
+      jsonLd={jsonLd}
+    />
   );
 }

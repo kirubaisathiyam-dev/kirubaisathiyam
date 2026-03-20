@@ -11,3 +11,29 @@ fragment ArticleParts on Article {
   audio
   body
 }
+
+fragment SystematicTheologyParts on SystematicTheology {
+  __typename
+  title
+  date
+  author
+  tags
+  keywords
+  summary
+  image
+  audio
+  body
+}
+
+fragment ReformedTheologyParts on ReformedTheology {
+  __typename
+  title
+  date
+  author
+  tags
+  keywords
+  summary
+  image
+  audio
+  body
+}

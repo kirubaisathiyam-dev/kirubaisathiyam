@@ -56,10 +56,16 @@ type Query {
   document(collection: String, relativePath: String): DocumentNode!
   article(relativePath: String): Article!
   articleConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ArticleFilter): ArticleConnection!
+  systematicTheology(relativePath: String): SystematicTheology!
+  systematicTheologyConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: SystematicTheologyFilter): SystematicTheologyConnection!
+  reformedTheology(relativePath: String): ReformedTheology!
+  reformedTheologyConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ReformedTheologyFilter): ReformedTheologyConnection!
 }
 
 input DocumentFilter {
   article: ArticleFilter
+  systematicTheology: SystematicTheologyFilter
+  reformedTheology: ReformedTheologyFilter
 }
 
 type DocumentConnectionEdges {
@@ -85,7 +91,7 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float, sort: String, filter: DocumentFilter, folder: String): DocumentConnection!
 }
 
-union DocumentNode = Article | Folder
+union DocumentNode = Article | SystematicTheology | ReformedTheology | Folder
 
 type Article implements Node & Document {
   title: String!
@@ -155,6 +161,82 @@ type ArticleConnection implements Connection {
   edges: [ArticleConnectionEdges]
 }
 
+type SystematicTheology implements Node & Document {
+  title: String!
+  date: String!
+  author: String!
+  tags: [String!]!
+  keywords: [String!]!
+  summary: String
+  image: String
+  audio: String
+  body: JSON!
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input SystematicTheologyFilter {
+  title: StringFilter
+  date: DatetimeFilter
+  author: StringFilter
+  tags: StringFilter
+  keywords: StringFilter
+  summary: StringFilter
+  image: ImageFilter
+  audio: StringFilter
+  body: RichTextFilter
+}
+
+type SystematicTheologyConnectionEdges {
+  cursor: String!
+  node: SystematicTheology
+}
+
+type SystematicTheologyConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [SystematicTheologyConnectionEdges]
+}
+
+type ReformedTheology implements Node & Document {
+  title: String!
+  date: String!
+  author: String!
+  tags: [String!]!
+  keywords: [String!]!
+  summary: String
+  image: String
+  audio: String
+  body: JSON!
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input ReformedTheologyFilter {
+  title: StringFilter
+  date: DatetimeFilter
+  author: StringFilter
+  tags: StringFilter
+  keywords: StringFilter
+  summary: StringFilter
+  image: ImageFilter
+  audio: StringFilter
+  body: RichTextFilter
+}
+
+type ReformedTheologyConnectionEdges {
+  cursor: String!
+  node: ReformedTheology
+}
+
+type ReformedTheologyConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [ReformedTheologyConnectionEdges]
+}
+
 type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentUpdateMutation!): DocumentNode!
@@ -163,15 +245,23 @@ type Mutation {
   createFolder(collection: String, relativePath: String!): DocumentNode!
   updateArticle(relativePath: String!, params: ArticleMutation!): Article!
   createArticle(relativePath: String!, params: ArticleMutation!): Article!
+  updateSystematicTheology(relativePath: String!, params: SystematicTheologyMutation!): SystematicTheology!
+  createSystematicTheology(relativePath: String!, params: SystematicTheologyMutation!): SystematicTheology!
+  updateReformedTheology(relativePath: String!, params: ReformedTheologyMutation!): ReformedTheology!
+  createReformedTheology(relativePath: String!, params: ReformedTheologyMutation!): ReformedTheology!
 }
 
 input DocumentUpdateMutation {
   article: ArticleMutation
+  systematicTheology: SystematicTheologyMutation
+  reformedTheology: ReformedTheologyMutation
   relativePath: String
 }
 
 input DocumentMutation {
   article: ArticleMutation
+  systematicTheology: SystematicTheologyMutation
+  reformedTheology: ReformedTheologyMutation
 }
 
 input ArticleMutation {
@@ -179,6 +269,30 @@ input ArticleMutation {
   date: String
   author: String
   type: String
+  tags: [String]
+  keywords: [String]
+  summary: String
+  image: String
+  audio: String
+  body: JSON
+}
+
+input SystematicTheologyMutation {
+  title: String
+  date: String
+  author: String
+  tags: [String]
+  keywords: [String]
+  summary: String
+  image: String
+  audio: String
+  body: JSON
+}
+
+input ReformedTheologyMutation {
+  title: String
+  date: String
+  author: String
   tags: [String]
   keywords: [String]
   summary: String

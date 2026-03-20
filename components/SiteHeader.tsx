@@ -130,6 +130,14 @@ export default function SiteHeader() {
                   பரிசுத்த வேதாகமம்
                 </Link>
                 <Link
+                  href="/theology"
+                  className="px-3 py-4 hover:opacity-70 border-t"
+                  style={{ borderColor: "var(--border-color)" }}
+                  onClick={() => setOpen(false)}
+                >
+                  இறையியல்
+                </Link>
+                <Link
                   href="/articles"
                   className="px-3 py-4 hover:opacity-70 border-t"
                   style={{ borderColor: "var(--border-color)" }}

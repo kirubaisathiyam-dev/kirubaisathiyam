@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 type PrefetchManifest = {
   articles: string[];
+  theologyTopics: string[];
   bibleBooks: string[];
   generatedAt?: string;
 };
@@ -18,6 +19,9 @@ const OFFLINE_PREFETCH_FLAG = "kirubai-offline:prefetch";
 const STATIC_ASSETS = [
   "/",
   "/articles",
+  "/theology",
+  "/theology/muraimai-iraiyiyal",
+  "/theology/seerthirutha-iraiyiyal",
   "/bible",
   "/privacy-terms",
   "/manifest.json",
@@ -54,6 +58,9 @@ function getCacheName(pathname: string) {
   if (
     pathname === "/" ||
     pathname === "/articles" ||
+    pathname === "/theology" ||
+    pathname === "/theology/muraimai-iraiyiyal" ||
+    pathname === "/theology/seerthirutha-iraiyiyal" ||
     pathname === "/bible" ||
     pathname === "/privacy-terms"
   ) {
@@ -61,6 +68,10 @@ function getCacheName(pathname: string) {
   }
 
   if (pathname.startsWith("/articles/")) {
+    return CACHE_NAMES.content;
+  }
+
+  if (pathname.startsWith("/theology/")) {
     return CACHE_NAMES.content;
   }
 
@@ -103,6 +114,10 @@ function buildUrlList(manifest: PrefetchManifest, buildId: string) {
 
   for (const article of manifest.articles || []) {
     urls.add(article);
+  }
+
+  for (const topic of manifest.theologyTopics || []) {
+    urls.add(topic);
   }
 
   if (buildId) {
@@ -221,8 +236,9 @@ export default function OfflineDownloader({ className }: OfflineDownloaderProps)
       {status === "idle" && (
         <>
           <div>
-            Download every article, book, and study note so the app works
-            entirely offline.
+            எல்லா கட்டுரைகள், இறையியல் தலைப்புகள், வேதாகமப் புத்தகங்கள்,
+            ஆய்வுக் குறிப்புகள் ஆகியவற்றையும் பதிவிறக்கி இணையம் இல்லாமலும்
+            பயன்படுத்தலாம்.
           </div>
           <button
             type="button"
