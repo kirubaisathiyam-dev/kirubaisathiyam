@@ -18,6 +18,8 @@ type ContentReaderProps = {
   shareText: string;
   shareUrl: string;
   jsonLd?: Record<string, unknown>;
+  showDate?: boolean;
+  showEngagement?: boolean;
 };
 
 export default function ContentReader({
@@ -33,6 +35,8 @@ export default function ContentReader({
   shareText,
   shareUrl,
   jsonLd,
+  showDate = true,
+  showEngagement = true,
 }: ContentReaderProps) {
   return (
     <article className="space-y-6">
@@ -58,9 +62,11 @@ export default function ContentReader({
         <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
           {author}
         </p>
-        <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
-          {formatTamilDate(date)}
-        </p>
+        {showDate && (
+          <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
+            {formatTamilDate(date)}
+          </p>
+        )}
       </header>
 
       {audio && (
@@ -105,11 +111,13 @@ export default function ContentReader({
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
 
-      <div className="mx-auto flex max-w-3xl justify-end">
-        <LikeButton articleId={itemId} />
-      </div>
+      {showEngagement && (
+        <div className="mx-auto flex max-w-3xl justify-end">
+          <LikeButton articleId={itemId} />
+        </div>
+      )}
 
-      <Comments articleId={itemId} />
+      {showEngagement && <Comments articleId={itemId} />}
 
       <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
         <div className="flex flex-col gap-3">

@@ -15,25 +15,19 @@ fragment ArticleParts on Article {
 fragment SystematicTheologyParts on SystematicTheology {
   __typename
   title
+  subsection
+  subsectionFolder
+  order
   date
-  author
-  tags
-  keywords
-  summary
-  image
-  audio
   body
 }
 
 fragment ReformedTheologyParts on ReformedTheology {
   __typename
   title
+  subsection
+  subsectionFolder
+  order
   date
-  author
-  tags
-  keywords
-  summary
-  image
-  audio
   body
 }

@@ -24,14 +24,21 @@ function createTimestampSlug(dateValue) {
 function createArticleSlug(dateValue) {
   return createTimestampSlug(dateValue);
 }
-function createTopicSlug(titleValue, dateValue) {
-  if (typeof titleValue === "string" && titleValue.trim()) {
-    const cleaned = titleValue.trim().toLowerCase().normalize("NFKC").replace(/[^\p{Letter}\p{Number}]+/gu, "-").replace(/^-+|-+$/g, "");
+function createSubsectionFolderSlug(value, dateValue) {
+  if (typeof value === "string" && value.trim()) {
+    const cleaned = value.trim().toLowerCase().normalize("NFKC").replace(/[^\p{Letter}\p{Number}]+/gu, "-").replace(/^-+|-+$/g, "");
     if (cleaned) {
       return cleaned;
     }
   }
-  return `thalappu-${createTimestampSlug(dateValue)}`;
+  return `subsection-${createTimestampSlug(dateValue)}`;
+}
+function createTheologyFilePath(subsectionFolderValue, dateValue) {
+  const fileName = createTimestampSlug(dateValue);
+  if (typeof subsectionFolderValue === "string" && subsectionFolderValue.trim()) {
+    return `${createSubsectionFolderSlug(subsectionFolderValue, dateValue)}/${fileName}`;
+  }
+  return fileName;
 }
 function createDateField() {
   return {
@@ -104,15 +111,47 @@ function createBodyField() {
     maxSearchIndexFieldLength: 500
   };
 }
-function createSharedContentFields() {
+function createOrderField() {
+  return {
+    type: "number",
+    name: "order",
+    label: "Order",
+    required: false,
+    description: "Smaller numbers appear first in the theology section table of contents."
+  };
+}
+function createSubsectionField() {
+  return {
+    type: "string",
+    name: "subsection",
+    label: "Subsection",
+    required: true,
+    description: "Visible subsection name. You can enter Tamil here, for example: \u0BA4\u0BC7\u0BB5\u0BA9\u0BBF\u0BAF\u0BB2\u0BCD."
+  };
+}
+function createSubsectionFolderField() {
+  return {
+    type: "string",
+    name: "subsectionFolder",
+    label: "Subsection Folder",
+    required: false,
+    description: "English folder name for a new subsection, for example: theology-proper, christology, salvation. Leave this empty when creating inside an existing subsection folder."
+  };
+}
+function createArticleFields() {
   return [
-    createDateField(),
-    createAuthorField(),
     createTagsField(),
     createKeywordsField(),
     createSummaryField(),
     createImageField(),
     createAudioField(),
+    createBodyField()
+  ];
+}
+function createTheologyFields() {
+  return [
+    createOrderField(),
+    createDateField(),
     createBodyField()
   ];
 }
@@ -184,23 +223,18 @@ var config_default = defineConfig({
             options: articleTypeOptions,
             required: true
           },
-          createTagsField(),
-          createKeywordsField(),
-          createSummaryField(),
-          createImageField(),
-          createAudioField(),
-          createBodyField()
+          ...createArticleFields()
         ]
       },
       {
         name: "systematicTheology",
-        label: "\u0BAE\u0BC1\u0BB1\u0BC8\u0BAF\u0BBF\u0BAF\u0BB2\u0BCD \u0B87\u0BB1\u0BC8\u0BAF\u0BBF\u0BAF\u0BB2\u0BCD",
-        path: "content/theology/muraimai-iraiyiyal",
+        label: "Systematic Theology",
+        path: "content/theology/systematic-theology",
         format: "md",
         ui: {
           filename: {
-            slugify: (values) => createTopicSlug(values.title, values.date),
-            description: "\u0B92\u0BB5\u0BCD\u0BB5\u0BCA\u0BB0\u0BC1 \u0BA4\u0BB2\u0BC8\u0BAA\u0BCD\u0BAA\u0BC1\u0BAE\u0BCD \u0BA4\u0BA9\u0BBF\u0BA4\u0BCD\u0BA4\u0BA9\u0BBF markdown file \u0B86\u0B95\u0B9A\u0BCD \u0B9A\u0BC7\u0BAE\u0BBF\u0B95\u0BCD\u0B95\u0BAA\u0BCD\u0BAA\u0B9F\u0BC1\u0BAE\u0BCD."
+            slugify: (values) => createTheologyFilePath(values.subsectionFolder, values.date),
+            description: "Each topic is stored as a timestamp-named markdown file inside the English subsection folder."
           }
         },
         fields: [
@@ -211,18 +245,20 @@ var config_default = defineConfig({
             isTitle: true,
             required: true
           },
-          ...createSharedContentFields()
+          createSubsectionField(),
+          createSubsectionFolderField(),
+          ...createTheologyFields()
         ]
       },
       {
         name: "reformedTheology",
-        label: "\u0B9A\u0BC0\u0BB0\u0BCD\u0BA4\u0BBF\u0BB0\u0BC1\u0BA4\u0BCD\u0BA4 \u0B87\u0BB1\u0BC8\u0BAF\u0BBF\u0BAF\u0BB2\u0BCD",
-        path: "content/theology/seerthirutha-iraiyiyal",
+        label: "Reformed Theology",
+        path: "content/theology/reformed-theology",
         format: "md",
         ui: {
           filename: {
-            slugify: (values) => createTopicSlug(values.title, values.date),
-            description: "\u0B92\u0BB5\u0BCD\u0BB5\u0BCA\u0BB0\u0BC1 \u0BA4\u0BB2\u0BC8\u0BAA\u0BCD\u0BAA\u0BC1\u0BAE\u0BCD \u0BA4\u0BA9\u0BBF\u0BA4\u0BCD\u0BA4\u0BA9\u0BBF markdown file \u0B86\u0B95\u0B9A\u0BCD \u0B9A\u0BC7\u0BAE\u0BBF\u0B95\u0BCD\u0B95\u0BAA\u0BCD\u0BAA\u0B9F\u0BC1\u0BAE\u0BCD."
+            slugify: (values) => createTheologyFilePath(values.subsectionFolder, values.date),
+            description: "Each topic is stored as a timestamp-named markdown file inside the English subsection folder."
           }
         },
         fields: [
@@ -233,7 +269,9 @@ var config_default = defineConfig({
             isTitle: true,
             required: true
           },
-          ...createSharedContentFields()
+          createSubsectionField(),
+          createSubsectionFolderField(),
+          ...createTheologyFields()
         ]
       }
     ]

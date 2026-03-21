@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import matter from "gray-matter";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
@@ -16,6 +17,9 @@ export type MarkdownFrontmatter = {
   tags?: unknown;
   keywords?: unknown;
   audio?: unknown;
+  order?: unknown;
+  subsection?: unknown;
+  subsectionFolder?: unknown;
 };
 
 export function listMarkdownFiles(directory: string) {
@@ -23,6 +27,29 @@ export function listMarkdownFiles(directory: string) {
     return fs
       .readdirSync(directory)
       .filter((fileName) => fileName.toLowerCase().endsWith(".md"));
+  } catch {
+    return [];
+  }
+}
+
+export function listMarkdownFilesRecursive(
+  directory: string,
+  baseDirectory = directory,
+): string[] {
+  try {
+    return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+      const fullPath = path.join(directory, entry.name);
+
+      if (entry.isDirectory()) {
+        return listMarkdownFilesRecursive(fullPath, baseDirectory);
+      }
+
+      if (!entry.name.toLowerCase().endsWith(".md")) {
+        return [];
+      }
+
+      return [path.relative(baseDirectory, fullPath)];
+    });
   } catch {
     return [];
   }

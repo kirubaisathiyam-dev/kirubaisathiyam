@@ -20,8 +20,8 @@ const STATIC_ASSETS = [
   "/",
   "/articles",
   "/theology",
-  "/theology/muraimai-iraiyiyal",
-  "/theology/seerthirutha-iraiyiyal",
+  "/theology/systematic-theology",
+  "/theology/reformed-theology",
   "/bible",
   "/privacy-terms",
   "/manifest.json",
@@ -59,8 +59,8 @@ function getCacheName(pathname: string) {
     pathname === "/" ||
     pathname === "/articles" ||
     pathname === "/theology" ||
-    pathname === "/theology/muraimai-iraiyiyal" ||
-    pathname === "/theology/seerthirutha-iraiyiyal" ||
+    pathname === "/theology/systematic-theology" ||
+    pathname === "/theology/reformed-theology" ||
     pathname === "/bible" ||
     pathname === "/privacy-terms"
   ) {
@@ -118,6 +118,11 @@ function buildUrlList(manifest: PrefetchManifest, buildId: string) {
 
   for (const topic of manifest.theologyTopics || []) {
     urls.add(topic);
+
+    const segments = topic.split("/").filter(Boolean);
+    if (segments.length >= 3) {
+      urls.add(`/${segments.slice(0, 3).join("/")}`);
+    }
   }
 
   if (buildId) {
@@ -236,9 +241,8 @@ export default function OfflineDownloader({ className }: OfflineDownloaderProps)
       {status === "idle" && (
         <>
           <div>
-            எல்லா கட்டுரைகள், இறையியல் தலைப்புகள், வேதாகமப் புத்தகங்கள்,
-            ஆய்வுக் குறிப்புகள் ஆகியவற்றையும் பதிவிறக்கி இணையம் இல்லாமலும்
-            பயன்படுத்தலாம்.
+            Download all articles, theology topics, Bible books, and study
+            notes for offline reading.
           </div>
           <button
             type="button"

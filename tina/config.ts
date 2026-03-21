@@ -32,9 +32,9 @@ function createArticleSlug(dateValue?: string) {
   return createTimestampSlug(dateValue);
 }
 
-function createTopicSlug(titleValue?: string, dateValue?: string) {
-  if (typeof titleValue === "string" && titleValue.trim()) {
-    const cleaned = titleValue
+function createSubsectionFolderSlug(value?: string, dateValue?: string) {
+  if (typeof value === "string" && value.trim()) {
+    const cleaned = value
       .trim()
       .toLowerCase()
       .normalize("NFKC")
@@ -46,7 +46,20 @@ function createTopicSlug(titleValue?: string, dateValue?: string) {
     }
   }
 
-  return `thalappu-${createTimestampSlug(dateValue)}`;
+  return `subsection-${createTimestampSlug(dateValue)}`;
+}
+
+function createTheologyFilePath(
+  subsectionFolderValue?: string,
+  dateValue?: string,
+) {
+  const fileName = createTimestampSlug(dateValue);
+
+  if (typeof subsectionFolderValue === "string" && subsectionFolderValue.trim()) {
+    return `${createSubsectionFolderSlug(subsectionFolderValue, dateValue)}/${fileName}`;
+  }
+
+  return fileName;
 }
 
 function createDateField() {
@@ -129,15 +142,54 @@ function createBodyField() {
   };
 }
 
-function createSharedContentFields() {
+function createOrderField() {
+  return {
+    type: "number" as const,
+    name: "order",
+    label: "Order",
+    required: false,
+    description:
+      "Smaller numbers appear first in the theology section table of contents.",
+  };
+}
+
+function createSubsectionField() {
+  return {
+    type: "string" as const,
+    name: "subsection",
+    label: "Subsection",
+    required: true,
+    description:
+      "Visible subsection name. You can enter Tamil here, for example: தேவனியல்.",
+  };
+}
+
+function createSubsectionFolderField() {
+  return {
+    type: "string" as const,
+    name: "subsectionFolder",
+    label: "Subsection Folder",
+    required: false,
+    description:
+      "English folder name for a new subsection, for example: theology-proper, christology, salvation. Leave this empty when creating inside an existing subsection folder.",
+  };
+}
+
+function createArticleFields() {
   return [
-    createDateField(),
-    createAuthorField(),
     createTagsField(),
     createKeywordsField(),
     createSummaryField(),
     createImageField(),
     createAudioField(),
+    createBodyField(),
+  ];
+}
+
+function createTheologyFields() {
+  return [
+    createOrderField(),
+    createDateField(),
     createBodyField(),
   ];
 }
@@ -221,24 +273,20 @@ export default defineConfig({
             options: articleTypeOptions,
             required: true,
           },
-          createTagsField(),
-          createKeywordsField(),
-          createSummaryField(),
-          createImageField(),
-          createAudioField(),
-          createBodyField(),
+          ...createArticleFields(),
         ],
       },
       {
         name: "systematicTheology",
-        label: "முறையியல் இறையியல்",
-        path: "content/theology/muraimai-iraiyiyal",
+        label: "Systematic Theology",
+        path: "content/theology/systematic-theology",
         format: "md",
         ui: {
           filename: {
-            slugify: (values) => createTopicSlug(values.title, values.date),
+            slugify: (values) =>
+              createTheologyFilePath(values.subsectionFolder, values.date),
             description:
-              "ஒவ்வொரு தலைப்பும் தனித்தனி markdown file ஆகச் சேமிக்கப்படும்.",
+              "Each topic is stored as a timestamp-named markdown file inside the English subsection folder.",
           },
         },
         fields: [
@@ -249,19 +297,22 @@ export default defineConfig({
             isTitle: true,
             required: true,
           },
-          ...createSharedContentFields(),
+          createSubsectionField(),
+          createSubsectionFolderField(),
+          ...createTheologyFields(),
         ],
       },
       {
         name: "reformedTheology",
-        label: "சீர்திருத்த இறையியல்",
-        path: "content/theology/seerthirutha-iraiyiyal",
+        label: "Reformed Theology",
+        path: "content/theology/reformed-theology",
         format: "md",
         ui: {
           filename: {
-            slugify: (values) => createTopicSlug(values.title, values.date),
+            slugify: (values) =>
+              createTheologyFilePath(values.subsectionFolder, values.date),
             description:
-              "ஒவ்வொரு தலைப்பும் தனித்தனி markdown file ஆகச் சேமிக்கப்படும்.",
+              "Each topic is stored as a timestamp-named markdown file inside the English subsection folder.",
           },
         },
         fields: [
@@ -272,7 +323,9 @@ export default defineConfig({
             isTitle: true,
             required: true,
           },
-          ...createSharedContentFields(),
+          createSubsectionField(),
+          createSubsectionFolderField(),
+          ...createTheologyFields(),
         ],
       },
     ],

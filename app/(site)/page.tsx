@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
 import { formatTamilDate } from "@/lib/date";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getTheologySectionsWithTopics } from "@/lib/theology";
-import Image from "next/image";
-import Link from "next/link";
 
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 
@@ -52,7 +52,7 @@ export default function Home() {
   const recentArticles = rest.slice(0, 6);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-16">
       {featured && (
         <section className="space-y-4">
           <Link
@@ -86,9 +86,7 @@ export default function Home() {
                   {featured.audio && (
                     <span
                       className="text-[0.8rem] opacity-70"
-                      style={{
-                        color: "var(--muted-foreground)",
-                      }}
+                      style={{ color: "var(--muted-foreground)" }}
                     >
                       <i className="fa-solid fa-volume-up"></i>
                     </span>
@@ -152,14 +150,12 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              <div className="p-4 space-y-2">
+              <div className="space-y-2 p-4">
                 <div className="flex items-center gap-2">
                   {article.audio && (
                     <span
                       className="text-[0.8rem] opacity-70"
-                      style={{
-                        color: "var(--muted-foreground)",
-                      }}
+                      style={{ color: "var(--muted-foreground)" }}
                     >
                       <i className="fa-solid fa-volume-up"></i>
                     </span>
@@ -214,44 +210,7 @@ export default function Home() {
                       {section.description}
                     </p>
                   </div>
-                  <span
-                    className="shrink-0 rounded-full border px-3 py-1 text-xs font-semibold"
-                    style={{ borderColor: "var(--border-color)" }}
-                  >
-                    {section.topics.length} தலைப்புகள்
-                  </span>
                 </div>
-
-                {section.topics.length === 0 ? (
-                  <p
-                    className="text-sm"
-                    style={{ color: "var(--muted-foreground)" }}
-                  >
-                    இன்னும் தலைப்புகள் சேர்க்கப்படவில்லை.
-                  </p>
-                ) : (
-                  <ul className="space-y-3">
-                    {section.topics.slice(0, 3).map((topic) => (
-                      <li key={topic.slug}>
-                        <Link
-                          href={`/theology/${section.slug}/${topic.slug}`}
-                          className="block rounded border px-4 py-3 transition hover:opacity-80"
-                          style={{ borderColor: "var(--border-color)" }}
-                        >
-                          <p className="font-medium leading-snug">
-                            {topic.title}
-                          </p>
-                          <p
-                            className="mt-1 text-xs"
-                            style={{ color: "var(--muted-foreground)" }}
-                          >
-                            {formatTamilDate(topic.date)} · {topic.author}
-                          </p>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
 
               <div
@@ -262,7 +221,7 @@ export default function Home() {
                   href={`/theology/${section.slug}`}
                   className="text-sm font-semibold hover:underline"
                 >
-                  பகுதியைப் பார் →
+                  பிரிவைத் திறக்க →
                 </Link>
               </div>
             </section>

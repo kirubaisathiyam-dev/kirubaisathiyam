@@ -14,6 +14,7 @@ export const dynamicParams = false;
 export function generateStaticParams() {
   return getAllTheologyTopics().map((topic) => ({
     section: topic.sectionSlug,
+    subsection: topic.subsectionSlug,
     slug: topic.slug,
   }));
 }
@@ -24,6 +25,7 @@ const siteName = "Kirubai Sathiyam";
 type TheologyTopicPageProps = {
   params: Promise<{
     section: string;
+    subsection: string;
     slug: string;
   }>;
 };
@@ -31,11 +33,11 @@ type TheologyTopicPageProps = {
 export async function generateMetadata({
   params,
 }: TheologyTopicPageProps): Promise<Metadata> {
-  const { section, slug } = await params;
+  const { section, subsection, slug } = await params;
 
   if (!isTheologySection(section)) {
     return {
-      title: "தலைப்பு கிடைக்கவில்லை",
+      title: "Topic Not Found",
       robots: {
         index: false,
         follow: false,
@@ -44,12 +46,15 @@ export async function generateMetadata({
   }
 
   const topic = getAllTheologyTopics().find(
-    (entry) => entry.sectionSlug === section && entry.slug === slug,
+    (entry) =>
+      entry.sectionSlug === section &&
+      entry.subsectionSlug === subsection &&
+      entry.slug === slug,
   );
 
   if (!topic) {
     return {
-      title: "தலைப்பு கிடைக்கவில்லை",
+      title: "Topic Not Found",
       robots: {
         index: false,
         follow: false,
@@ -57,32 +62,28 @@ export async function generateMetadata({
     };
   }
 
-  const title = topic.title || "இறையியல் தலைப்பு";
+  const title = topic.title || "Theology Topic";
   const description =
-    topic.excerpt || `${topic.sectionLabel} பகுதியில் உள்ள ஒரு தலைப்பு.`;
-  const keywords = [...(topic.tags || []), ...(topic.keywords || [])].filter(
-    Boolean,
-  );
+    topic.excerpt || `${topic.subsectionLabel} topic inside ${topic.sectionLabel}.`;
   const imageUrl = topic.image ? toAbsoluteUrl(topic.image) : undefined;
 
   return {
     title,
     description,
-    keywords: keywords.length ? keywords : undefined,
+    keywords: topic.keywords.length ? topic.keywords : undefined,
     authors: topic.author ? [{ name: topic.author }] : undefined,
     alternates: {
-      canonical: `/theology/${topic.sectionSlug}/${topic.slug}`,
+      canonical: `/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,
     },
     openGraph: {
       type: "article",
-      url: `/theology/${topic.sectionSlug}/${topic.slug}`,
+      url: `/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,
       title,
       description,
       siteName,
       locale: "ta-IN",
       publishedTime: topic.date,
       authors: topic.author ? [topic.author] : undefined,
-      tags: topic.tags?.length ? topic.tags : undefined,
       images: imageUrl ? [{ url: imageUrl }] : undefined,
     },
     twitter: {
@@ -97,30 +98,31 @@ export async function generateMetadata({
 export default async function TheologyTopicPage({
   params,
 }: TheologyTopicPageProps) {
-  const { section, slug } = await params;
+  const { section, subsection, slug } = await params;
 
   if (!isTheologySection(section)) {
     notFound();
   }
 
   const sectionEntry = getTheologySection(section);
-  const topic = await getTheologyTopic(section, slug);
+  const topic = await getTheologyTopic(section, subsection, slug);
 
   if (!sectionEntry || !topic) {
     notFound();
   }
 
-  const topicUrl = toAbsoluteUrl(`/theology/${topic.sectionSlug}/${topic.slug}`);
+  const topicUrl = toAbsoluteUrl(
+    `/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,
+  );
   const imageUrl = topic.image ? toAbsoluteUrl(topic.image) : undefined;
   const shareText =
-    topic.excerpt || `${topic.sectionLabel} பகுதியில் உள்ள ஒரு தலைப்பு.`;
-  const audioUrl = topic.audio ? toAbsoluteUrl(topic.audio) : undefined;
+    topic.excerpt || `${topic.subsectionLabel} topic inside ${topic.sectionLabel}.`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: topic.title,
     description: topic.excerpt,
-    articleSection: sectionEntry.label,
+    articleSection: `${sectionEntry.label} / ${topic.subsectionLabel}`,
     author: topic.author
       ? {
           "@type": "Person",
@@ -139,30 +141,23 @@ export default async function TheologyTopicPage({
       name: siteName,
       url: siteUrl.toString(),
     },
-    audio: audioUrl
-      ? {
-          "@type": "AudioObject",
-          name: topic.title ? `${topic.title} (ஒலி)` : undefined,
-          url: audioUrl,
-          contentUrl: audioUrl,
-        }
-      : undefined,
   };
 
   return (
     <ContentReader
-      itemId={`theology:${topic.sectionSlug}:${topic.slug}`}
+      itemId={`theology:${topic.sectionSlug}:${topic.subsectionSlug}:${topic.slug}`}
       title={topic.title}
       author={topic.author}
       date={topic.date}
-      eyebrow={topic.sectionLabel}
+      eyebrow={`${topic.sectionLabel} · ${topic.subsectionLabel}`}
       image={topic.image}
-      audio={topic.audio}
       contentHtml={topic.contentHtml}
       shareTitle={topic.title}
       shareText={shareText}
       shareUrl={topicUrl}
       jsonLd={jsonLd}
+      showDate={false}
+      showEngagement={false}
     />
   );
 }

@@ -1,7 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/articles";
 import { getSiteUrl } from "@/lib/seo";
-import { getAllTheologyTopics, THEOLOGY_SECTIONS } from "@/lib/theology";
+import {
+  getAllTheologyTopics,
+  getTheologySubsectionsBySection,
+  THEOLOGY_SECTIONS,
+} from "@/lib/theology";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = getSiteUrl().toString().replace(/\/$/, "");
@@ -80,9 +84,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   );
 
+  const theologySubsectionEntries: MetadataRoute.Sitemap =
+    THEOLOGY_SECTIONS.flatMap((section) =>
+      getTheologySubsectionsBySection(section.slug).map((subsection) => ({
+        url: `${siteUrl}/theology/${section.slug}/${subsection.slug}`,
+        lastModified: subsection.latestDate
+          ? new Date(subsection.latestDate)
+          : theologyDatesBySection.get(section.slug) ?? latestTheologyDate,
+        changeFrequency: "monthly",
+        priority: 0.75,
+      })),
+    );
+
   const theologyTopicEntries: MetadataRoute.Sitemap = theologyTopics.map(
     (topic) => ({
-      url: `${siteUrl}/theology/${topic.sectionSlug}/${topic.slug}`,
+      url: `${siteUrl}/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,
       lastModified: new Date(topic.date),
       changeFrequency: "monthly",
       priority: 0.75,
@@ -93,6 +109,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...staticEntries,
     ...articleEntries,
     ...theologySectionEntries,
+    ...theologySubsectionEntries,
     ...theologyTopicEntries,
   ];
 }

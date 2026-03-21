@@ -9,12 +9,12 @@ const shareImage = toAbsoluteUrl("/logo-light.svg");
 export const metadata: Metadata = {
   title: "இறையியல்",
   description:
-    "முறையியல் இறையியல் மற்றும் சீர்திருத்த இறையியலின் தலைப்புகளை ஒழுங்காக வாசிக்கக்கூடிய பகுதி.",
+    "முக்கிய பிரிவிலிருந்து உட்பிரிவுக்கு சென்று இறையியல் தலைப்புகளை வாசிக்கலாம். ஒவ்வொரு தலைப்பும் தனித்தனி markdown கோப்பாகச் சேமிக்கப்பட்டு கட்டுரை வாசிப்பு வடிவில் திறக்கும்.",
   keywords: [
     "இறையியல்",
     "முறையியல் இறையியல்",
     "சீர்திருத்த இறையியல்",
-    "தமிழ் இறையியல்",
+    "தமிழ் கிறிஸ்தவ இறையியல்",
     "Kirubai Sathiyam",
   ],
   alternates: {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     url: "/theology",
     title: "இறையியல்",
     description:
-      "முறையியல் இறையியல் மற்றும் சீர்திருத்த இறையியலின் தலைப்புகளை ஒழுங்காக வாசிக்கக்கூடிய பகுதி.",
+      "முக்கிய பிரிவிலிருந்து உட்பிரிவுக்கு சென்று இறையியல் தலைப்புகளை வாசிக்கலாம். ஒவ்வொரு தலைப்பும் தனித்தனி markdown கோப்பாகச் சேமிக்கப்பட்டு கட்டுரை வாசிப்பு வடிவில் திறக்கும்.",
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "இறையியல்",
     description:
-      "முறையியல் இறையியல் மற்றும் சீர்திருத்த இறையியலின் தலைப்புகளை ஒழுங்காக வாசிக்கக்கூடிய பகுதி.",
+      "முக்கிய பிரிவிலிருந்து உட்பிரிவுக்கு சென்று இறையியல் தலைப்புகளை வாசிக்கலாம். ஒவ்வொரு தலைப்பும் தனித்தனி markdown கோப்பாகச் சேமிக்கப்பட்டு கட்டுரை வாசிப்பு வடிவில் திறக்கும்.",
     images: [shareImage],
   },
 };
@@ -48,9 +48,9 @@ export default function TheologyPage() {
           இறையியல்
         </h1>
         <p style={{ color: "var(--muted-foreground)" }}>
-          தலைப்புகளின் அடிப்படையில் ஒழுங்குபடுத்தப்பட்ட இறையியல் குறிப்புகள்.
-          இப்போது முறையியல் இறையியல் மற்றும் சீர்திருத்த இறையியல் பகுதிகள்
-          சேர்க்கப்பட்டுள்ளன. பின்னர் மேலும் பகுதிகள் சேர்க்கலாம்.
+          முக்கிய பிரிவிலிருந்து உட்பிரிவுக்கு சென்று இறையியல் தலைப்புகளை
+          வாசிக்கலாம். ஒவ்வொரு தலைப்பும் தனித்தனி markdown கோப்பாகச்
+          சேமிக்கப்பட்டு கட்டுரை வாசிப்பு வடிவில் திறக்கும்.
         </p>
       </header>
 
@@ -72,40 +72,7 @@ export default function TheologyPage() {
                     {section.description}
                   </p>
                 </div>
-                <span
-                  className="shrink-0 rounded-full border px-3 py-1 text-xs font-semibold"
-                  style={{ borderColor: "var(--border-color)" }}
-                >
-                  {section.topics.length} தலைப்புகள்
-                </span>
               </div>
-
-              {section.topics.length === 0 ? (
-                <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                  இன்னும் தலைப்புகள் சேர்க்கப்படவில்லை. Tina CMS-ல் முதல்
-                  தலைப்பை உருவாக்கலாம்.
-                </p>
-              ) : (
-                <ul className="space-y-3">
-                  {section.topics.slice(0, 4).map((topic) => (
-                    <li key={topic.slug}>
-                      <Link
-                        href={`/theology/${section.slug}/${topic.slug}`}
-                        className="block rounded border px-4 py-3 transition hover:opacity-80"
-                        style={{ borderColor: "var(--border-color)" }}
-                      >
-                        <p className="font-medium leading-snug">{topic.title}</p>
-                        <p
-                          className="mt-1 text-xs"
-                          style={{ color: "var(--muted-foreground)" }}
-                        >
-                          {formatTamilDate(topic.date)} · {topic.author}
-                        </p>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </div>
 
             <div
@@ -116,7 +83,7 @@ export default function TheologyPage() {
                 href={`/theology/${section.slug}`}
                 className="text-sm font-semibold hover:underline"
               >
-                பகுதியைப் பார் →
+                பிரிவைத் திறக்க →
               </Link>
             </div>
           </section>

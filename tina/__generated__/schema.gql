@@ -163,28 +163,32 @@ type ArticleConnection implements Connection {
 
 type SystematicTheology implements Node & Document {
   title: String!
+  subsection: String!
+  subsectionFolder: String
+  order: Float
   date: String!
-  author: String!
-  tags: [String!]!
-  keywords: [String!]!
-  summary: String
-  image: String
-  audio: String
   body: JSON!
   id: ID!
   _sys: SystemInfo!
   _values: JSON!
 }
 
+input NumberFilter {
+  lt: Float
+  lte: Float
+  gte: Float
+  gt: Float
+  eq: Float
+  exists: Boolean
+  in: [Float]
+}
+
 input SystematicTheologyFilter {
   title: StringFilter
+  subsection: StringFilter
+  subsectionFolder: StringFilter
+  order: NumberFilter
   date: DatetimeFilter
-  author: StringFilter
-  tags: StringFilter
-  keywords: StringFilter
-  summary: StringFilter
-  image: ImageFilter
-  audio: StringFilter
   body: RichTextFilter
 }
 
@@ -201,13 +205,10 @@ type SystematicTheologyConnection implements Connection {
 
 type ReformedTheology implements Node & Document {
   title: String!
+  subsection: String!
+  subsectionFolder: String
+  order: Float
   date: String!
-  author: String!
-  tags: [String!]!
-  keywords: [String!]!
-  summary: String
-  image: String
-  audio: String
   body: JSON!
   id: ID!
   _sys: SystemInfo!
@@ -216,13 +217,10 @@ type ReformedTheology implements Node & Document {
 
 input ReformedTheologyFilter {
   title: StringFilter
+  subsection: StringFilter
+  subsectionFolder: StringFilter
+  order: NumberFilter
   date: DatetimeFilter
-  author: StringFilter
-  tags: StringFilter
-  keywords: StringFilter
-  summary: StringFilter
-  image: ImageFilter
-  audio: StringFilter
   body: RichTextFilter
 }
 
@@ -279,25 +277,19 @@ input ArticleMutation {
 
 input SystematicTheologyMutation {
   title: String
+  subsection: String
+  subsectionFolder: String
+  order: Float
   date: String
-  author: String
-  tags: [String]
-  keywords: [String]
-  summary: String
-  image: String
-  audio: String
   body: JSON
 }
 
 input ReformedTheologyMutation {
   title: String
+  subsection: String
+  subsectionFolder: String
+  order: Float
   date: String
-  author: String
-  tags: [String]
-  keywords: [String]
-  summary: String
-  image: String
-  audio: String
   body: JSON
 }
 
