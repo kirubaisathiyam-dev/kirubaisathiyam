@@ -292,7 +292,13 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         list.find((entry) => entry.english === defaultBook)?.english ||
         list[0]?.english ||
         defaultBook;
-      setSelectedBook(defaultSelection);
+      setSelectedBook((current) => {
+        const existingSelection = list.find(
+          (entry) => entry.english === current,
+        )?.english;
+
+        return existingSelection || defaultSelection;
+      });
     };
 
     const loadIndex = async () => {
