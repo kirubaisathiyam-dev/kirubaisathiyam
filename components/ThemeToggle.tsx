@@ -2,6 +2,12 @@
 
 import { useEffect, useMemo, useSyncExternalStore } from "react";
 import {
+  MoonIcon,
+  SunIcon,
+  SystemThemeIcon,
+  type LocalIcon,
+} from "@/components/Icons";
+import {
   getThemeServerSnapshot,
   getThemeSnapshot,
   setThemePreference,
@@ -20,17 +26,17 @@ export default function ThemeToggle() {
     if (preference === "system") {
       return {
         label: `Using device theme (${resolved})`,
-        icon: "fa-circle-half-stroke",
+        icon: SystemThemeIcon,
       };
     }
     return preference === "dark"
       ? {
           label: "Switch to light mode",
-          icon: "fa-sun",
+          icon: SunIcon,
         }
       : {
           label: "Switch to dark mode",
-          icon: "fa-moon",
+          icon: MoonIcon,
         };
   }, [preference, resolved]);
 
@@ -65,6 +71,8 @@ export default function ThemeToggle() {
     setThemePreference(next);
   }
 
+  const Icon = labels.icon as LocalIcon;
+
   return (
     <button
       type="button"
@@ -73,10 +81,7 @@ export default function ThemeToggle() {
       aria-label={labels.label}
       title={labels.label}
     >
-      <i
-        className={`fa-solid ${labels.icon}`}
-        aria-hidden="true"
-      ></i>
+      <Icon style={{ width: 25, height: 25 }} />
     </button>
   );
 }

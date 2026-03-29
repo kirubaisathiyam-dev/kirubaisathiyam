@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
@@ -88,7 +89,7 @@ export default function Home() {
                       className="text-[0.8rem] opacity-70"
                       style={{ color: "var(--muted-foreground)" }}
                     >
-                      <i className="fa-solid fa-volume-up"></i>
+                      <VolumeIcon style={{ width: 20, height: 20 }} />
                     </span>
                   )}
                   <p
@@ -121,9 +122,10 @@ export default function Home() {
           <h2 className="text-xl font-semibold">சமீபத்திய பதிவுகள்</h2>
           <Link
             href="/articles"
-            className="text-sm font-semibold hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
           >
-            மேலும் →
+            மேலும்
+            <ArrowRightIcon style={{ width: 15, height: 15 }} />
           </Link>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -151,13 +153,13 @@ export default function Home() {
                 </div>
               )}
               <div className="space-y-2 p-4">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   {article.audio && (
                     <span
                       className="text-[0.8rem] opacity-70"
                       style={{ color: "var(--muted-foreground)" }}
                     >
-                      <i className="fa-solid fa-volume-up"></i>
+                      <VolumeIcon style={{ width: 15, height: 15 }} />
                     </span>
                   )}
                   <p
@@ -187,9 +189,10 @@ export default function Home() {
           <h2 className="text-xl font-semibold">இறையியல்</h2>
           <Link
             href="/theology"
-            className="text-sm font-semibold hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
           >
-            மேலும் →
+            மேலும்
+            <ArrowRightIcon style={{ width: 15, height: 15 }} />
           </Link>
         </div>
         <div className="grid gap-6 md:grid-cols-2">
@@ -219,9 +222,10 @@ export default function Home() {
               >
                 <Link
                   href={`/theology/${section.slug}`}
-                  className="text-sm font-semibold hover:underline"
+                  className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
                 >
-                  பிரிவைத் திறக்க →
+                  பிரிவைத் திறக்க
+                  <ArrowRightIcon style={{ width: 15, height: 15 }} />
                 </Link>
               </div>
             </section>

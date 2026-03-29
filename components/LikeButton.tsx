@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { doc, increment, onSnapshot, setDoc } from "firebase/firestore";
+import { HeartIcon } from "@/components/Icons";
 import { db } from "@/lib/firebase";
 
 type LikeButtonProps = {
@@ -99,7 +100,7 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
             aria-label="Like this article"
           >
             <span aria-hidden="true" className="text-base">
-              <i className="fa-solid fa-heart text-[color:var(--foreground-bible)]" />
+              <HeartIcon style={{ width: 20, height: 20 }} className="text-[color:var(--foreground-bible)]" />
             </span>
             <span>{isLoading ? "..." : displayCount}</span>
           </button>

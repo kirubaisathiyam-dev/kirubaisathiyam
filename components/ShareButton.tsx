@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShareIcon } from "@/components/Icons";
 
 type ShareButtonProps = {
   title: string;
@@ -50,7 +51,7 @@ export default function ShareButton({
     <button
       type="button"
       onClick={handleShare}
-      className={`inline-flex cursor-pointer items-center justify-center rounded-full border px-3 py-3.5 text-sm font-semibold transition hover:opacity-80 ${
+      className={`inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80 ${
         className ?? ""
       }`}
       style={{
@@ -62,7 +63,7 @@ export default function ShareButton({
       aria-live="polite"
     >
       <span className="sr-only">{label}</span>
-      <i className="fa-solid fa-share-nodes" aria-hidden="true" />
+      <ShareIcon style={{ width: 20, height: 20 }} />
     </button>
   );
 }

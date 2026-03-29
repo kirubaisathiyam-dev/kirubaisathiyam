@@ -1,5 +1,7 @@
 "use client";
 
+import { CloseIcon, CopyIcon, ShareIcon } from "@/components/Icons";
+
 type BibleSelectionBarProps = {
   reference: string;
   message: string;
@@ -40,7 +42,7 @@ export default function BibleSelectionBar({
             aria-label="Copy selected verses"
             title="Copy"
           >
-            <i className="fa-regular fa-copy" aria-hidden="true" />
+            <CopyIcon style={{ width: 15, height: 15 }} />
           </button>
           <button
             type="button"
@@ -50,7 +52,7 @@ export default function BibleSelectionBar({
             aria-label="Share selected verses"
             title="Share"
           >
-            <i className="fa-solid fa-share-nodes" aria-hidden="true" />
+            <ShareIcon style={{ width: 15, height: 15 }} />
           </button>
           <button
             type="button"
@@ -60,7 +62,7 @@ export default function BibleSelectionBar({
             aria-label="Clear selected verses"
             title="Clear"
           >
-            <i className="fa-solid fa-xmark" aria-hidden="true" />
+            <CloseIcon style={{ width: 15, height: 15 }} />
           </button>
         </div>
       </div>

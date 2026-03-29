@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+import localFont from "next/font/local";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import "./globals.css";
 import "cookieconsent/build/cookieconsent.min.css";
@@ -11,6 +11,22 @@ const siteName = "Kirubai Sathiyam";
 const siteDescription =
   "Tamil Christian articles and the Tamil Holy Bible reader with study notes.";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
+const notoSerifTamil = localFont({
+  src: [
+    {
+      path: "./fonts/NotoSerifTamil-VariableFont_wdth,wght.ttf",
+      style: "normal",
+      weight: "100 900",
+    },
+    {
+      path: "./fonts/NotoSerifTamil-Italic-VariableFont_wdth,wght.ttf",
+      style: "italic",
+      weight: "100 900",
+    },
+  ],
+  variable: "--font-tamil",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -55,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ta">
+    <html lang="ta" className={notoSerifTamil.variable}>
       <head>
         <meta name="apple-mobile-web-app-title" content="Kirubai Sathiyam" />
         <meta name="application-name" content="Kirubai Sathiyam" />
@@ -78,21 +94,6 @@ export default function RootLayout({
         <link rel="icon" href="/icon0.svg" type="image/svg+xml" />
         <link rel="icon" href="/icon1.png" />
         <link rel="apple-touch-icon" href="/apple-icon.png" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
-        />
-        <Script
-          src="https://kit.fontawesome.com/944b74851d.js"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </head>
       <body className="antialiased" suppressHydrationWarning>
         {children}

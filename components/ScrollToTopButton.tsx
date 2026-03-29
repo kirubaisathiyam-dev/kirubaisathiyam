@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ArrowUpIcon } from "@/components/Icons";
 
 type ScrollToTopButtonProps = {
   className?: string;
@@ -37,7 +38,7 @@ export default function ScrollToTopButton({
       }}
       aria-label="Scroll to top"
     >
-      <i className="fa-solid fa-arrow-up" aria-hidden="true" />
+      <ArrowUpIcon style={{ width: 20, height: 20 }} />
     </button>
   );
 }

@@ -3,6 +3,7 @@
 import { fetchWithOffline, getOfflineData } from "@/lib/offline";
 import { parseBibleReference, replaceBibleRefsInHtml } from "@/lib/bible";
 import BibleSelectionBar from "@/components/BibleSelectionBar";
+import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -952,7 +953,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
             aria-label="Previous chapter"
           >
             <span className="md:hidden" aria-hidden="true">
-              <i className="fa-solid fa-arrow-left"></i>
+              <ArrowLeftIcon style={{ width: 15, height: 15 }} />
             </span>
             <span className="hidden md:inline">முந்தின அதிகாரம்</span>
           </button>
@@ -968,7 +969,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
             aria-label="Next chapter"
           >
             <span className="md:hidden" aria-hidden="true">
-              <i className="fa-solid fa-arrow-right"></i>
+              <ArrowRightIcon style={{ width: 15, height: 15 }} />
             </span>
             <span className="hidden md:inline">அடுத்த அதிகாரம்</span>
           </button>

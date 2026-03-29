@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import { ArrowRightIcon } from "@/components/Icons";
 import Link from "next/link";
-import { formatTamilDate } from "@/lib/date";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getTheologySectionsWithTopics } from "@/lib/theology";
 
@@ -81,9 +81,10 @@ export default function TheologyPage() {
             >
               <Link
                 href={`/theology/${section.slug}`}
-                className="text-sm font-semibold hover:underline"
+                className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
               >
-                பிரிவைத் திறக்க →
+                பிரிவைத் திறக்க
+                <ArrowRightIcon style={{ width: 15, height: 15 }} />
               </Link>
             </div>
           </section>

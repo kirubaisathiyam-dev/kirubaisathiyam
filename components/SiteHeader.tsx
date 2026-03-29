@@ -7,6 +7,7 @@ import StickyHeader from "@/components/StickyHeader";
 import ThemeToggle from "@/components/ThemeToggle";
 import logoDark from "@/app/logo-dark.svg";
 import logoLight from "@/app/logo-light.svg";
+import { CloseIcon, MenuIcon } from "@/components/Icons";
 import {
   getThemeServerSnapshot,
   getThemeSnapshot,
@@ -71,10 +72,11 @@ export default function SiteHeader() {
             aria-controls="site-drawer"
             onClick={() => setOpen((prev) => !prev)}
           >
-            <i
-              className={`fa-solid ${open ? "fa-xmark" : "fa-bars"}`}
-              aria-hidden="true"
-            ></i>
+            {open ? (
+              <CloseIcon style={{ width: 20, height: 20 }} />
+            ) : (
+              <MenuIcon style={{ width: 20, height: 20 }} />
+            )}
           </button>
         </div>
       </StickyHeader>
@@ -108,7 +110,7 @@ export default function SiteHeader() {
               aria-label="Close menu"
               onClick={() => setOpen(false)}
             >
-              <i className="fa-solid fa-xmark" aria-hidden="true"></i>
+              <CloseIcon style={{ width: 20, height: 20 }} />
             </button>
           </div>
           <div

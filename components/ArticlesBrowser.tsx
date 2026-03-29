@@ -1,6 +1,7 @@
 "use client";
 
 import type { ArticleMeta } from "@/lib/articles";
+import { VolumeIcon } from "@/components/Icons";
 import { formatTamilDate } from "@/lib/date";
 import Image from "next/image";
 import Link from "next/link";
@@ -286,7 +287,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                     </div>
                   )}
                   <div className="space-y-2 p-4 sm:p-5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       {article.audio && (
                         <span
                           className="text-[0.8rem] opacity-70"
@@ -294,7 +295,7 @@ export default function ArticlesBrowser({ articles }: Props) {
                             color: "var(--muted-foreground)",
                           }}
                         >
-                          <i className="fa-solid fa-volume-up"></i>
+                          <VolumeIcon style={{ width: 15, height: 15 }} />
                         </span>
                       )}
                       <p

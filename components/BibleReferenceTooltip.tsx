@@ -3,6 +3,7 @@
 import { getOfflineData, setOfflineData } from "@/lib/offline";
 import { parseBibleReference } from "@/lib/bible";
 import { useEffect, useRef, useState } from "react";
+import { CloseIcon } from "@/components/Icons";
 
 type TooltipState = {
   visible: boolean;
@@ -329,7 +330,7 @@ export default function BibleReferenceTooltip() {
           lineHeight: 1,
         }}
       >
-        <i className="fa-solid fa-xmark" aria-hidden="true" />
+        <CloseIcon style={{ width: 15, height: 15 }} />
       </button>
       <div
         style={{
