@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import StickyHeader from "@/components/StickyHeader";
 import ThemeToggle from "@/components/ThemeToggle";
-import OfflineDownloader from "@/components/OfflineDownloader";
 import logoDark from "@/app/logo-dark.svg";
 import logoLight from "@/app/logo-light.svg";
 import {
@@ -161,10 +160,8 @@ export default function SiteHeader() {
               className="flex flex-col gap-6 items-center border-t justify-center px-3 py-4"
               style={{ borderColor: "var(--border-color)" }}
             >
-              <OfflineDownloader className="px-4" />
               <div
-                className="flex w-full items-center border-t justify-center px-3 py-4"
-                style={{ borderColor: "var(--border-color)" }}
+                className="flex w-full items-center justify-center px-3 py-4"
               >
                 <ThemeToggle />
               </div>

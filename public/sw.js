@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-globals */
-const VERSION = "v1";
+const VERSION = "v2";
 const PRECACHE = `precache-${VERSION}`;
 const RUNTIME = `runtime-${VERSION}`;
 const CONTENT = `content-${VERSION}`;
@@ -14,19 +13,43 @@ const CORE_ASSETS = [
   "/icon1.png",
   "/web-app-manifest-192x192.png",
   "/web-app-manifest-512x512.png",
-  "/bible-notes.json",
-  "/local-bible/Books.json",
 ];
 
-async function cacheAll(cache, paths) {
+function getCacheName(pathname) {
+  if (pathname.startsWith("/_next/")) {
+    return PRECACHE;
+  }
+
+  if (
+    pathname === "/bible-notes.json" ||
+    pathname.startsWith("/local-bible/") ||
+    pathname.startsWith("/articles/") ||
+    pathname.startsWith("/theology/") ||
+    pathname.startsWith("/uploads/") ||
+    pathname.startsWith("/images/")
+  ) {
+    return CONTENT;
+  }
+
+  return RUNTIME;
+}
+
+async function cachePath(path) {
+  const response = await fetch(path, { cache: "no-cache" });
+  if (!response || !response.ok) {
+    return;
+  }
+
+  const cache = await caches.open(getCacheName(new URL(path, self.location.origin).pathname));
+  await cache.put(path, response.clone());
+}
+
+async function cacheAll(paths) {
   const unique = Array.from(new Set(paths)).filter(Boolean);
   await Promise.all(
     unique.map(async (path) => {
       try {
-        const response = await fetch(path, { cache: "no-cache" });
-        if (response && response.ok) {
-          await cache.put(path, response.clone());
-        }
+        await cachePath(path);
       } catch {
         // Ignore individual failures so install can continue.
       }
@@ -34,27 +57,35 @@ async function cacheAll(cache, paths) {
   );
 }
 
-async function warmContentCache() {
+async function readOfflineManifest() {
   try {
     const response = await fetch("/pwa-precache.json", { cache: "no-cache" });
-    if (!response.ok) return;
-    const data = await response.json();
-    const routes = [
-      ...(Array.isArray(data.articles) ? data.articles : []),
-      ...(Array.isArray(data.bibleBooks) ? data.bibleBooks : []),
-    ];
-    const cache = await caches.open(CONTENT);
-    await cacheAll(cache, routes);
+    if (!response.ok) return null;
+    return await response.json();
   } catch {
-    // no-op
+    return null;
   }
+}
+
+async function warmContentCache() {
+  const manifest = await readOfflineManifest();
+  if (!manifest) {
+    return;
+  }
+
+  const routes = Array.isArray(manifest.routes) ? manifest.routes : [];
+  const bibleBooks = Array.isArray(manifest.bibleBooks) ? manifest.bibleBooks : [];
+  const contentAssets = Array.isArray(manifest.contentAssets)
+    ? manifest.contentAssets
+    : [];
+
+  await cacheAll([...routes, ...bibleBooks, ...contentAssets]);
 }
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(PRECACHE);
-      await cacheAll(cache, CORE_ASSETS);
+      await cacheAll(CORE_ASSETS);
       await warmContentCache();
       await self.skipWaiting();
     })(),
@@ -135,7 +166,17 @@ self.addEventListener("fetch", (event) => {
   const pathname = url.pathname;
 
   if (request.mode === "navigate") {
-    event.respondWith(networkFirst(request, RUNTIME, "/"));
+    const fallbackUrl = pathname.startsWith("/articles/")
+      ? "/articles"
+      : pathname.startsWith("/theology/")
+        ? "/theology"
+        : pathname === "/bible"
+          ? "/bible"
+          : pathname === "/privacy-terms"
+            ? "/privacy-terms"
+            : "/";
+
+    event.respondWith(networkFirst(request, getCacheName(pathname), fallbackUrl));
     return;
   }
 
@@ -149,6 +190,11 @@ self.addEventListener("fetch", (event) => {
 
   if (pathname.startsWith("/articles/")) {
     event.respondWith(networkFirst(request, CONTENT, "/articles"));
+    return;
+  }
+
+  if (pathname.startsWith("/theology/")) {
+    event.respondWith(networkFirst(request, CONTENT, "/theology"));
     return;
   }
 
@@ -177,7 +223,12 @@ self.addEventListener("fetch", (event) => {
     pathname.endsWith(".ttf") ||
     pathname.endsWith(".otf");
 
+  if (pathname.startsWith("/uploads/")) {
+    event.respondWith(cacheFirst(request, CONTENT));
+    return;
+  }
+
   if (isStaticAsset || isNextData) {
-    event.respondWith(cacheFirst(request, PRECACHE));
+    event.respondWith(cacheFirst(request, getCacheName(pathname)));
   }
 });
