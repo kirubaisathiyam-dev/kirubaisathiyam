@@ -77,6 +77,8 @@ body[data-theme="light"] {
 html {
   background: var(--background);
   color: var(--foreground);
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
@@ -85,10 +87,37 @@ body {
   font-family: var(--site-font-sans);
   line-height: 1.7;
   min-height: 100vh;
-  /* overflow-wrap: anywhere;
-  word-break: break-word;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+body :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    li,
+    blockquote,
+    figcaption,
+    label,
+    a,
+    button,
+    td,
+    th,
+    .verse-text,
+    .bible-tooltip
+  ) {
+  overflow-wrap: anywhere;
+  word-break: normal;
   hyphens: auto;
-  hyphenate-character: "-"; */
+  hyphenate-character: "-";
+}
+
+body :where(.flex > *, .grid > *) {
+  min-width: 0;
 }
 
 a {
@@ -110,6 +139,7 @@ button:disabled {
   height: 1em;
   line-height: 0;
   vertical-align: middle;
+  hyphens: manual;
 }
 
 [data-inline-icon="true"] svg {
@@ -147,14 +177,14 @@ button:disabled {
   background: var(--background);
 }
 
-/* pre,
+pre,
 code,
 kbd,
 samp {
   overflow-wrap: normal;
   word-break: normal;
   hyphens: manual;
-} */
+}
 
 .hljs {
   background: transparent;
