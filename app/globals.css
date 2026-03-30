@@ -111,6 +111,7 @@ body :where(
   overflow-wrap: anywhere;
   word-break: normal;
   hyphens: manual;
+  hyphenate-character: "-";
 }
 
 body :where(.flex > *, .grid > *) {
