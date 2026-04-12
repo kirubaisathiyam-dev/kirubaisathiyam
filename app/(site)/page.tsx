@@ -197,15 +197,21 @@ export default function Home() {
         </div>
         <div className="grid gap-6 md:grid-cols-2">
           {theologySections.map((section) => (
-            <section
+            <Link
+              href={`/theology/${section.slug}`}
               key={section.slug}
-              className="flex h-full flex-col border"
-              style={{ borderColor: "var(--border-color)" }}
+              className="group flex h-full flex-col border"
+              style={{
+                borderColor: "var(--border-color)",
+                backgroundColor: "var(--muted-background)",
+              }}
             >
               <div className="space-y-3 p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">{section.label}</h3>
+                    <h3 className="text-xl font-semibold group-hover:underline">
+                      {section.label}
+                    </h3>
                     <p
                       className="text-sm leading-relaxed"
                       style={{ color: "var(--muted-foreground)" }}
@@ -217,18 +223,17 @@ export default function Home() {
               </div>
 
               <div
-                className="mt-auto border-t p-5"
+                className="mt-auto flex justify-end border-t p-5"
                 style={{ borderColor: "var(--border-color)" }}
               >
-                <Link
-                  href={`/theology/${section.slug}`}
-                  className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+                <span
+                  className="inline-flex items-center"
+                  aria-hidden="true"
                 >
-                  பிரிவைத் திறக்க
                   <ArrowRightIcon style={{ width: 15, height: 15 }} />
-                </Link>
+                </span>
               </div>
-            </section>
+            </Link>
           ))}
         </div>
       </section>

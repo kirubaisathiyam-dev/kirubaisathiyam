@@ -111,6 +111,19 @@ export default async function TheologyTopicPage({
     notFound();
   }
 
+  const topics = getAllTheologyTopics();
+  const topicIndex = topics.findIndex(
+    (entry) =>
+      entry.sectionSlug === topic.sectionSlug &&
+      entry.subsectionSlug === topic.subsectionSlug &&
+      entry.slug === topic.slug,
+  );
+  const previousTopic = topicIndex > 0 ? topics[topicIndex - 1] : undefined;
+  const nextTopic =
+    topicIndex >= 0 && topicIndex < topics.length - 1
+      ? topics[topicIndex + 1]
+      : undefined;
+
   const topicUrl = toAbsoluteUrl(
     `/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,
   );
@@ -158,6 +171,26 @@ export default async function TheologyTopicPage({
       jsonLd={jsonLd}
       showDate={false}
       showEngagement={false}
+      navigation={{
+        previous: previousTopic
+          ? {
+              href: `/theology/${previousTopic.sectionSlug}/${previousTopic.subsectionSlug}/${previousTopic.slug}`,
+              label: `${previousTopic.sectionLabel} · ${previousTopic.subsectionLabel}`,
+              title: previousTopic.title,
+            }
+          : undefined,
+        toc: {
+          href: `/theology/${topic.sectionSlug}#${topic.subsectionSlug}`,
+          label: "பொருளடக்கம்",
+        },
+        next: nextTopic
+          ? {
+              href: `/theology/${nextTopic.sectionSlug}/${nextTopic.subsectionSlug}/${nextTopic.slug}`,
+              label: `${nextTopic.sectionLabel} · ${nextTopic.subsectionLabel}`,
+              title: nextTopic.title,
+            }
+          : undefined,
+      }}
     />
   );
 }

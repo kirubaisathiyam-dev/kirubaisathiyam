@@ -123,6 +123,14 @@ a {
   text-decoration: none;
 }
 
+.hover\:underline:hover {
+  text-decoration-color: var(--foreground-bible);
+}
+
+.group:hover .group-hover\:underline {
+  text-decoration-color: var(--foreground-bible);
+}
+
 button {
   cursor: pointer;
 }
@@ -168,6 +176,10 @@ button:disabled {
 .prose a {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--foreground-bible);
 }
 
 .prose pre {

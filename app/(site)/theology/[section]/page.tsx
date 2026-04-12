@@ -97,21 +97,26 @@ export default async function TheologySectionPage({
         </div>
       ) : (
         <div className="space-y-10">
-          {subsections.map((subsection) => (
+          {subsections.map((subsection, subsectionIndex) => (
             <section
               id={subsection.slug}
               key={subsection.slug}
               className="space-y-4 scroll-mt-24"
             >
-              <h2 className="text-xl font-semibold">{subsection.label}</h2>
-              <ol className="space-y-3">
-                {subsection.topics.map((topic) => (
+              <h2 className="pl-8 text-xl font-semibold">
+                {subsectionIndex + 1}. {subsection.label}
+              </h2>
+              <ol className="space-y-3 pl-10">
+                {subsection.topics.map((topic, topicIndex) => (
                   <li key={topic.slug}>
                     <Link
                       href={`/theology/${entry.slug}/${subsection.slug}/${topic.slug}`}
-                      className="text-base leading-relaxed hover:underline"
+                      className="group text-base leading-relaxed"
                     >
-                      {topic.title}
+                      {subsectionIndex + 1}.{topicIndex + 1}.{" "}
+                      <span className="underline-offset-4 group-hover:underline">
+                        {topic.title}
+                      </span>
                     </Link>
                   </li>
                 ))}
