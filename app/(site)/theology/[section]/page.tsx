@@ -96,34 +96,45 @@ export default async function TheologySectionPage({
           இந்தப் பிரிவில் இன்னும் எந்த தலைப்பும் சேர்க்கப்படவில்லை.
         </div>
       ) : (
-        <div className="space-y-10">
+        <ol className="space-y-10">
           {subsections.map((subsection, subsectionIndex) => (
-            <section
+            <li
               id={subsection.slug}
               key={subsection.slug}
-              className="space-y-4 scroll-mt-24"
+              className="list-none scroll-mt-24"
             >
-              <h2 className="pl-8 text-xl font-semibold">
-                {subsectionIndex + 1}. {subsection.label}
-              </h2>
-              <ol className="space-y-3 pl-10">
-                {subsection.topics.map((topic, topicIndex) => (
-                  <li key={topic.slug}>
-                    <Link
-                      href={`/theology/${entry.slug}/${subsection.slug}/${topic.slug}`}
-                      className="group text-base leading-relaxed"
-                    >
-                      {subsectionIndex + 1}.{topicIndex + 1}.{" "}
-                      <span className="underline-offset-4 group-hover:underline">
-                        {topic.title}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            </section>
+              <div className="space-y-4 pl-4">
+                <div className="flex items-baseline">
+                  <span className="w-8 flex-none text-xl font-semibold">
+                    {subsectionIndex + 1}.
+                  </span>
+                  <h2 className="flex-1 text-xl font-semibold">
+                    {subsection.label}
+                  </h2>
+                </div>
+                <div className="pl-4">
+                  <ol className="space-y-3">
+                    {subsection.topics.map((topic, topicIndex) => (
+                      <li key={topic.slug} className="list-none">
+                        <Link
+                          href={`/theology/${entry.slug}/${subsection.slug}/${topic.slug}`}
+                          className="group flex items-baseline text-base leading-relaxed"
+                        >
+                          <span className="w-12 flex-none">
+                            {subsectionIndex + 1}.{topicIndex + 1}.
+                          </span>
+                          <span className="flex-1 underline-offset-4 group-hover:underline">
+                            {topic.title}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            </li>
           ))}
-        </div>
+        </ol>
       )}
     </div>
   );
