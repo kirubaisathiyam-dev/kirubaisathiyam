@@ -255,7 +255,7 @@ export type ArticleFilter = {
   keywords?: InputMaybe<StringFilter>;
   summary?: InputMaybe<StringFilter>;
   image?: InputMaybe<ImageFilter>;
-  audio?: InputMaybe<StringFilter>;
+  audio?: InputMaybe<ImageFilter>;
   body?: InputMaybe<RichTextFilter>;
 };
 

@@ -122,12 +122,12 @@ function createImageField() {
 
 function createAudioField() {
   return {
-    type: "string" as const,
+    type: "image" as const,
     name: "audio",
-    label: "Audio Path",
+    label: "Audio",
     searchable: false,
     description:
-      "Store the uploaded audio file path, for example /uploads/sermon.mp3.",
+      "Upload or select an audio file, for example /uploads/sermon.mp3.",
   };
 }
 
@@ -239,6 +239,7 @@ export default defineConfig({
       mediaRoot: "uploads",
       publicFolder: "public",
     },
+    accept: ["image/*", "audio/*"],
   },
   search: searchConfig,
   schema: {

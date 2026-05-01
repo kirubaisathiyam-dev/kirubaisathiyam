@@ -146,7 +146,7 @@ input ArticleFilter {
   keywords: StringFilter
   summary: StringFilter
   image: ImageFilter
-  audio: StringFilter
+  audio: ImageFilter
   body: RichTextFilter
 }
 
