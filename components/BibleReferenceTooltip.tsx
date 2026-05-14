@@ -1,7 +1,7 @@
 "use client";
 
 import { getOfflineData, setOfflineData } from "@/lib/offline";
-import { parseBibleReference } from "@/lib/bible";
+import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { useEffect, useRef, useState } from "react";
 import { CloseIcon } from "@/components/Icons";
 
@@ -30,8 +30,27 @@ type VerseCacheEntry = {
   content: string;
 };
 
+type LocalBibleBook = {
+  book?: {
+    english?: string;
+    tamil?: string;
+  };
+  chapters?: Array<{
+    chapter: string;
+    verses: Array<{
+      verse: string;
+      text: string;
+    }>;
+  }>;
+};
+
 const VERSE_CACHE_PREFIX = "verse:";
 const verseCache = new Map<string, VerseCacheEntry>();
+const localBibleBasePath = "/local-bible";
+let localBooksIndexPromise:
+  | Promise<Map<string, { english?: string; tamil?: string }>>
+  | null = null;
+const localBookCache = new Map<string, Promise<LocalBibleBook>>();
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
@@ -69,14 +88,29 @@ export default function BibleReferenceTooltip() {
   const activeElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    const roots = Array.from(document.querySelectorAll(".prose"));
-    for (const root of roots) {
-      if (root.getAttribute("data-bible-enhanced") === "true") {
-        continue;
+    const enhanceRoots = () => {
+      const roots = Array.from(document.querySelectorAll(".prose"));
+      for (const root of roots) {
+        if (root.getAttribute("data-bible-enhanced") === "true") {
+          continue;
+        }
+        enhanceBibleRefs(root);
+        root.setAttribute("data-bible-enhanced", "true");
       }
-      enhanceBibleRefs(root);
-      root.setAttribute("data-bible-enhanced", "true");
-    }
+    };
+
+    enhanceRoots();
+
+    const observer = new MutationObserver(() => {
+      enhanceRoots();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -132,25 +166,7 @@ export default function BibleReferenceTooltip() {
       }
 
       try {
-        const response = await fetch(
-          `/api/bible?passage=${encodeURIComponent(passage)}`,
-          { cache: "no-cache" },
-        );
-        const data = (await response.json()) as {
-          ok?: boolean;
-          error?: string;
-          reference?: string;
-          content?: string;
-        };
-
-        if (!response.ok || data.ok === false) {
-          throw new Error(data.error || "Unable to load verse.");
-        }
-
-        const verse = {
-          reference: data.reference || reference,
-          content: data.content || "",
-        };
+        const verse = await loadVerseFromAvailableSources(passage, reference);
 
         verseCache.set(passage, verse);
         void setOfflineData(storageKey, verse);
@@ -411,5 +427,177 @@ function enhanceBibleRefs(root: Element) {
     if (node.parentNode) {
       node.parentNode.replaceChild(fragment, node);
     }
+  }
+}
+
+function parsePassageId(passageId: string) {
+  const parts = passageId.split(".");
+  if (parts.length < 3) return null;
+  const [bookCode, chapter, ...rest] = parts;
+  const verse = rest.join(".");
+  if (!bookCode || !chapter || !verse) return null;
+  return { bookCode, chapter, verse };
+}
+
+function getBookFileSlug(bookName: string) {
+  return bookName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+async function loadLocalBooksIndex() {
+  if (localBooksIndexPromise) {
+    return localBooksIndexPromise;
+  }
+
+  localBooksIndexPromise = fetch(`${localBibleBasePath}/Books.json`, {
+    cache: "force-cache",
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error("Missing local Books.json");
+      }
+
+      const data = (await response.json()) as Array<{
+        book?: { english?: string; tamil?: string };
+      }>;
+      const map = new Map<string, { english?: string; tamil?: string }>();
+
+      for (const entry of data || []) {
+        const english = entry.book?.english?.trim();
+        if (!english) continue;
+        map.set(english.toLowerCase(), entry.book || {});
+      }
+
+      return map;
+    })
+    .catch((error) => {
+      localBooksIndexPromise = null;
+      throw error;
+    });
+
+  return localBooksIndexPromise;
+}
+
+async function loadLocalBook(bookName: string) {
+  const cacheKey = bookName.toLowerCase();
+  const cached = localBookCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  const fileSlug = getBookFileSlug(bookName);
+  const promise = fetch(
+    `${localBibleBasePath}/books/${encodeURIComponent(fileSlug)}.json`,
+    {
+      cache: "force-cache",
+    },
+  )
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`Missing local book: ${bookName}`);
+      }
+      return (await response.json()) as LocalBibleBook;
+    })
+    .catch((error) => {
+      localBookCache.delete(cacheKey);
+      throw error;
+    });
+
+  localBookCache.set(cacheKey, promise);
+  return promise;
+}
+
+function findLocalVerseText(
+  book: LocalBibleBook,
+  chapterId: string,
+  verseId: string,
+) {
+  const chapter = book.chapters?.find((entry) => entry.chapter === chapterId);
+  if (!chapter) return "";
+
+  const [startStr, endStr] = verseId.split("-");
+  const start = Number(startStr);
+  const end = endStr ? Number(endStr) : null;
+
+  if (!Number.isFinite(start)) return "";
+
+  if (!end || !Number.isFinite(end)) {
+    return chapter.verses.find((verse) => verse.verse === startStr)?.text || "";
+  }
+
+  return chapter.verses
+    .filter((verse) => {
+      const num = Number(verse.verse);
+      return Number.isFinite(num) && num >= start && num <= end;
+    })
+    .map((verse) => verse.text)
+    .join(" ");
+}
+
+async function loadVerseFromLocalBible(passage: string, fallbackReference: string) {
+  const parsedPassage = parsePassageId(passage);
+  if (!parsedPassage) {
+    throw new Error("Invalid passage format");
+  }
+
+  const book = getBookByCode(parsedPassage.bookCode);
+  if (!book) {
+    throw new Error("Unknown book code");
+  }
+
+  const booksIndex = await loadLocalBooksIndex();
+  const bookMeta = booksIndex.get(book.name.toLowerCase());
+  const localBookName = bookMeta?.english?.trim() || book.name;
+  const displayName = bookMeta?.tamil?.trim() || book.name;
+  const localBook = await loadLocalBook(localBookName);
+  const content = findLocalVerseText(
+    localBook,
+    parsedPassage.chapter,
+    parsedPassage.verse,
+  );
+
+  if (!content) {
+    throw new Error("Verse not found");
+  }
+
+  return {
+    reference:
+      fallbackReference ||
+      `${displayName} ${parsedPassage.chapter}:${parsedPassage.verse}`,
+    content,
+  };
+}
+
+async function loadVerseFromApi(passage: string, fallbackReference: string) {
+  const response = await fetch(`/api/bible?passage=${encodeURIComponent(passage)}`, {
+    cache: "no-cache",
+  });
+  const data = (await response.json()) as {
+    ok?: boolean;
+    error?: string;
+    reference?: string;
+    content?: string;
+  };
+
+  if (!response.ok || data.ok === false) {
+    throw new Error(data.error || "Unable to load verse.");
+  }
+
+  return {
+    reference: data.reference || fallbackReference,
+    content: data.content || "",
+  };
+}
+
+async function loadVerseFromAvailableSources(
+  passage: string,
+  fallbackReference: string,
+) {
+  try {
+    return await loadVerseFromLocalBible(passage, fallbackReference);
+  } catch {
+    return loadVerseFromApi(passage, fallbackReference);
   }
 }
