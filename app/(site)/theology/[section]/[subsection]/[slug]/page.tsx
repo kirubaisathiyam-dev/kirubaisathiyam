@@ -65,7 +65,8 @@ export async function generateMetadata({
   const title = topic.title || "Theology Topic";
   const description =
     topic.excerpt || `${topic.subsectionLabel} topic inside ${topic.sectionLabel}.`;
-  const imageUrl = topic.image ? toAbsoluteUrl(topic.image) : undefined;
+  const shareImage = topic.image || topic.sectionImage;
+  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
 
   return {
     title,
@@ -127,7 +128,8 @@ export default async function TheologyTopicPage({
   const topicUrl = toAbsoluteUrl(
     `/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,
   );
-  const imageUrl = topic.image ? toAbsoluteUrl(topic.image) : undefined;
+  const shareImage = topic.image || topic.sectionImage;
+  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
   const shareText =
     topic.excerpt || `${topic.subsectionLabel} topic inside ${topic.sectionLabel}.`;
   const jsonLd = {

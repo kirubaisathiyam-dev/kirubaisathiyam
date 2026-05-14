@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -38,7 +39,7 @@ export async function generateMetadata({
     };
   }
 
-  const shareImage = toAbsoluteUrl("/logo-light.svg");
+  const shareImage = toAbsoluteUrl(entry.image || "/logo-light.svg");
 
   return {
     title: `${entry.label} | இறையியல்`,
@@ -78,6 +79,21 @@ export default async function TheologySectionPage({
   return (
     <div className="mx-auto max-w-4xl space-y-10">
       <header className="space-y-3">
+        {entry.image && (
+          <div
+            className="relative aspect-square w-full overflow-hidden border"
+            style={{ borderColor: "var(--border-color)" }}
+          >
+            <Image
+              src={entry.image}
+              alt={entry.label}
+              fill
+              priority
+              sizes="(min-width: 1024px) 56rem, 100vw"
+              className="object-cover"
+            />
+          </div>
+        )}
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
             {entry.label}

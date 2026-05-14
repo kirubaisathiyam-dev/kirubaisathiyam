@@ -15,12 +15,14 @@ const theologyDirectory = path.join(process.cwd(), "content/theology");
 export const THEOLOGY_SECTIONS = [
   {
     slug: "systematic-theology",
+    image: "/images/systematic.jpg",
     label: "முறையியல் இறையியல்",
     description:
       "வேதாகமத்தின் மைய உபதேசங்களை தலைப்புவாரியாக ஒழுங்குபடுத்தும் இறையியல் அணுகுமுறை; தேவன், மனிதன், பாவம், இரட்சிப்பு, சபை, இறுதிக்காலம் போன்ற போதனைகளை ஒன்றிணைத்து ஆராய்கிறது.",
   },
   {
     slug: "reformed-theology",
+    image: "/images/reformed.jpg",
     label: "சீர்திருத்த இறையியல்",
     description:
       "சீர்திருத்த மரபில் வேரூன்றிய இறையியல் சிந்தனை; தேவனுடைய இறையாட்சி, கிருபை, உடன்படிக்கை, கிறிஸ்துவின் மத்தியஸ்தம், விசுவாச வாழ்க்கை ஆகியவற்றை வேதாகம அடிப்படையில் வலியுறுத்துகிறது.",
@@ -41,6 +43,7 @@ export type TheologyTopicMeta = {
   sectionSlug: TheologySectionSlug;
   sectionLabel: string;
   sectionDescription: string;
+  sectionImage?: string;
   subsectionSlug: string;
   subsectionLabel: string;
 };
@@ -186,6 +189,7 @@ function readTopicMeta(
     sectionSlug,
     sectionLabel: section.label,
     sectionDescription: section.description,
+    sectionImage: section.image,
     subsectionSlug,
     subsectionLabel,
     sortDate: parsedDate,
@@ -211,6 +215,7 @@ export function getAllTheologyTopics(): TheologyTopicMeta[] {
     sectionSlug: topic.sectionSlug,
     sectionLabel: topic.sectionLabel,
     sectionDescription: topic.sectionDescription,
+    sectionImage: topic.sectionImage,
     subsectionSlug: topic.subsectionSlug,
     subsectionLabel: topic.subsectionLabel,
   }));
@@ -340,6 +345,7 @@ export async function getTheologyTopic(
     sectionSlug,
     sectionLabel: section.label,
     sectionDescription: section.description,
+    sectionImage: section.image,
     subsectionSlug,
     subsectionLabel,
     contentHtml,

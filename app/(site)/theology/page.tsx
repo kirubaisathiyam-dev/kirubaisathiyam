@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRightIcon } from "@/components/Icons";
+import Image from "next/image";
 import Link from "next/link";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getTheologySectionsWithTopics } from "@/lib/theology";
@@ -62,6 +63,20 @@ export default function TheologyPage() {
               backgroundColor: "var(--muted-background)",
             }}
           >
+            {section.image && (
+              <div
+                className="relative aspect-square w-full overflow-hidden border-b"
+                style={{ borderColor: "var(--border-color)" }}
+              >
+                <Image
+                  src={section.image}
+                  alt={section.label}
+                  fill
+                  sizes="(min-width: 768px) 24rem, 100vw"
+                  className="object-cover transition duration-300 group-hover:scale-[1.02]"
+                />
+              </div>
+            )}
             <div className="space-y-3 p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-2">
