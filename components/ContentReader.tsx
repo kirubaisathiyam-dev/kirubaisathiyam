@@ -1,9 +1,15 @@
+"use client";
+
 import Comments from "@/components/Comments";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
 import LikeButton from "@/components/LikeButton";
+import ReaderSettingsButton, {
+  useReaderFontSize,
+} from "@/components/ReaderSettingsButton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import ShareButton from "@/components/ShareButton";
 import { formatTamilDate } from "@/lib/date";
+import { getReaderFontScale } from "@/lib/reader-settings";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -57,6 +63,9 @@ export default function ContentReader({
   showEngagement = true,
   navigation,
 }: ContentReaderProps) {
+  const { fontSize, setFontSize } = useReaderFontSize();
+  const readerScale = getReaderFontScale(fontSize);
+
   return (
     <article className="space-y-6">
       {jsonLd && (
@@ -70,19 +79,39 @@ export default function ContentReader({
         {eyebrow && (
           <p
             className="text-xs font-semibold uppercase tracking-wide"
-            style={{ color: "var(--muted-foreground)" }}
+            style={{
+              color: "var(--muted-foreground)",
+              fontSize: `calc(0.75rem * ${readerScale})`,
+            }}
           >
             {eyebrow}
           </p>
         )}
-        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl md:text-4xl">
+        <h1
+          className="font-semibold leading-tight"
+          style={{
+            fontSize: `clamp(${2 * readerScale}rem, ${1.6 * readerScale}rem + 1.6vw, ${2.8 * readerScale}rem)`,
+          }}
+        >
           {title}
         </h1>
-        <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
+        <p
+          className="text-sm"
+          style={{
+            color: "var(--muted-foreground)",
+            fontSize: `calc(0.875rem * ${readerScale})`,
+          }}
+        >
           {author}
         </p>
         {showDate && (
-          <p style={{ color: "var(--muted-foreground)" }} className="text-sm">
+          <p
+            className="text-sm"
+            style={{
+              color: "var(--muted-foreground)",
+              fontSize: `calc(0.875rem * ${readerScale})`,
+            }}
+          >
             {formatTamilDate(date)}
           </p>
         )}
@@ -127,6 +156,7 @@ export default function ContentReader({
 
       <div
         className="prose prose-neutral mx-auto max-w-3xl"
+        style={{ fontSize: `${readerScale}em` }}
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
 
@@ -198,8 +228,12 @@ export default function ContentReader({
 
       {showEngagement && <Comments articleId={itemId} />}
 
-      <div className="sticky bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
         <div className="flex flex-col gap-3">
+          <ReaderSettingsButton
+            fontSize={fontSize}
+            onFontSizeChange={setFontSize}
+          />
           <ShareButton
             title={shareTitle}
             text={shareText}

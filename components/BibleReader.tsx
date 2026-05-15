@@ -4,6 +4,11 @@ import { fetchWithOffline, getOfflineData } from "@/lib/offline";
 import { parseBibleReference, replaceBibleRefsInHtml } from "@/lib/bible";
 import BibleSelectionBar from "@/components/BibleSelectionBar";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
+import ReaderSettingsButton, {
+  useReaderFontSize,
+} from "@/components/ReaderSettingsButton";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
+import { getReaderFontScale } from "@/lib/reader-settings";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -61,7 +66,6 @@ type BibleReaderProps = {
 
 const defaultBook = "Genesis";
 const COPY_RESET_MS = 1800;
-const INTRO_CHAPTER_LABEL = "\u0B85\u0BB1\u0BBF\u0BAE\u0BC1\u0B95\u0BAE\u0BCD";
 const BOOKS_CACHE_KEY = "local-bible-books";
 const NOTES_CACHE_KEY = "bible-notes";
 const BOOK_CACHE_PREFIX = "local-book:";
@@ -279,6 +283,8 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     alt?: string;
   } | null>(null);
   const [zoomed, setZoomed] = useState(false);
+  const { fontSize, setFontSize } = useReaderFontSize();
+  const readerScale = getReaderFontScale(fontSize);
 
   useEffect(() => {
     let active = true;
@@ -485,7 +491,14 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     if (!hasSyncedFromUrl) {
       setHasSyncedFromUrl(true);
     }
-  }, [books, hasSyncedFromUrl, searchKey, selectedBook, selectedChapter]);
+  }, [
+    books,
+    hasSyncedFromUrl,
+    searchKey,
+    selectedBook,
+    selectedChapter,
+    selectedVerses,
+  ]);
 
   useEffect(() => {
     if (!hasSyncedFromUrl) return;
@@ -636,7 +649,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     }
     const path = `/bible?${params.toString()}`;
     return normalizedBase ? `${normalizedBase}${path}` : path;
-  }, [selectedBook, selectedChapter, verseLabel]);
+  }, [selectedBook, selectedChapter, siteUrl, verseLabel]);
 
   const shareReference = useMemo(() => {
     if (!selectedVerses.length) return "";
@@ -718,18 +731,29 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
           <div className="space-y-2">
             <p
               className="text-xs font-semibold uppercase tracking-wide"
-              style={{ color: "var(--muted-foreground)" }}
+              style={{
+                color: "var(--muted-foreground)",
+                fontSize: `calc(0.75rem * ${readerScale})`,
+              }}
             >
               Bible Reader
             </p>
             <div className="space-y-1">
-              <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
+              <h1
+                className="font-semibold leading-tight"
+                style={{
+                  fontSize: `clamp(${2.25 * readerScale}rem, ${1.9 * readerScale}rem + 1.5vw, ${2.8 * readerScale}rem)`,
+                }}
+              >
                 {title} {selectedChapter && ` ${selectedChapter}`}
               </h1>
               {subtitle && (
                 <p
                   className="text-sm"
-                  style={{ color: "var(--muted-foreground)" }}
+                  style={{
+                    color: "var(--muted-foreground)",
+                    fontSize: `calc(0.875rem * ${readerScale})`,
+                  }}
                 >
                   {subtitle}
                 </p>
@@ -818,11 +842,18 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
           {chapterHtml && (
             <div
               className="prose prose-neutral max-w-none"
+              style={{ fontSize: `${readerScale}em` }}
               dangerouslySetInnerHTML={{ __html: chapterHtml }}
             />
           )}
           {chapterVerses.length > 0 && (
-            <div className="space-y-5 text-[1.05rem] leading-8 sm:text-[1.2rem]">
+            <div
+              className="space-y-5"
+              style={{
+                fontSize: `${readerScale}em`,
+                lineHeight: 1.9,
+              }}
+            >
               {chapterVerses.map((verse) => {
                 const passageId = bookCode
                   ? `${bookCode}.${selectedChapter}.${verse.verse}`
@@ -843,6 +874,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                           style={{
                             borderColor: "var(--border-color)",
                             background: "var(--muted-background)",
+                            fontSize: `${readerScale}em`,
                           }}
                         >
                           <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide">
@@ -863,6 +895,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                                 return (
                                   <div
                                     className="prose prose-neutral max-w-none"
+                                    style={{ fontSize: `${readerScale}em` }}
                                     dangerouslySetInnerHTML={{
                                       __html: noteHtml,
                                     }}
@@ -981,6 +1014,14 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
           </button>
         </section>
       )}
+
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+        <ReaderSettingsButton
+          fontSize={fontSize}
+          onFontSizeChange={setFontSize}
+        />
+        <ScrollToTopButton />
+      </div>
 
       {activeImage && (
         <div
