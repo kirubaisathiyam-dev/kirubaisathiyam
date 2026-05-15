@@ -1,51 +1,32 @@
 "use client";
 
-import { fetchWithOffline, getOfflineData } from "@/lib/offline";
-import { parseBibleReference, replaceBibleRefsInHtml } from "@/lib/bible";
 import BibleSelectionBar from "@/components/BibleSelectionBar";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
 import ReaderSettingsButton, {
   useReaderFontSize,
+  useReaderTemperature,
 } from "@/components/ReaderSettingsButton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
-import { getReaderFontScale } from "@/lib/reader-settings";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { parseBibleReference, replaceBibleRefsInHtml } from "@/lib/bible";
+import {
+  BOOKS_CACHE_KEY,
+  BOOK_CACHE_PREFIX,
+  DEFAULT_BIBLE_BOOK,
+  getBookFileSlug,
+  mapBookEntries,
+  type BookIndexEntry,
+  type BookMeta,
+  type LocalBibleBook,
+} from "@/lib/local-bible";
+import { fetchWithOffline, getOfflineData } from "@/lib/offline";
 import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import type { ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import rehypeStringify from "rehype-stringify";
 import { remark } from "remark";
 import remarkGfm from "remark-gfm";
 import remarkRehype from "remark-rehype";
-import rehypeStringify from "rehype-stringify";
-
-type BookIndexEntry = {
-  book?: {
-    english?: string;
-    tamil?: string;
-  };
-};
-
-type BookMeta = {
-  english: string;
-  tamil?: string;
-};
-
-type LocalBibleBook = {
-  book?: {
-    english?: string;
-    tamil?: string;
-  };
-  count?: string;
-  chapters?: Array<{
-    chapter: string;
-    type?: string;
-    content?: string;
-    verses?: Array<{
-      verse: string;
-      text: string;
-    }>;
-  }>;
-};
 
 type BibleNote = {
   id?: string;
@@ -64,18 +45,8 @@ type BibleReaderProps = {
   siteUrl?: string;
 };
 
-const defaultBook = "Genesis";
 const COPY_RESET_MS = 1800;
-const BOOKS_CACHE_KEY = "local-bible-books";
 const NOTES_CACHE_KEY = "bible-notes";
-const BOOK_CACHE_PREFIX = "local-book:";
-
-function getBookFileSlug(bookName: string) {
-  return bookName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 function getNoteKey(note: BibleNote) {
   if (note.id) return note.id;
@@ -88,15 +59,6 @@ function getBookCode(bookName: string) {
   const parsed = parseBibleReference(`${bookName} 1:1`);
   if (!parsed) return null;
   return parsed.passageId.split(".")[0] || null;
-}
-
-function mapBookEntries(entries: BookIndexEntry[]): BookMeta[] {
-  return (entries || [])
-    .map((entry) => ({
-      english: entry.book?.english?.trim() || "",
-      tamil: entry.book?.tamil?.trim(),
-    }))
-    .filter((entry) => Boolean(entry.english));
 }
 
 function parseNotes(notes: BibleNote[]) {
@@ -261,7 +223,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   const searchParams = useSearchParams();
   const [books, setBooks] = useState<BookMeta[]>([]);
   const [notes, setNotes] = useState<BibleNote[]>([]);
-  const [selectedBook, setSelectedBook] = useState<string>(defaultBook);
+  const [selectedBook, setSelectedBook] = useState<string>(DEFAULT_BIBLE_BOOK);
   const [selectedChapter, setSelectedChapter] = useState<string>("1");
   const [bookData, setBookData] = useState<LocalBibleBook | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -284,7 +246,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   } | null>(null);
   const [zoomed, setZoomed] = useState(false);
   const { fontSize, setFontSize } = useReaderFontSize();
-  const readerScale = getReaderFontScale(fontSize);
+  const { temperature, setTemperature } = useReaderTemperature();
 
   useEffect(() => {
     let active = true;
@@ -295,9 +257,9 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
       }
       setBooks(list);
       const defaultSelection =
-        list.find((entry) => entry.english === defaultBook)?.english ||
+        list.find((entry) => entry.english === DEFAULT_BIBLE_BOOK)?.english ||
         list[0]?.english ||
-        defaultBook;
+        DEFAULT_BIBLE_BOOK;
       setSelectedBook((current) => {
         const existingSelection = list.find(
           (entry) => entry.english === current,
@@ -598,19 +560,9 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
       ? chapterOptions[chapterIndex + 1]
       : null;
 
-  const title = selectedBookMeta?.tamil || selectedBook;
-  const subtitle = selectedBookMeta?.tamil ? selectedBook : undefined;
-
   const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
     if (!topRef.current) return;
     topRef.current.scrollIntoView({ behavior, block: "start" });
-  };
-
-  const handleBookChange = (book: string) => {
-    setSelectedBook(book);
-    setSelectedVerses([]);
-    setLastClickedVerse(null);
-    window.requestAnimationFrame(() => scrollToTop("smooth"));
   };
 
   const handleChapterChange = (chapter: string) => {
@@ -626,6 +578,8 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     [selectedVerses],
   );
   const bookLabel = selectedBookMeta?.tamil || selectedBook;
+  const shortBookLabel =
+    selectedBookMeta?.short || selectedBookMeta?.tamil || selectedBook;
 
   const selectedVerseTexts = useMemo(() => {
     const verses = currentChapter?.verses || [];
@@ -647,14 +601,14 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     if (verseLabel) {
       params.set("verses", verseLabel);
     }
-    const path = `/bible?${params.toString()}`;
+    const path = `/bible/read?${params.toString()}`;
     return normalizedBase ? `${normalizedBase}${path}` : path;
   }, [selectedBook, selectedChapter, siteUrl, verseLabel]);
 
   const shareReference = useMemo(() => {
     if (!selectedVerses.length) return "";
-    return `${bookLabel} ${selectedChapter}:${verseLabel}`;
-  }, [bookLabel, selectedChapter, selectedVerses.length, verseLabel]);
+    return `${shortBookLabel} ${selectedChapter}:${verseLabel}`;
+  }, [selectedChapter, selectedVerses.length, shortBookLabel, verseLabel]);
 
   const shareText = useMemo(() => {
     if (!selectedVerseTexts.length) return "";
@@ -718,106 +672,19 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   }, [scrollToSelection, selectedVerses]);
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
+    <div className="mx-auto max-w-3xl space-y-8">
       <div ref={topRef} />
-      <section
-        className="rounded border px-5 py-6 shadow-sm sm:px-6"
-        style={{
-          borderColor: "var(--border-color)",
-          background: "var(--muted-background)",
-        }}
-      >
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-2">
-            <p
-              className="text-xs font-semibold uppercase tracking-wide"
-              style={{
-                color: "var(--muted-foreground)",
-                fontSize: `calc(0.75rem * ${readerScale})`,
-              }}
-            >
-              Bible Reader
-            </p>
-            <div className="space-y-1">
-              <h1
-                className="font-semibold leading-tight"
-                style={{
-                  fontSize: `clamp(${2.25 * readerScale}rem, ${1.9 * readerScale}rem + 1.5vw, ${2.8 * readerScale}rem)`,
-                }}
-              >
-                {title} {selectedChapter && ` ${selectedChapter}`}
-              </h1>
-              {subtitle && (
-                <p
-                  className="text-sm"
-                  style={{
-                    color: "var(--muted-foreground)",
-                    fontSize: `calc(0.875rem * ${readerScale})`,
-                  }}
-                >
-                  {subtitle}
-                </p>
-              )}
-            </div>
-          </div>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:min-w-[260px]">
-            <label className="text-sm font-semibold">
-              புத்தகம்
-              <select
-                value={selectedBook}
-                onChange={(event) => handleBookChange(event.target.value)}
-                className="mt-2 w-full rounded border px-3 py-2 text-sm"
-                style={{
-                  borderColor: "var(--border-color)",
-                  background: "var(--background)",
-                }}
-              >
-                {books.map((book) => (
-                  <option key={book.english} value={book.english}>
-                    {book.tamil
-                      ? `${book.tamil} (${book.english})`
-                      : book.english}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm font-semibold">
-              அதிகாரம்
-              <select
-                value={selectedChapter}
-                onChange={(event) => handleChapterChange(event.target.value)}
-                className="mt-2 w-full rounded border px-3 py-2 text-sm"
-                style={{
-                  borderColor: "var(--border-color)",
-                  background: "var(--background)",
-                }}
-              >
-                {chapterOptions.map((chapter) => (
-                  <option key={chapter} value={chapter}>
-                    {chapter}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label
-              className="flex items-center justify-between gap-3 rounded border px-3 py-2 text-sm font-semibold"
-              style={{
-                borderColor: "var(--border-color)",
-                background: "var(--background)",
-              }}
-            >
-              <span>விளக்கவுரை</span>
-              <input
-                type="checkbox"
-                checked={studyModeEnabled}
-                onChange={(event) => setStudyModeEnabled(event.target.checked)}
-                className="h-4 w-4 accent-black"
-                aria-label="Toggle study mode"
-              />
-            </label>
-          </div>
-        </div>
-      </section>
+      <header className="space-y-1 text-center">
+        <h1
+          className="font-semibold leading-tight"
+          style={{
+            fontSize:
+              "calc(clamp(1.6rem, 1.35rem + 1vw, 2.1rem) * var(--reader-font-scale, 1))",
+          }}
+        >
+          {bookLabel} {selectedChapter && ` ${selectedChapter}`}
+        </h1>
+      </header>
 
       {error && (
         <div
@@ -842,7 +709,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
           {chapterHtml && (
             <div
               className="prose prose-neutral max-w-none"
-              style={{ fontSize: `${readerScale}em` }}
+              style={{ fontSize: "calc(1em * var(--reader-font-scale, 1))" }}
               dangerouslySetInnerHTML={{ __html: chapterHtml }}
             />
           )}
@@ -850,7 +717,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
             <div
               className="space-y-5"
               style={{
-                fontSize: `${readerScale}em`,
+                fontSize: "calc(1em * var(--reader-font-scale, 1))",
                 lineHeight: 1.9,
               }}
             >
@@ -874,7 +741,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                           style={{
                             borderColor: "var(--border-color)",
                             background: "var(--muted-background)",
-                            fontSize: `${readerScale}em`,
+                            fontSize: "calc(1em * var(--reader-font-scale, 1))",
                           }}
                         >
                           <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide">
@@ -895,7 +762,10 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                                 return (
                                   <div
                                     className="prose prose-neutral max-w-none"
-                                    style={{ fontSize: `${readerScale}em` }}
+                                    style={{
+                                      fontSize:
+                                        "calc(1em * var(--reader-font-scale, 1))",
+                                    }}
                                     dangerouslySetInnerHTML={{
                                       __html: noteHtml,
                                     }}
@@ -957,8 +827,38 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
             </div>
           )}
           {selectedVerses.length > 0 && (
-            <div className="sticky bottom-6 z-40 flex flex-col items-center gap-3">
-              <div className="flex flex-col gap-3">
+            <div className="sticky bottom-6 z-40 space-y-3">
+              <div className="flex justify-end">
+                <div className="flex flex-col items-end gap-3">
+                  <ReaderSettingsButton
+                    fontSize={fontSize}
+                    onFontSizeChange={setFontSize}
+                    temperature={temperature}
+                    onTemperatureChange={setTemperature}
+                    extraContent={
+                      <label
+                        className="flex items-center justify-between gap-3 rounded border px-4 py-3 text-sm font-semibold"
+                        style={{
+                          borderColor: "var(--theme-border-color)",
+                        }}
+                      >
+                        <span>à®µà®¿à®³à®•à¯à®•à®µà¯à®°à¯ˆ</span>
+                        <input
+                          type="checkbox"
+                          checked={studyModeEnabled}
+                          onChange={(event) =>
+                            setStudyModeEnabled(event.target.checked)
+                          }
+                          className="h-4 w-4 accent-black"
+                          aria-label="Toggle study mode"
+                        />
+                      </label>
+                    }
+                  />
+                  <ScrollToTopButton />
+                </div>
+              </div>
+              <div className="flex justify-center">
                 <BibleSelectionBar
                   reference={shareReference}
                   message={copyMessage}
@@ -978,7 +878,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
 
       {!loading && currentChapter && (
         <section
-          className="flex gap-3 border-t mt-12 pt-6 flex-row items-center justify-between"
+          className="mt-12 flex flex-row items-center justify-between gap-3 border-t pt-6"
           style={{ borderColor: "var(--border-color)" }}
         >
           <button
@@ -1015,13 +915,36 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         </section>
       )}
 
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
+      {selectedVerses.length === 0 && (
+      <div className="sticky bottom-6 z-40 flex justify-end">
+        <div className="flex flex-col items-end gap-3">
         <ReaderSettingsButton
           fontSize={fontSize}
           onFontSizeChange={setFontSize}
+          temperature={temperature}
+          onTemperatureChange={setTemperature}
+          extraContent={
+            <label
+              className="flex items-center justify-between gap-3 rounded border px-4 py-3 text-sm font-semibold"
+              style={{
+                borderColor: "var(--theme-border-color)",
+              }}
+            >
+              <span>விளக்கவுரை</span>
+              <input
+                type="checkbox"
+                checked={studyModeEnabled}
+                onChange={(event) => setStudyModeEnabled(event.target.checked)}
+                className="h-4 w-4 accent-black"
+                aria-label="Toggle study mode"
+              />
+            </label>
+          }
         />
         <ScrollToTopButton />
+        </div>
       </div>
+      )}
 
       {activeImage && (
         <div

@@ -1,25 +1,19 @@
 import type { Metadata } from "next";
-import BibleReader from "@/components/BibleReader";
-import { Suspense } from "react";
-import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
+import BibleFrontPage from "@/components/BibleFrontPage";
+import { toAbsoluteUrl } from "@/lib/seo";
 
 const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
-const siteUrl = getSiteUrl().toString();
 
 export const metadata: Metadata = {
-  title: "Tamil Holy Bible Reader",
+  title: "Tamil Holy Bible",
   description:
-    "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
+    "Choose a book and chapter from the Tamil Holy Bible and open the dedicated reader with study notes.",
   keywords: [
     "Tamil Holy Bible",
     "Tamil Bible",
+    "Bible chapters",
     "Study Bible Tamil",
-    "Illustrated Bible",
-    "Tamil Old Version",
-    "Bible reader",
     "Kirubai Sathiyam",
-    "தமிழ் பரிசுத்த வேதாகமம்",
-    "தமிழ் ஆய்வு வேதாகமம்",
   ],
   alternates: {
     canonical: "/bible",
@@ -27,9 +21,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/bible",
-    title: "Tamil Holy Bible Reader",
+    title: "Tamil Holy Bible",
     description:
-      "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
+      "Choose a book and chapter from the Tamil Holy Bible and open the dedicated reader with study notes.",
     siteName: "Kirubai Sathiyam",
     images: [
       {
@@ -42,37 +36,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tamil Holy Bible Reader",
+    title: "Tamil Holy Bible",
     description:
-      "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
+      "Choose a book and chapter from the Tamil Holy Bible and open the dedicated reader with study notes.",
     images: [shareImage],
   },
 };
 
 export default function BiblePage() {
-  return (
-    <div className="space-y-10">
-      <header className="space-y-3 text-center max-w-3xl mx-auto">
-        <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">
-          பரிசுத்த வேதாகமம்
-        </h1>
-        {/* <p style={{ color: "var(--muted-foreground)" }}>
-          Read the Tamil Holy Bible online with study Bible notes, illustrated
-          Bible references, and old Tamil Bible versions.
-        </p> */}
-      </header>
-      <Suspense
-        fallback={
-          <div
-            className="rounded-2xl border px-4 py-3 text-sm"
-            style={{ borderColor: "var(--border-color)" }}
-          >
-            Loading bible...
-          </div>
-        }
-      >
-        <BibleReader siteUrl={siteUrl} />
-      </Suspense>
-    </div>
-  );
+  return <BibleFrontPage />;
 }

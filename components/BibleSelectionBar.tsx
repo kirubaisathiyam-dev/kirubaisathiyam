@@ -18,14 +18,14 @@ export default function BibleSelectionBar({
   onClear,
 }: BibleSelectionBarProps) {
   return (
-      <div
-        className="rounded border px-4 py-3 text-sm flex gap-3 flex-row items-center justify-between shadow-sm"
-        style={{
-          borderColor: "var(--border-color)",
-          background: "var(--muted-background)",
-        }}
-      >
-        <div className="space-y-1">
+    <div
+      className="flex items-start justify-between gap-4 rounded border px-4 py-3 text-sm shadow-sm"
+      style={{
+        borderColor: "var(--border-color)",
+        background: "var(--muted-background)",
+      }}
+    >
+        <div className="min-w-0 flex-1 space-y-1">
           <p className="text-base font-semibold">{reference}</p>
           {message && (
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
@@ -33,7 +33,7 @@ export default function BibleSelectionBar({
             </p>
           )}
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 items-center gap-2 self-start">
           <button
             type="button"
             onClick={onCopy}
@@ -65,6 +65,6 @@ export default function BibleSelectionBar({
             <CloseIcon style={{ width: 15, height: 15 }} />
           </button>
         </div>
-      </div>
+    </div>
   );
 }

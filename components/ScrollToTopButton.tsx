@@ -35,6 +35,7 @@ export default function ScrollToTopButton({
       style={{
         borderColor: "var(--border-color)",
         backgroundColor: "var(--background)",
+        color: "var(--foreground)",
       }}
       aria-label="Scroll to top"
     >

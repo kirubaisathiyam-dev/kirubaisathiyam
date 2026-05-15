@@ -5,11 +5,11 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
 import LikeButton from "@/components/LikeButton";
 import ReaderSettingsButton, {
   useReaderFontSize,
+  useReaderTemperature,
 } from "@/components/ReaderSettingsButton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import ShareButton from "@/components/ShareButton";
 import { formatTamilDate } from "@/lib/date";
-import { getReaderFontScale } from "@/lib/reader-settings";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -64,7 +64,7 @@ export default function ContentReader({
   navigation,
 }: ContentReaderProps) {
   const { fontSize, setFontSize } = useReaderFontSize();
-  const readerScale = getReaderFontScale(fontSize);
+  const { temperature, setTemperature } = useReaderTemperature();
 
   return (
     <article className="space-y-6">
@@ -81,7 +81,7 @@ export default function ContentReader({
             className="text-xs font-semibold uppercase tracking-wide"
             style={{
               color: "var(--muted-foreground)",
-              fontSize: `calc(0.75rem * ${readerScale})`,
+              fontSize: "calc(0.75rem * var(--reader-font-scale, 1))",
             }}
           >
             {eyebrow}
@@ -90,7 +90,8 @@ export default function ContentReader({
         <h1
           className="font-semibold leading-tight"
           style={{
-            fontSize: `clamp(${2 * readerScale}rem, ${1.6 * readerScale}rem + 1.6vw, ${2.8 * readerScale}rem)`,
+            fontSize:
+              "calc(clamp(2rem, 1.6rem + 1.6vw, 2.8rem) * var(--reader-font-scale, 1))",
           }}
         >
           {title}
@@ -99,7 +100,7 @@ export default function ContentReader({
           className="text-sm"
           style={{
             color: "var(--muted-foreground)",
-            fontSize: `calc(0.875rem * ${readerScale})`,
+            fontSize: "calc(0.875rem * var(--reader-font-scale, 1))",
           }}
         >
           {author}
@@ -109,7 +110,7 @@ export default function ContentReader({
             className="text-sm"
             style={{
               color: "var(--muted-foreground)",
-              fontSize: `calc(0.875rem * ${readerScale})`,
+              fontSize: "calc(0.875rem * var(--reader-font-scale, 1))",
             }}
           >
             {formatTamilDate(date)}
@@ -156,7 +157,7 @@ export default function ContentReader({
 
       <div
         className="prose prose-neutral mx-auto max-w-3xl"
-        style={{ fontSize: `${readerScale}em` }}
+        style={{ fontSize: "calc(1em * var(--reader-font-scale, 1))" }}
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
 
@@ -228,11 +229,13 @@ export default function ContentReader({
 
       {showEngagement && <Comments articleId={itemId} />}
 
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-3">
-        <div className="flex flex-col gap-3">
+      <div className="sticky bottom-6 z-40 flex justify-end">
+        <div className="flex flex-col items-end gap-3">
           <ReaderSettingsButton
             fontSize={fontSize}
             onFontSizeChange={setFontSize}
+            temperature={temperature}
+            onTemperatureChange={setTemperature}
           />
           <ShareButton
             title={shareTitle}

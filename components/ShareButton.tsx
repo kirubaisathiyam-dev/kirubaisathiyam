@@ -55,9 +55,9 @@ export default function ShareButton({
         className ?? ""
       }`}
       style={{
-        borderColor: "var(--border-color)",
-        backgroundColor: "var(--foreground-bible)",
-        color: "var(--foreground-contrast)",
+        borderColor: "var(--theme-border-color)",
+        backgroundColor: "var(--theme-foreground-bible)",
+        color: "var(--theme-foreground-contrast)",
       }}
       aria-label={label}
       aria-live="polite"
