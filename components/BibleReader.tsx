@@ -1,6 +1,7 @@
 "use client";
 
 import BibleSelectionBar from "@/components/BibleSelectionBar";
+import BibleContentsButton from "@/components/BibleContentsButton";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
 import ReaderSettingsButton, {
   useReaderFontSize,
@@ -841,6 +842,10 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
             <div className="sticky bottom-6 z-40 space-y-3">
               <div className="flex justify-end">
                 <div className="flex flex-col items-end gap-3">
+                  <BibleContentsButton
+                    currentBook={selectedBook}
+                    currentChapter={selectedChapter}
+                  />
                   <ReaderSettingsButton
                     fontSize={fontSize}
                     onFontSizeChange={setFontSize}
@@ -929,6 +934,10 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
       {selectedVerses.length === 0 && (
       <div className="sticky bottom-6 z-40 flex justify-end">
         <div className="flex flex-col items-end gap-3">
+        <BibleContentsButton
+          currentBook={selectedBook}
+          currentChapter={selectedChapter}
+        />
         <ReaderSettingsButton
           fontSize={fontSize}
           onFontSizeChange={setFontSize}
