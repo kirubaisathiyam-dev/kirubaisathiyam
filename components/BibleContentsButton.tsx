@@ -33,6 +33,7 @@ export default function BibleContentsButton({
   const [loadingBook, setLoadingBook] = useState("");
   const [error, setError] = useState("");
   const bookRefs = useRef<Record<string, HTMLElement | null>>({});
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -144,13 +145,35 @@ export default function BibleContentsButton({
     let frameId = 0;
 
     const scrollToExpandedBook = () => {
+      const container = scrollContainerRef.current;
       const target = bookRefs.current[expandedBook];
-      if (target) {
-        const top = target.getBoundingClientRect().top + window.scrollY - 12;
-        window.scrollTo({
-          top: Math.max(top, 0),
-          behavior: "smooth",
-        });
+      if (container && target) {
+        const chapterTarget =
+          expandedBook === currentBook
+            ? target.querySelector<HTMLElement>(
+                `[data-chapter-id="${currentChapter}"]`,
+              )
+            : null;
+
+        const targetRect = target.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const targetTop =
+          container.scrollTop + (targetRect.top - containerRect.top) - 12;
+
+        if (chapterTarget) {
+          const chapterRect = chapterTarget.getBoundingClientRect();
+          const chapterTop =
+            container.scrollTop + (chapterRect.top - containerRect.top) - 96;
+          container.scrollTo({
+            top: Math.max(chapterTop, targetTop, 0),
+            behavior: "smooth",
+          });
+        } else {
+          container.scrollTo({
+            top: Math.max(targetTop, 0),
+            behavior: "smooth",
+          });
+        }
         return;
       }
 
@@ -167,7 +190,7 @@ export default function BibleContentsButton({
         window.cancelAnimationFrame(frameId);
       }
     };
-  }, [books.length, expandedBook, isOpen]);
+  }, [books.length, currentBook, currentChapter, expandedBook, isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -252,7 +275,7 @@ export default function BibleContentsButton({
               </button>
             </div>
 
-            <div className="overflow-y-auto p-5">
+            <div ref={scrollContainerRef} className="overflow-y-auto p-5">
               {error && (
                 <div
                   className="mb-4 rounded border px-4 py-3 text-sm"
@@ -344,6 +367,7 @@ export default function BibleContentsButton({
                                             onClick={() =>
                                               handleChapterSelect(book.english, chapter)
                                             }
+                                            data-chapter-id={chapter}
                                             className="inline-flex h-14 items-center justify-center border-b border-r px-3 py-3 text-sm font-semibold transition hover:opacity-80"
                                             style={{
                                               borderColor: "var(--theme-border-color)",
