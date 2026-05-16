@@ -1,6 +1,11 @@
 "use client";
 
-import { CloseIcon, SettingsIcon } from "@/components/Icons";
+import {
+  CloseIcon,
+  FocusModeOffIcon,
+  FocusModeOnIcon,
+  SettingsIcon,
+} from "@/components/Icons";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   DEFAULT_READER_TEMPERATURE,
@@ -497,19 +502,17 @@ export default function ReaderSettingsButton({
                 aria-pressed={focusMode}
               >
                 <span>Focus mode</span>
-                <span
-                  className="rounded-full px-3 py-1 text-xs font-semibold"
-                  style={{
-                    background: focusMode
-                      ? "var(--theme-foreground)"
-                      : "var(--theme-muted-background)",
-                    color: focusMode
-                      ? "var(--theme-background)"
-                      : "var(--theme-foreground)",
-                  }}
-                >
-                  {focusMode ? "On" : "Off"}
-                </span>
+                {focusMode ? (
+                  <FocusModeOnIcon
+                    className="shrink-0"
+                    style={{ width: 24, height: 24 }}
+                  />
+                ) : (
+                  <FocusModeOffIcon
+                    className="shrink-0"
+                    style={{ width: 24, height: 24 }}
+                  />
+                )}
               </button>
 
               <div
