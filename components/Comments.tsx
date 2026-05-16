@@ -212,9 +212,9 @@ export default function Comments({ articleId }: CommentsProps) {
             onClick={handleLogin}
             className="inline-flex items-center justify-center border px-4 py-2 text-sm font-semibold transition hover:opacity-80"
             style={{
-              borderColor: "var(--border-color)",
-              backgroundColor: "var(--foreground-bible)",
-              color: "var(--foreground-contrast)",
+              borderColor: "var(--theme-border-color)",
+              backgroundColor: "var(--theme-foreground-bible)",
+              color: "var(--theme-foreground-contrast)",
             }}
           >
             Continue with Google
@@ -261,9 +261,9 @@ export default function Comments({ articleId }: CommentsProps) {
               onChange={(event) => setText(event.target.value)}
               className="w-full border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
               style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--background)",
-                color: "var(--foreground)",
+                borderColor: "var(--theme-border-color)",
+                backgroundColor: "var(--theme-background)",
+                color: "var(--theme-foreground)",
               }}
               placeholder="Write your comment..."
             />
@@ -280,9 +280,9 @@ export default function Comments({ articleId }: CommentsProps) {
                 disabled={status === "posting" || !text.trim()}
                 className="border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
                 style={{
-                  borderColor: "var(--border-color)",
-                  backgroundColor: "var(--foreground-bible)",
-                  color: "var(--foreground-contrast)",
+                  borderColor: "var(--theme-border-color)",
+                  backgroundColor: "var(--theme-foreground-bible)",
+                  color: "var(--theme-foreground-contrast)",
                 }}
               >
                 {status === "posting" ? "Posting..." : "Post comment"}
@@ -358,9 +358,9 @@ export default function Comments({ articleId }: CommentsProps) {
                         onChange={(event) => setEditingText(event.target.value)}
                         className="w-full border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
                         style={{
-                          borderColor: "var(--border-color)",
-                          backgroundColor: "var(--background)",
-                          color: "var(--foreground)",
+                          borderColor: "var(--theme-border-color)",
+                          backgroundColor: "var(--theme-background)",
+                          color: "var(--theme-foreground)",
                         }}
                       />
                       <div className="flex items-center justify-end gap-2 text-[10px] font-semibold uppercase tracking-wide">
@@ -370,9 +370,9 @@ export default function Comments({ articleId }: CommentsProps) {
                           disabled={savingCommentId === comment.id}
                           className="border px-3 py-1 transition hover:opacity-80"
                           style={{
-                            borderColor: "var(--border-color)",
-                            backgroundColor: "var(--foreground-bible)",
-                            color: "var(--foreground-contrast)",
+                            borderColor: "var(--theme-border-color)",
+                            backgroundColor: "var(--theme-foreground-bible)",
+                            color: "var(--theme-foreground-contrast)",
                           }}
                         >
                           {savingCommentId === comment.id
@@ -387,9 +387,9 @@ export default function Comments({ articleId }: CommentsProps) {
                           }}
                           className="border px-3 py-1 transition hover:opacity-80"
                           style={{
-                            borderColor: "var(--border-color)",
-                            backgroundColor: "var(--background)",
-                            color: "var(--foreground)",
+                            borderColor: "var(--theme-border-color)",
+                            backgroundColor: "var(--theme-background)",
+                            color: "var(--theme-foreground)",
                           }}
                         >
                           Cancel
@@ -409,7 +409,7 @@ export default function Comments({ articleId }: CommentsProps) {
                         onClick={() => handleEdit(comment)}
                         className="transition opacity-50 hover:opacity-100 "
                         style={{
-                          color: "var(--foreground)",
+                          color: "var(--theme-foreground)",
                         }}
                       >
                         Edit
@@ -419,7 +419,7 @@ export default function Comments({ articleId }: CommentsProps) {
                         onClick={() => handleDelete(comment.id)}
                         className="transition opacity-50 hover:opacity-100"
                         style={{
-                          color: "var(--foreground)",
+                          color: "var(--theme-foreground)",
                         }}
                       >
                         Delete

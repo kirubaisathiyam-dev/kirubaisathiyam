@@ -100,7 +100,10 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
             aria-label="Like this article"
           >
             <span aria-hidden="true" className="text-base">
-              <HeartIcon style={{ width: 20, height: 20 }} className="text-[color:var(--foreground-bible)]" />
+              <HeartIcon
+                style={{ width: 20, height: 20 }}
+                className="text-[color:var(--theme-foreground-bible)]"
+              />
             </span>
             <span>{isLoading ? "..." : displayCount}</span>
           </button>

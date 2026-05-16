@@ -12,6 +12,7 @@ import {
   BOOKS_CACHE_KEY,
   BOOK_CACHE_PREFIX,
   DEFAULT_BIBLE_BOOK,
+  LAST_BIBLE_BOOK_STORAGE_KEY,
   getBookFileSlug,
   mapBookEntries,
   type BookIndexEntry,
@@ -671,6 +672,16 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     setScrollToSelection(false);
   }, [scrollToSelection, selectedVerses]);
 
+  useEffect(() => {
+    if (!selectedBook || typeof window === "undefined") return;
+
+    try {
+      window.localStorage.setItem(LAST_BIBLE_BOOK_STORAGE_KEY, selectedBook);
+    } catch {
+      // Ignore storage failures.
+    }
+  }, [selectedBook]);
+
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <div ref={topRef} />
@@ -842,7 +853,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                           borderColor: "var(--theme-border-color)",
                         }}
                       >
-                        <span>à®µà®¿à®³à®•à¯à®•à®µà¯à®°à¯ˆ</span>
+                        <span>விளக்கவுரை</span>
                         <input
                           type="checkbox"
                           checked={studyModeEnabled}

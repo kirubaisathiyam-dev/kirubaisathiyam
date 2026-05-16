@@ -194,7 +194,7 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
             onClick={() => setReplying((prev) => !prev)}
             className="text-xs tracking-wide transition opacity-80 hover:opacity-100"
             style={{
-              color: "var(--foreground-bible)",
+              color: "var(--theme-foreground-bible)",
             }}
           >
             {replying ? "Cancel" : "Reply"}
@@ -208,14 +208,14 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
             rows={3}
             value={text}
             onChange={(event) => setText(event.target.value)}
-            className="w-full border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
-            style={{
-              borderColor: "var(--border-color)",
-              backgroundColor: "var(--background)",
-              color: "var(--foreground)",
-            }}
-            placeholder="Write a reply..."
-          />
+          className="w-full border px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
+          style={{
+              borderColor: "var(--theme-border-color)",
+              backgroundColor: "var(--theme-background)",
+              color: "var(--theme-foreground)",
+          }}
+          placeholder="Write a reply..."
+        />
           <div className="flex justify-end">
             <button
               type="button"
@@ -223,9 +223,9 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
               disabled={replyStatus === "posting" || !text.trim()}
               className="border px-4 py-1.5 text-xs font-semibold tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
               style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--foreground-bible)",
-                color: "var(--foreground-contrast)",
+                borderColor: "var(--theme-border-color)",
+                backgroundColor: "var(--theme-foreground-bible)",
+                color: "var(--theme-foreground-contrast)",
               }}
             >
               {replyStatus === "posting" ? "Posting..." : "Post reply"}
@@ -287,13 +287,13 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
                       rows={2}
                       value={editingText}
                       onChange={(event) => setEditingText(event.target.value)}
-                      className="w-full border px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
-                      style={{
-                        borderColor: "var(--border-color)",
-                        backgroundColor: "var(--background)",
-                        color: "var(--foreground)",
-                      }}
-                    />
+                    className="w-full border px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-[color:var(--foreground-bible)]/50"
+                    style={{
+                        borderColor: "var(--theme-border-color)",
+                        backgroundColor: "var(--theme-background)",
+                        color: "var(--theme-foreground)",
+                    }}
+                  />
                     <div className="flex items-center justify-end gap-2 text-[10px] font-semibold uppercase tracking-wide">
                       <button
                         type="button"
@@ -301,9 +301,9 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
                         disabled={savingReplyId === reply.id}
                         className="border px-3 py-1 transition hover:opacity-80"
                         style={{
-                          borderColor: "var(--border-color)",
-                          backgroundColor: "var(--foreground-bible)",
-                          color: "var(--foreground-contrast)",
+                          borderColor: "var(--theme-border-color)",
+                          backgroundColor: "var(--theme-foreground-bible)",
+                          color: "var(--theme-foreground-contrast)",
                         }}
                       >
                         {savingReplyId === reply.id ? "Saving..." : "Save"}
@@ -317,9 +317,9 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
                         disabled={savingReplyId === reply.id}
                         className="border px-3 py-1 transition hover:opacity-80"
                         style={{
-                          borderColor: "var(--border-color)",
-                          backgroundColor: "var(--background)",
-                          color: "var(--foreground)",
+                          borderColor: "var(--theme-border-color)",
+                          backgroundColor: "var(--theme-background)",
+                          color: "var(--theme-foreground)",
                         }}
                       >
                         Cancel
@@ -341,7 +341,7 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
                         onClick={() => handleEdit(reply)}
                         className="px-1 transition opacity-50 hover:opacity-100 "
                         style={{
-                          color: "var(--foreground)",
+                          color: "var(--theme-foreground)",
                         }}
                       >
                         Edit
@@ -351,7 +351,7 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
                         onClick={() => handleDelete(reply.id)}
                         className="transition opacity-50 hover:opacity-100 "
                         style={{
-                          color: "var(--foreground)",
+                          color: "var(--theme-foreground)",
                         }}
                       >
                         Delete

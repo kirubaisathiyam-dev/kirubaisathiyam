@@ -2,7 +2,7 @@
 
 import { ArrowLeftIcon } from "@/components/Icons";
 import { useApplyReaderSettings } from "@/components/ReaderSettingsButton";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useRef } from "react";
 
 type ReaderShellProps = {
@@ -11,21 +11,30 @@ type ReaderShellProps = {
 
 export default function ReaderShell({ children }: ReaderShellProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const shellRef = useRef<HTMLDivElement | null>(null);
   useApplyReaderSettings(shellRef);
+
+  const getBackHref = () => {
+    if (!pathname) return "/";
+    if (pathname.startsWith("/articles/")) return "/articles";
+    if (pathname.startsWith("/bible/read")) return "/bible";
+    if (pathname.startsWith("/theology/")) {
+      const parts = pathname.split("/").filter(Boolean);
+      if (parts.length >= 3) {
+        return `/theology/${parts[1]}#${parts[2]}`;
+      }
+      return "/theology";
+    }
+    return "/";
+  };
 
   return (
     <div ref={shellRef} className="min-h-screen">
       <div className="mx-auto w-full max-w-5xl px-4 py-4 sm:px-6">
         <button
           type="button"
-          onClick={() => {
-            if (window.history.length > 1) {
-              router.back();
-              return;
-            }
-            router.push("/");
-          }}
+          onClick={() => router.push(getBackHref())}
           className="inline-flex h-11 w-11 items-center justify-center rounded-full transition hover:opacity-80"
           style={{ color: "var(--foreground)" }}
           aria-label="Go back"

@@ -5,6 +5,7 @@ import {
   BOOKS_CACHE_KEY,
   BOOK_CACHE_PREFIX,
   DEFAULT_BIBLE_BOOK,
+  LAST_BIBLE_BOOK_STORAGE_KEY,
   getBookFileSlug,
   mapBookEntries,
   type BookIndexEntry,
@@ -13,7 +14,7 @@ import {
 } from "@/lib/local-bible";
 import { fetchWithOffline, getOfflineData } from "@/lib/offline";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function BibleFrontPage() {
   const [books, setBooks] = useState<BookMeta[]>([]);
@@ -21,21 +22,37 @@ export default function BibleFrontPage() {
   const [chapterMap, setChapterMap] = useState<Record<string, string[]>>({});
   const [loadingBook, setLoadingBook] = useState<string>("");
   const [error, setError] = useState("");
+  const bookRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     let active = true;
+
+    const getPreferredBook = (list: BookMeta[]) => {
+      if (typeof window !== "undefined") {
+        try {
+          const saved = window.localStorage.getItem(LAST_BIBLE_BOOK_STORAGE_KEY);
+          const matchedSavedBook = list.find((entry) => entry.english === saved);
+          if (matchedSavedBook?.english) {
+            return matchedSavedBook.english;
+          }
+        } catch {
+          // Ignore storage failures and fall back to default selection.
+        }
+      }
+
+      return (
+        list.find((entry) => entry.english === DEFAULT_BIBLE_BOOK)?.english ||
+        list[0]?.english ||
+        DEFAULT_BIBLE_BOOK
+      );
+    };
 
     const loadBooks = async () => {
       try {
         const cachedBooks = await getOfflineData<BookMeta[]>(BOOKS_CACHE_KEY);
         if (active && cachedBooks?.length) {
           setBooks(cachedBooks);
-          setExpandedBook(
-            cachedBooks.find((entry) => entry.english === DEFAULT_BIBLE_BOOK)
-              ?.english ||
-              cachedBooks[0]?.english ||
-              DEFAULT_BIBLE_BOOK,
-          );
+          setExpandedBook(getPreferredBook(cachedBooks));
         }
 
         const bookList = await fetchWithOffline<BookMeta[]>(
@@ -54,7 +71,12 @@ export default function BibleFrontPage() {
 
         if (active) {
           setBooks(bookList);
-          setExpandedBook((current) => current || bookList[0]?.english || "");
+          setExpandedBook((current) => {
+            if (current && bookList.some((entry) => entry.english === current)) {
+              return current;
+            }
+            return getPreferredBook(bookList);
+          });
         }
       } catch (err) {
         if (active) {
@@ -125,6 +147,20 @@ export default function BibleFrontPage() {
     };
   }, [chapterMap, expandedBook]);
 
+  useEffect(() => {
+    if (!expandedBook) return;
+
+    const target = bookRefs.current[expandedBook];
+    if (!target) return;
+
+    window.requestAnimationFrame(() => {
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }, [expandedBook]);
+
   const visibleBooks = useMemo(() => books, [books]);
   const oldTestamentBooks = useMemo(
     () => visibleBooks.slice(0, 39),
@@ -168,6 +204,9 @@ export default function BibleFrontPage() {
                 return (
                   <section
                     key={book.english}
+                    ref={(node) => {
+                      bookRefs.current[book.english] = node;
+                    }}
                     className="overflow-hidden border"
                     style={{
                       borderColor: "var(--border-color)",
@@ -176,11 +215,7 @@ export default function BibleFrontPage() {
                   >
                     <button
                       type="button"
-                      onClick={() =>
-                        setExpandedBook((current) =>
-                          current === book.english ? "" : book.english,
-                        )
-                      }
+                      onClick={() => setExpandedBook(book.english)}
                       className="flex w-full items-center justify-between gap-4 p-3 text-left transition hover:opacity-80"
                       aria-expanded={isOpen}
                     >
@@ -229,6 +264,7 @@ export default function BibleFrontPage() {
                                   href={`/bible/read?book=${encodeURIComponent(
                                     book.english,
                                   )}&chapter=${encodeURIComponent(chapter)}`}
+                                  onClick={() => setExpandedBook(book.english)}
                                   className="inline-flex h-14 items-center justify-center border-b border-r px-3 py-3 text-sm font-semibold transition hover:opacity-80"
                                   style={{
                                     borderColor: "var(--border-color)",

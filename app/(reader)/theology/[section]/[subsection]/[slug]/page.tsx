@@ -164,7 +164,7 @@ export default async function TheologyTopicPage({
       title={topic.title}
       author={topic.author}
       date={topic.date}
-      eyebrow={`${topic.sectionLabel} Â· ${topic.subsectionLabel}`}
+      eyebrow={`${topic.sectionLabel} · ${topic.subsectionLabel}`}
       image={topic.image}
       contentHtml={topic.contentHtml}
       shareTitle={topic.title}
@@ -177,18 +177,18 @@ export default async function TheologyTopicPage({
         previous: previousTopic
           ? {
               href: `/theology/${previousTopic.sectionSlug}/${previousTopic.subsectionSlug}/${previousTopic.slug}`,
-              label: `${previousTopic.sectionLabel} Â· ${previousTopic.subsectionLabel}`,
+              label: `${previousTopic.sectionLabel} · ${previousTopic.subsectionLabel}`,
               title: previousTopic.title,
             }
           : undefined,
         toc: {
           href: `/theology/${topic.sectionSlug}#${topic.subsectionSlug}`,
-          label: "à®ªà¯Šà®°à¯à®³à®Ÿà®•à¯à®•à®®à¯",
+          label: "பொருளடக்கம்",
         },
         next: nextTopic
           ? {
               href: `/theology/${nextTopic.sectionSlug}/${nextTopic.subsectionSlug}/${nextTopic.slug}`,
-              label: `${nextTopic.sectionLabel} Â· ${nextTopic.subsectionLabel}`,
+              label: `${nextTopic.sectionLabel} · ${nextTopic.subsectionLabel}`,
               title: nextTopic.title,
             }
           : undefined,

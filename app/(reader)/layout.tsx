@@ -1,3 +1,4 @@
+import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import ReaderShell from "@/components/ReaderShell";
 
 export default function ReaderLayout({
@@ -5,5 +6,10 @@ export default function ReaderLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <ReaderShell>{children}</ReaderShell>;
+  return (
+    <ReaderShell>
+      {children}
+      <BibleReferenceTooltip />
+    </ReaderShell>
+  );
 }

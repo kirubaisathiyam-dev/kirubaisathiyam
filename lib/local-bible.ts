@@ -33,6 +33,7 @@ export type LocalBibleBook = {
 export const DEFAULT_BIBLE_BOOK = "Genesis";
 export const BOOKS_CACHE_KEY = "local-bible-books";
 export const BOOK_CACHE_PREFIX = "local-book:";
+export const LAST_BIBLE_BOOK_STORAGE_KEY = "last-bible-book";
 
 export function getBookFileSlug(bookName: string) {
   return bookName
