@@ -12,6 +12,7 @@ import ShareButton from "@/components/ShareButton";
 import { formatTamilDate } from "@/lib/date";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 
 type ContentNavigationItem = {
   href: string;
@@ -65,9 +66,17 @@ export default function ContentReader({
 }: ContentReaderProps) {
   const { fontSize, setFontSize } = useReaderFontSize();
   const { temperature, setTemperature } = useReaderTemperature();
+  const topRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!topRef.current || typeof window === "undefined") return;
+    const top = topRef.current.getBoundingClientRect().top + window.scrollY - 24;
+    window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+  }, [itemId]);
 
   return (
     <article className="space-y-6">
+      <div ref={topRef} />
       {jsonLd && (
         <script
           type="application/ld+json"
@@ -170,6 +179,7 @@ export default function ContentReader({
           {navigation.previous ? (
             <Link
               href={navigation.previous.href}
+              scroll={false}
               className="inline-flex items-center gap-2 rounded border px-4 py-2 text-sm font-semibold transition hover:opacity-80"
               style={{ borderColor: "var(--border-color)" }}
             >
@@ -202,6 +212,7 @@ export default function ContentReader({
           {navigation.next ? (
             <Link
               href={navigation.next.href}
+              scroll={false}
               className="inline-flex items-center gap-2 rounded border px-4 py-2 text-sm font-semibold transition hover:opacity-80"
               style={{ borderColor: "var(--border-color)" }}
             >

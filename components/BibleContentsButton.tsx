@@ -141,10 +141,11 @@ export default function BibleContentsButton({
   useEffect(() => {
     if (!isOpen || !expandedBook || !books.length) return;
 
-    let attempts = 0;
     let frameId = 0;
+    let timeoutId: ReturnType<typeof window.setTimeout> | null = null;
+    let startTime = 0;
 
-    const scrollToExpandedBook = () => {
+    const alignExpandedBook = () => {
       const container = scrollContainerRef.current;
       const target = bookRefs.current[expandedBook];
       if (container && target) {
@@ -174,18 +175,29 @@ export default function BibleContentsButton({
             behavior: "smooth",
           });
         }
-        return;
-      }
-
-      if (attempts < 8) {
-        attempts += 1;
-        frameId = window.requestAnimationFrame(scrollToExpandedBook);
       }
     };
 
-    frameId = window.requestAnimationFrame(scrollToExpandedBook);
+    const runAlignment = (timestamp: number) => {
+      if (!startTime) {
+        startTime = timestamp;
+      }
+
+      alignExpandedBook();
+
+      if (timestamp - startTime < 380) {
+        frameId = window.requestAnimationFrame(runAlignment);
+      }
+    };
+
+    timeoutId = window.setTimeout(() => {
+      frameId = window.requestAnimationFrame(runAlignment);
+    }, 20);
 
     return () => {
+      if (timeoutId) {
+        window.clearTimeout(timeoutId);
+      }
       if (frameId) {
         window.cancelAnimationFrame(frameId);
       }

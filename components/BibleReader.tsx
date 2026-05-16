@@ -49,6 +49,7 @@ type BibleReaderProps = {
 
 const COPY_RESET_MS = 1800;
 const NOTES_CACHE_KEY = "bible-notes";
+const CHAPTER_SCROLL_TOP_OFFSET = 24;
 
 function getNoteKey(note: BibleNote) {
   if (note.id) return note.id;
@@ -568,7 +569,11 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
 
   const scrollToTop = (behavior: ScrollBehavior = "smooth") => {
     if (!topRef.current) return;
-    topRef.current.scrollIntoView({ behavior, block: "start" });
+    const top =
+      topRef.current.getBoundingClientRect().top +
+      window.scrollY -
+      CHAPTER_SCROLL_TOP_OFFSET;
+    window.scrollTo({ top: Math.max(top, 0), behavior });
   };
 
   const handleChapterChange = (chapter: string) => {
