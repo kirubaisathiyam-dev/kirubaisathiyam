@@ -19,7 +19,7 @@ export default function BibleSelectionBar({
 }: BibleSelectionBarProps) {
   return (
     <div
-      className="flex items-start justify-between gap-4 rounded border px-4 py-3 text-sm shadow-sm"
+      className="flex items-center justify-between gap-4 rounded border px-4 py-3 text-sm shadow-sm"
       style={{
         borderColor: "var(--border-color)",
         background: "var(--muted-background)",

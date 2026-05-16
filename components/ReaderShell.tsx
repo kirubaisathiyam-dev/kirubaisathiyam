@@ -1,7 +1,10 @@
 "use client";
 
 import { ArrowLeftIcon } from "@/components/Icons";
-import { useApplyReaderSettings } from "@/components/ReaderSettingsButton";
+import {
+  useApplyReaderFocusMode,
+  useApplyReaderSettings,
+} from "@/components/ReaderSettingsButton";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef } from "react";
 
@@ -14,6 +17,7 @@ export default function ReaderShell({ children }: ReaderShellProps) {
   const pathname = usePathname();
   const shellRef = useRef<HTMLDivElement | null>(null);
   useApplyReaderSettings(shellRef);
+  useApplyReaderFocusMode();
 
   const getBackHref = () => {
     if (!pathname) return "/";

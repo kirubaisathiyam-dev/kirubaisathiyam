@@ -1,5 +1,6 @@
 export const READER_FONT_SIZE_STORAGE_KEY = "reader-font-size";
 export const READER_TEMPERATURE_STORAGE_KEY = "reader-temperature";
+export const READER_FOCUS_MODE_STORAGE_KEY = "reader-focus-mode";
 
 export const READER_FONT_SIZE_OPTIONS = [
   {

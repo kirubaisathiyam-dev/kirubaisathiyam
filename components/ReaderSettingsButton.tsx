@@ -5,6 +5,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import {
   DEFAULT_READER_TEMPERATURE,
   DEFAULT_READER_FONT_SIZE,
+  READER_FOCUS_MODE_STORAGE_KEY,
   READER_FONT_SIZE_OPTIONS,
   READER_FONT_SIZE_STORAGE_KEY,
   getReaderFontScale,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/reader-settings";
 import { getThemeSnapshot, subscribeTheme } from "@/lib/theme";
 import {
+  useCallback,
   useEffect,
   useSyncExternalStore,
   useState,
@@ -88,6 +90,18 @@ function getStoredReaderTemperature(): ReaderTemperature {
   return DEFAULT_READER_TEMPERATURE;
 }
 
+function getStoredReaderFocusMode() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  try {
+    return window.localStorage.getItem(READER_FOCUS_MODE_STORAGE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
 export function useReaderFontSize() {
   const fontSize = useSyncExternalStore(
     subscribeReaderSettings,
@@ -124,6 +138,28 @@ export function useReaderTemperature() {
   };
 
   return { temperature, setTemperature: updateTemperature };
+}
+
+export function useReaderFocusMode() {
+  const focusMode = useSyncExternalStore(
+    subscribeReaderSettings,
+    getStoredReaderFocusMode,
+    () => false,
+  );
+
+  const updateFocusMode = useCallback((value: boolean) => {
+    try {
+      window.localStorage.setItem(
+        READER_FOCUS_MODE_STORAGE_KEY,
+        value ? "true" : "false",
+      );
+      window.dispatchEvent(new Event(READER_SETTINGS_EVENT));
+    } catch {
+      // Ignore storage failures.
+    }
+  }, []);
+
+  return { focusMode, setFocusMode: updateFocusMode };
 }
 
 export function useApplyReaderSettings(
@@ -170,6 +206,105 @@ export function useApplyReaderSettings(
   }, [temperature, themeSnapshot.resolved, targetRef]);
 }
 
+export function useApplyReaderFocusMode() {
+  const { focusMode, setFocusMode } = useReaderFocusMode();
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    let wakeLock: { release: () => Promise<void> } | null = null;
+    let cancelled = false;
+
+    const releaseWakeLock = async () => {
+      if (!wakeLock) return;
+      try {
+        await wakeLock.release();
+      } catch {
+        // Ignore wake lock release failures.
+      }
+      wakeLock = null;
+    };
+
+    const requestWakeLock = async () => {
+      if (
+        !focusMode ||
+        typeof navigator === "undefined" ||
+        !("wakeLock" in navigator)
+      ) {
+        return;
+      }
+
+      try {
+        wakeLock = await (
+          navigator as Navigator & {
+            wakeLock?: {
+              request: (
+                type: "screen",
+              ) => Promise<{ release: () => Promise<void> }>;
+            };
+          }
+        ).wakeLock?.request("screen");
+
+        if (cancelled) {
+          await releaseWakeLock();
+        }
+      } catch {
+        // Ignore wake lock request failures.
+      }
+    };
+
+    const enableFocusMode = async () => {
+      if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        try {
+          await document.documentElement.requestFullscreen();
+        } catch {
+          // Ignore fullscreen request failures.
+        }
+      }
+      await requestWakeLock();
+    };
+
+    const disableFocusMode = async () => {
+      await releaseWakeLock();
+      if (document.fullscreenElement) {
+        try {
+          await document.exitFullscreen();
+        } catch {
+          // Ignore fullscreen exit failures.
+        }
+      }
+    };
+
+    if (focusMode) {
+      void enableFocusMode();
+    } else {
+      void disableFocusMode();
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && focusMode) {
+        void requestWakeLock();
+      }
+    };
+
+    const handleFullscreenChange = () => {
+      if (focusMode && !document.fullscreenElement) {
+        setFocusMode(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      cancelled = true;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      void releaseWakeLock();
+    };
+  }, [focusMode, setFocusMode]);
+}
+
 export default function ReaderSettingsButton({
   fontSize,
   onFontSizeChange,
@@ -179,6 +314,7 @@ export default function ReaderSettingsButton({
   className,
 }: ReaderSettingsButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { focusMode, setFocusMode } = useReaderFocusMode();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -261,13 +397,8 @@ export default function ReaderSettingsButton({
               </button>
             </div>
 
-            <section
-              className="mt-6 space-y-4"
-            >
-              <div className="flex items-center justify-between rounded border px-4 py-3" style={{ borderColor: "var(--theme-border-color)" }}>
-                <span className="text-sm font-semibold">Theme</span>
-                <ThemeToggle />
-              </div>
+            <section className="mt-6 space-y-4">
+              {extraContent ? <div>{extraContent}</div> : null}
 
               <div
                 className="grid grid-cols-3 overflow-hidden border"
@@ -357,9 +488,51 @@ export default function ReaderSettingsButton({
                   );
                 })}
               </div>
-            </section>
 
-            {extraContent ? <section className="mt-4">{extraContent}</section> : null}
+              <button
+                type="button"
+                onClick={() => setFocusMode(!focusMode)}
+                className="flex w-full items-center justify-between rounded border px-4 py-3 text-sm font-semibold transition hover:opacity-80"
+                style={{ borderColor: "var(--theme-border-color)" }}
+                aria-pressed={focusMode}
+              >
+                <span>Focus mode</span>
+                <span
+                  className="rounded-full px-3 py-1 text-xs font-semibold"
+                  style={{
+                    background: focusMode
+                      ? "var(--theme-foreground)"
+                      : "var(--theme-muted-background)",
+                    color: focusMode
+                      ? "var(--theme-background)"
+                      : "var(--theme-foreground)",
+                  }}
+                >
+                  {focusMode ? "On" : "Off"}
+                </span>
+              </button>
+
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => {
+                  const themeButton = document.getElementById("reader-theme-toggle");
+                  themeButton?.click();
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    const themeButton = document.getElementById("reader-theme-toggle");
+                    themeButton?.click();
+                  }
+                }}
+                className="flex w-full cursor-pointer items-center justify-between rounded border px-4 py-3 text-sm font-semibold transition hover:opacity-80"
+                style={{ borderColor: "var(--theme-border-color)" }}
+              >
+                <span>Theme</span>
+                <ThemeToggle />
+              </div>
+            </section>
           </div>
         </div>
       )}

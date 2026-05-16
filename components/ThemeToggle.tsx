@@ -75,6 +75,7 @@ export default function ThemeToggle() {
 
   return (
     <button
+      id="reader-theme-toggle"
       type="button"
       onClick={toggleTheme}
       className="cursor-pointer text-base hover:opacity-70"
