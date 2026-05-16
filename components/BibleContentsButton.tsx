@@ -142,7 +142,7 @@ export default function BibleContentsButton({
     if (!isOpen || !expandedBook || !books.length) return;
 
     let frameId = 0;
-    let timeoutId: ReturnType<typeof window.setTimeout> | null = null;
+    let timeoutId: number | null = null;
     let startTime = 0;
 
     const alignExpandedBook = () => {
