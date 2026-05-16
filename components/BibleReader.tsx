@@ -331,6 +331,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
       if (!selectedBook) return;
       setLoading(true);
       setError("");
+      setBookData(null);
       const slug = getBookFileSlug(selectedBook);
       const cacheKey = `${BOOK_CACHE_PREFIX}${slug}`;
 
@@ -535,12 +536,15 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   const notesByPassage = useMemo(() => parseNotes(notes), [notes]);
 
   const currentChapter = useMemo(() => {
+    if (bookData?.book?.english?.trim() !== selectedBook) {
+      return null;
+    }
     return (
       bookData?.chapters?.find(
         (chapter) => chapter.chapter === selectedChapter,
       ) || null
     );
-  }, [bookData, selectedChapter]);
+  }, [bookData, selectedBook, selectedChapter]);
 
   const chapterHtml = useMemo(() => {
     const content =
@@ -571,6 +575,16 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     setSelectedChapter(chapter);
     setSelectedVerses([]);
     setLastClickedVerse(null);
+    setCopyMessage("");
+    window.requestAnimationFrame(() => scrollToTop("smooth"));
+  };
+
+  const handleContentsSelect = (book: string, chapter: string) => {
+    setSelectedBook(book);
+    setSelectedChapter(chapter);
+    setSelectedVerses([]);
+    setLastClickedVerse(null);
+    setCopyMessage("");
     window.requestAnimationFrame(() => scrollToTop("smooth"));
   };
 
@@ -845,6 +859,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                   <BibleContentsButton
                     currentBook={selectedBook}
                     currentChapter={selectedChapter}
+                    onSelect={handleContentsSelect}
                   />
                   <ReaderSettingsButton
                     fontSize={fontSize}
@@ -937,6 +952,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         <BibleContentsButton
           currentBook={selectedBook}
           currentChapter={selectedChapter}
+          onSelect={handleContentsSelect}
         />
         <ReaderSettingsButton
           fontSize={fontSize}

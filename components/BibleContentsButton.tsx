@@ -11,21 +11,21 @@ import {
   type LocalBibleBook,
 } from "@/lib/local-bible";
 import { fetchWithOffline, getOfflineData } from "@/lib/offline";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type BibleContentsButtonProps = {
   currentBook: string;
   currentChapter: string;
+  onSelect: (book: string, chapter: string) => void;
   className?: string;
 };
 
 export default function BibleContentsButton({
   currentBook,
   currentChapter,
+  onSelect,
   className,
 }: BibleContentsButtonProps) {
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [books, setBooks] = useState<BookMeta[]>([]);
   const [chapterMap, setChapterMap] = useState<Record<string, string[]>>({});
@@ -138,15 +138,36 @@ export default function BibleContentsButton({
   }, [chapterMap, expandedBook, isOpen]);
 
   useEffect(() => {
-    if (!isOpen || !expandedBook) return;
+    if (!isOpen || !expandedBook || !books.length) return;
 
-    const target = bookRefs.current[expandedBook];
-    if (!target) return;
+    let attempts = 0;
+    let frameId = 0;
 
-    window.requestAnimationFrame(() => {
-      target.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }, [expandedBook, isOpen]);
+    const scrollToExpandedBook = () => {
+      const target = bookRefs.current[expandedBook];
+      if (target) {
+        const top = target.getBoundingClientRect().top + window.scrollY - 12;
+        window.scrollTo({
+          top: Math.max(top, 0),
+          behavior: "smooth",
+        });
+        return;
+      }
+
+      if (attempts < 8) {
+        attempts += 1;
+        frameId = window.requestAnimationFrame(scrollToExpandedBook);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(scrollToExpandedBook);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
+  }, [books.length, expandedBook, isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -173,9 +194,7 @@ export default function BibleContentsButton({
 
   const handleChapterSelect = (book: string, chapter: string) => {
     setIsOpen(false);
-    router.push(
-      `/bible/read?book=${encodeURIComponent(book)}&chapter=${encodeURIComponent(chapter)}`,
-    );
+    onSelect(book, chapter);
   };
 
   return (
@@ -262,7 +281,7 @@ export default function BibleContentsButton({
                             ref={(node) => {
                               bookRefs.current[book.english] = node;
                             }}
-                            className="overflow-hidden border"
+                            className="scroll-mt-3 overflow-hidden border"
                             style={{
                               borderColor: "var(--theme-border-color)",
                               background: "var(--theme-muted-background)",

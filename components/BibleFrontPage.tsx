@@ -148,18 +148,36 @@ export default function BibleFrontPage() {
   }, [chapterMap, expandedBook]);
 
   useEffect(() => {
-    if (!expandedBook) return;
+    if (!expandedBook || !books.length) return;
 
-    const target = bookRefs.current[expandedBook];
-    if (!target) return;
+    let attempts = 0;
+    let frameId = 0;
 
-    window.requestAnimationFrame(() => {
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    });
-  }, [expandedBook]);
+    const scrollToExpandedBook = () => {
+      const target = bookRefs.current[expandedBook];
+      if (target) {
+        const top = target.getBoundingClientRect().top + window.scrollY - 12;
+        window.scrollTo({
+          top: Math.max(top, 0),
+          behavior: "smooth",
+        });
+        return;
+      }
+
+      if (attempts < 8) {
+        attempts += 1;
+        frameId = window.requestAnimationFrame(scrollToExpandedBook);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(scrollToExpandedBook);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
+  }, [books.length, expandedBook]);
 
   const visibleBooks = useMemo(() => books, [books]);
   const oldTestamentBooks = useMemo(
@@ -207,7 +225,7 @@ export default function BibleFrontPage() {
                     ref={(node) => {
                       bookRefs.current[book.english] = node;
                     }}
-                    className="overflow-hidden border"
+                    className="scroll-mt-3 overflow-hidden border"
                     style={{
                       borderColor: "var(--border-color)",
                       background: "var(--muted-background)",
