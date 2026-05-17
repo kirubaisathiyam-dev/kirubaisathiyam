@@ -3,6 +3,7 @@
 import BibleSelectionBar from "@/components/BibleSelectionBar";
 import BibleContentsButton from "@/components/BibleContentsButton";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import ReaderSettingsButton, {
   useReaderFontSize,
   useReaderTemperature,
@@ -726,14 +727,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         </div>
       )}
 
-      {loading && (
-        <div
-          className="rounded border px-4 py-3 text-sm"
-          style={{ borderColor: "var(--border-color)" }}
-        >
-          Loading chapter...
-        </div>
-      )}
+      {loading && <LoadingIndicator className="py-6" />}
 
       {!loading && currentChapter && (
         <section className="space-y-6">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import BibleReader from "@/components/BibleReader";
 import { Suspense } from "react";
+import BibleReader from "@/components/BibleReader";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
@@ -49,16 +50,7 @@ export const metadata: Metadata = {
 
 export default function BibleReadPage() {
   return (
-    <Suspense
-      fallback={
-        <div
-          className="rounded-2xl border px-4 py-3 text-sm"
-          style={{ borderColor: "var(--border-color)" }}
-        >
-          Loading bible...
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingIndicator className="py-6" />}>
       <BibleReader siteUrl={siteUrl} />
     </Suspense>
   );

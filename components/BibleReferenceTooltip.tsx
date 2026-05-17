@@ -4,6 +4,7 @@ import { getOfflineData, setOfflineData } from "@/lib/offline";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { useEffect, useRef, useState } from "react";
 import { CloseIcon } from "@/components/Icons";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 type TooltipState = {
   visible: boolean;
@@ -365,7 +366,11 @@ export default function BibleReferenceTooltip() {
           <div className="text-xs font-semibold">{state.reference}</div>
         </div>
         <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
-          {state.loading ? "Loading..." : state.content || "No verse found."}
+          {state.loading ? (
+            <LoadingIndicator className="py-2" size={20} />
+          ) : (
+            state.content || "No verse found."
+          )}
         </div>
       </div>
     </div>

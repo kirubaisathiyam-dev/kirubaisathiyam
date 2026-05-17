@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRightIcon } from "@/components/Icons";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import BibleSearchForm from "@/components/BibleSearchForm";
 import {
   BOOKS_CACHE_KEY,
@@ -205,7 +206,7 @@ export default function BibleFrontPage() {
   return (
     <div className="mx-auto max-w-xl space-y-4">
       <header className="space-y-4">
-        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl text-center mb-8">
+        <h1 className="mb-8 text-center text-2xl font-semibold leading-tight sm:text-3xl">
           பரிசுத்த வேதாகமம்
         </h1>
         <BibleSearchForm />
@@ -275,12 +276,7 @@ export default function BibleFrontPage() {
                           style={{ borderColor: "var(--border-color)" }}
                         >
                           {loadingBook === book.english && !chapters.length ? (
-                            <div
-                              className="text-sm"
-                              style={{ color: "var(--muted-foreground)" }}
-                            >
-                              Loading chapters...
-                            </div>
+                            <LoadingIndicator className="py-4" size={24} />
                           ) : (
                             <div
                               className="grid overflow-hidden border border-b-0 border-r-0"

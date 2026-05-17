@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRightIcon, CloseIcon, ListIcon } from "@/components/Icons";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import {
   BOOKS_CACHE_KEY,
   BOOK_CACHE_PREFIX,
@@ -352,12 +353,7 @@ export default function BibleContentsButton({
                                   style={{ borderColor: "var(--theme-border-color)" }}
                                 >
                                   {loadingBook === book.english && !chapters.length ? (
-                                    <div
-                                      className="text-sm"
-                                      style={{ color: "var(--theme-muted-foreground)" }}
-                                    >
-                                      Loading chapters...
-                                    </div>
+                                    <LoadingIndicator className="py-4" size={24} />
                                   ) : (
                                     <div
                                       className="grid overflow-hidden border border-b-0 border-r-0"

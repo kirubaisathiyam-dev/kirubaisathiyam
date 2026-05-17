@@ -2,6 +2,7 @@
 
 import BibleSearchForm from "@/components/BibleSearchForm";
 import { SearchIcon } from "@/components/Icons";
+import LoadingIndicator from "@/components/LoadingIndicator";
 import {
   createBibleSearchIndex,
   loadBibleSearchCorpus,
@@ -162,24 +163,10 @@ export default function BibleSearchPage() {
       </header>
 
       {isLoading ? (
-        <section
-          className="mx-auto max-w-3xl border px-6 py-10 text-center"
-          style={{
-            borderColor: "var(--border-color)",
-            background: "var(--muted-background)",
-          }}
-        >
-          <p className="text-lg font-semibold">வேதாகம தேடல் தயாராகிறது...</p>
-          <p
-            className="mt-2 text-sm"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            முதல் முறையில் எல்லா வசனங்களும் offline search-க்கு ஏற்றப்படுகின்றன.
-          </p>
-        </section>
+        <LoadingIndicator className="mx-auto max-w-3xl py-10" />
       ) : error ? (
         <section
-          className="mx-auto max-w-3xl  border px-6 py-10 text-center"
+          className="mx-auto max-w-3xl border px-6 py-10 text-center"
           style={{
             borderColor: "var(--border-color)",
             background: "var(--muted-background)",
@@ -237,7 +224,7 @@ export default function BibleSearchPage() {
 
           {results.length === 0 ? (
             <div
-              className=" border px-6 py-10 text-center"
+              className="border px-6 py-10 text-center"
               style={{
                 borderColor: "var(--border-color)",
                 background: "var(--muted-background)",
