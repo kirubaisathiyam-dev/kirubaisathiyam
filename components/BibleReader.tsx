@@ -690,14 +690,51 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   };
 
   useEffect(() => {
-    if (!scrollToSelection || !selectedVerses.length) return;
-    const firstVerse = selectedVerses[0];
-    const target = document.getElementById(`verse-${firstVerse}`);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!scrollToSelection || !selectedVerses.length || loading || !currentChapter) {
+      return;
     }
-    setScrollToSelection(false);
-  }, [scrollToSelection, selectedVerses]);
+
+    const firstVerse = selectedVerses[0];
+    let frameId = 0;
+    let startTime = 0;
+
+    const tryScroll = (timestamp: number) => {
+      if (!startTime) {
+        startTime = timestamp;
+      }
+
+      const target = document.getElementById(`verse-${firstVerse}`);
+      if (target) {
+        const textTarget =
+          target.querySelector<HTMLElement>(".verse-text-inner") || target;
+        const top =
+          textTarget.getBoundingClientRect().top +
+          window.scrollY -
+          CHAPTER_SCROLL_TOP_OFFSET;
+        window.scrollTo({
+          top: Math.max(top, 0),
+          behavior: "smooth",
+        });
+        setScrollToSelection(false);
+        return;
+      }
+
+      if (timestamp - startTime < 800) {
+        frameId = window.requestAnimationFrame(tryScroll);
+        return;
+      }
+
+      setScrollToSelection(false);
+    };
+
+    frameId = window.requestAnimationFrame(tryScroll);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
+  }, [currentChapter, loading, scrollToSelection, selectedVerses]);
 
   useEffect(() => {
     if (!selectedBook || typeof window === "undefined") return;
