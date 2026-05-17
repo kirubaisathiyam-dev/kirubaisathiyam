@@ -41,6 +41,8 @@ function isExactPhraseMatch(entry: BibleSearchVerse, query: string) {
 
   const searchableValues = [
     entry.text,
+    entry.noteTitle,
+    entry.noteText,
     entry.reference,
     entry.bookTamil,
     entry.bookShort,
@@ -101,7 +103,15 @@ function createIndex(corpus: BibleSearchVerse[]) {
     cache: 100,
     document: {
       id: "id",
-      index: ["text", "bookTamil", "bookEnglish", "bookShort", "reference"],
+      index: [
+        "text",
+        "noteTitle",
+        "noteText",
+        "bookTamil",
+        "bookEnglish",
+        "bookShort",
+        "reference",
+      ],
       store: true,
     },
   });
