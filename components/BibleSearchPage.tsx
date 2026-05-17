@@ -4,12 +4,13 @@ import BibleSearchForm from "@/components/BibleSearchForm";
 import { SearchIcon } from "@/components/Icons";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import {
-  createBibleSearchIndex,
   loadBibleSearchCorpus,
-  searchBibleIndex,
   type BibleSearchVerse,
 } from "@/lib/bible-search";
-import type { Document } from "flexsearch";
+import type {
+  BibleSearchWorkerMessage,
+  BibleSearchWorkerResponse,
+} from "@/lib/bible-search-worker";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -18,6 +19,7 @@ import {
   useDeferredValue,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -68,25 +70,64 @@ export default function BibleSearchPage() {
   const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
   const deferredQuery = useDeferredValue(query);
   const [corpus, setCorpus] = useState<BibleSearchVerse[]>([]);
-  const [index, setIndex] = useState<Document<BibleSearchVerse> | null>(null);
   const [results, setResults] = useState<BibleSearchVerse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lastResolvedQuery, setLastResolvedQuery] = useState("");
+  const workerRef = useRef<Worker | null>(null);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     let active = true;
+    const worker = new Worker(
+      new URL("../lib/bible-search.worker.ts", import.meta.url),
+      { type: "module" },
+    );
+    workerRef.current = worker;
+
+    const handleWorkerMessage = (
+      event: MessageEvent<BibleSearchWorkerResponse>,
+    ) => {
+      if (!active) return;
+
+      const message = event.data;
+
+      if (message.type === "ready") {
+        setIsLoading(false);
+        return;
+      }
+
+      if (message.type === "result") {
+        if (message.requestId !== requestIdRef.current) {
+          return;
+        }
+
+        startTransition(() => {
+          setResults(message.results);
+          setLastResolvedQuery(message.query);
+        });
+        return;
+      }
+
+      setError(message.message);
+      setIsLoading(false);
+    };
+
+    worker.addEventListener("message", handleWorkerMessage);
 
     const loadSearch = async () => {
       try {
         const nextCorpus = await loadBibleSearchCorpus();
         if (!active) return;
 
-        const nextIndex = createBibleSearchIndex(nextCorpus);
         startTransition(() => {
           setCorpus(nextCorpus);
-          setIndex(nextIndex);
-          setIsLoading(false);
         });
+
+        worker.postMessage({
+          type: "init",
+          corpus: nextCorpus,
+        } satisfies BibleSearchWorkerMessage);
       } catch (loadError) {
         if (!active) return;
         setError(
@@ -102,16 +143,29 @@ export default function BibleSearchPage() {
 
     return () => {
       active = false;
+      worker.removeEventListener("message", handleWorkerMessage);
+      worker.terminate();
+      workerRef.current = null;
     };
   }, []);
 
   useEffect(() => {
-    if (!index) return;
+    const worker = workerRef.current;
+    if (!worker || isLoading) {
+      return;
+    }
 
-    startTransition(() => {
-      setResults(searchBibleIndex(index, deferredQuery));
-    });
-  }, [deferredQuery, index]);
+    const nextRequestId = requestIdRef.current + 1;
+    requestIdRef.current = nextRequestId;
+
+    worker.postMessage({
+      type: "search",
+      query: deferredQuery,
+      requestId: nextRequestId,
+    } satisfies BibleSearchWorkerMessage);
+  }, [deferredQuery, isLoading]);
+
+  const isSearching = !isLoading && deferredQuery !== lastResolvedQuery;
 
   const resultLabel = useMemo(() => {
     if (!query) return "";
@@ -213,11 +267,13 @@ export default function BibleSearchPage() {
           <div className="space-y-1">
             <div className="flex items-center justify-between gap-3 text-sm">
               <p style={{ color: "var(--muted-foreground)" }}>{resultLabel}</p>
-              {totalPages > 1 && (
+              {isSearching ? (
+                <LoadingIndicator size={18} />
+              ) : totalPages > 1 ? (
                 <p style={{ color: "var(--muted-foreground)" }}>
                   Page {currentPage} of {totalPages}
                 </p>
-              )}
+              ) : null}
             </div>
             <h2 className="text-xl font-semibold">&quot;{query}&quot;</h2>
           </div>

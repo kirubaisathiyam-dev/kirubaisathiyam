@@ -1,8 +1,59 @@
+import { memo } from "react";
 import type { ComponentType, HTMLAttributes } from "react";
 
 type IconProps = HTMLAttributes<HTMLSpanElement>;
 
-function InlineSvgIcon({
+function areStylesEqual(
+  first: HTMLAttributes<HTMLSpanElement>["style"],
+  second: HTMLAttributes<HTMLSpanElement>["style"],
+) {
+  if (first === second) {
+    return true;
+  }
+
+  if (!first || !second) {
+    return false;
+  }
+
+  const firstEntries = Object.entries(first);
+  const secondEntries = Object.entries(second);
+
+  if (firstEntries.length !== secondEntries.length) {
+    return false;
+  }
+
+  const secondStyle = second as Record<string, unknown>;
+  return firstEntries.every(([key, value]) => secondStyle[key] === value);
+}
+
+function areIconPropsEqual(
+  previous: IconProps & { markup: string },
+  next: IconProps & { markup: string },
+) {
+  const previousKeys = Object.keys(previous);
+  const nextKeys = Object.keys(next);
+
+  if (previousKeys.length !== nextKeys.length) {
+    return false;
+  }
+
+  for (const key of previousKeys) {
+    if (key === "style") {
+      if (!areStylesEqual(previous.style, next.style)) {
+        return false;
+      }
+      continue;
+    }
+
+    if (previous[key as keyof typeof previous] !== next[key as keyof typeof next]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+const InlineSvgIcon = memo(function InlineSvgIcon({
   markup,
   className,
   ...props
@@ -16,7 +67,7 @@ function InlineSvgIcon({
       {...props}
     />
   );
-}
+}, areIconPropsEqual);
 
 export type LocalIcon = ComponentType<IconProps>;
 

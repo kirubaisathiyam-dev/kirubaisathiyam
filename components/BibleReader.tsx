@@ -225,10 +225,15 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const initialBookParam = searchParams?.get("book")?.trim() || "";
+  const initialChapterParamRaw = searchParams?.get("chapter")?.trim() || "";
+  const initialChapterParam = initialChapterParamRaw.replace(/^0+(?=\d)/, "");
   const [books, setBooks] = useState<BookMeta[]>([]);
   const [notes, setNotes] = useState<BibleNote[]>([]);
-  const [selectedBook, setSelectedBook] = useState<string>(DEFAULT_BIBLE_BOOK);
-  const [selectedChapter, setSelectedChapter] = useState<string>("1");
+  const [selectedBook, setSelectedBook] = useState<string>(initialBookParam);
+  const [selectedChapter, setSelectedChapter] = useState<string>(
+    initialChapterParam,
+  );
   const [bookData, setBookData] = useState<LocalBibleBook | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -602,6 +607,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   const bookLabel = selectedBookMeta?.tamil || selectedBook;
   const shortBookLabel =
     selectedBookMeta?.short || selectedBookMeta?.tamil || selectedBook;
+  const hasActiveLocation = Boolean(selectedBook && selectedChapter);
 
   const selectedVerseTexts = useMemo(() => {
     const verses = currentChapter?.verses || [];
@@ -706,17 +712,19 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <div ref={topRef} />
-      <header className="space-y-1 text-center">
-        <h1
-          className="font-semibold leading-tight"
-          style={{
-            fontSize:
-              "calc(clamp(1.6rem, 1.35rem + 1vw, 2.1rem) * var(--reader-font-scale, 1))",
-          }}
-        >
-          {bookLabel} {selectedChapter && ` ${selectedChapter}`}
-        </h1>
-      </header>
+      {hasActiveLocation && (
+        <header className="space-y-1 text-center">
+          <h1
+            className="font-semibold leading-tight"
+            style={{
+              fontSize:
+                "calc(clamp(1.6rem, 1.35rem + 1vw, 2.1rem) * var(--reader-font-scale, 1))",
+            }}
+          >
+            {bookLabel} {selectedChapter && ` ${selectedChapter}`}
+          </h1>
+        </header>
+      )}
 
       {error && (
         <div
@@ -727,9 +735,9 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         </div>
       )}
 
-      {loading && <LoadingIndicator className="py-6" />}
+      {(loading || !hasActiveLocation) && <LoadingIndicator className="py-6" />}
 
-      {!loading && currentChapter && (
+      {!loading && hasActiveLocation && currentChapter && (
         <section className="space-y-6">
           {chapterHtml && (
             <div
@@ -906,7 +914,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         </section>
       )}
 
-      {!loading && currentChapter && (
+      {!loading && hasActiveLocation && currentChapter && (
         <section
           className="mt-12 flex flex-row items-center justify-between gap-3 border-t pt-6"
           style={{ borderColor: "var(--border-color)" }}
@@ -945,7 +953,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         </section>
       )}
 
-      {selectedVerses.length === 0 && (
+      {hasActiveLocation && selectedVerses.length === 0 && (
       <div className="sticky bottom-6 z-40 flex justify-end">
         <div className="flex flex-col items-end gap-3">
         <BibleContentsButton
