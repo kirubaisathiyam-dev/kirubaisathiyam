@@ -168,6 +168,18 @@ function isDocumentPath(pathname: string) {
   return !/\.[a-z0-9]+$/i.test(pathname);
 }
 
+function isNestedInteractiveClick(target: Element | null) {
+  if (!target) {
+    return false;
+  }
+
+  const interactiveAncestor = target.closest(
+    'button, input, select, textarea, summary, [role="button"], [data-no-offline-nav]',
+  );
+
+  return Boolean(interactiveAncestor);
+}
+
 export default function PwaRegister() {
   useEffect(() => {
     if (!("serviceWorker" in navigator)) return;
@@ -286,6 +298,17 @@ export default function PwaRegister() {
         (anchor.target && anchor.target !== "_self") ||
         anchor.hasAttribute("download")
       ) {
+        return;
+      }
+
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable || target.closest("[contenteditable='true']"))
+      ) {
+        return;
+      }
+
+      if (isNestedInteractiveClick(target)) {
         return;
       }
 
