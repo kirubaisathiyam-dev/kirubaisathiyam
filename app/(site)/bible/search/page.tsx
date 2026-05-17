@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import BibleSearchPage from "@/components/BibleSearchPage";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -22,5 +23,17 @@ export const metadata: Metadata = {
 };
 
 export default function BibleSearchRoute() {
-  return <BibleSearchPage />;
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6">
+          <div className="rounded-2xl border px-5 py-8 text-sm sm:px-6" style={{ borderColor: "var(--border-color)" }}>
+            தேடல் ஏற்றப்படுகிறது...
+          </div>
+        </div>
+      }
+    >
+      <BibleSearchPage />
+    </Suspense>
+  );
 }
