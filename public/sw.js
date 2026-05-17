@@ -6,6 +6,8 @@ const CONTENT = `content-${VERSION}`;
 const CORE_ASSETS = [
   "/",
   "/bible",
+  "/bible/read",
+  "/bible/search",
   "/articles",
   "/manifest.json",
   "/apple-icon.png",
@@ -170,8 +172,12 @@ self.addEventListener("fetch", (event) => {
       ? "/articles"
       : pathname.startsWith("/theology/")
         ? "/theology"
-        : pathname === "/bible"
-          ? "/bible"
+        : pathname.startsWith("/bible/read")
+          ? "/bible/read"
+          : pathname.startsWith("/bible/search")
+            ? "/bible/search"
+            : pathname === "/bible"
+              ? "/bible"
           : pathname === "/privacy-terms"
             ? "/privacy-terms"
             : "/";

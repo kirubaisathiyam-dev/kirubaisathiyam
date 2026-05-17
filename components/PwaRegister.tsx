@@ -15,6 +15,8 @@ const CORE_SYNC_URLS = [
   "/articles",
   "/theology",
   "/bible",
+  "/bible/read",
+  "/bible/search",
   "/privacy-terms",
   "/manifest.json",
   "/apple-icon.png",

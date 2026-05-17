@@ -79,6 +79,8 @@ const routeSet = new Set([
   "/articles",
   "/theology",
   "/bible",
+  "/bible/read",
+  "/bible/search",
   "/privacy-terms",
 ]);
 

@@ -14,6 +14,8 @@
     "/articles/2026-03-11-055530",
     "/articles/2026-03-12-180758",
     "/bible",
+    "/bible/read",
+    "/bible/search",
     "/privacy-terms",
     "/theology",
     "/theology/reformed-theology",
@@ -160,5 +162,5 @@
     "/uploads/long.jpg",
     "/uploads/map3.png"
   ],
-  "generatedAt": "2026-05-16T09:33:53.262Z"
+  "generatedAt": "2026-05-17T06:58:11.909Z"
 }
