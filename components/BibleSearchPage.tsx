@@ -60,6 +60,7 @@ function isHighlightedPart(part: string, query: string) {
 export default function BibleSearchPage() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchPath = pathname || "/bible/search";
   const searchParams = useSearchParams();
   const query = searchParams?.get("q")?.trim() || "";
   const rawPage = Number.parseInt(searchParams?.get("page") || "1", 10);
@@ -134,10 +135,10 @@ export default function BibleSearchPage() {
 
       const search = params.toString();
       startTransition(() => {
-        router.push(search ? `${pathname}?${search}` : pathname);
+        router.push(search ? `${searchPath}?${search}` : searchPath);
       });
     },
-    [pathname, router, searchParams],
+    [router, searchParams, searchPath],
   );
 
   useEffect(() => {
