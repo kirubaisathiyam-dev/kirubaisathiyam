@@ -23,7 +23,7 @@ import {
 } from "@/lib/local-bible";
 import { fetchWithOffline, getOfflineData } from "@/lib/offline";
 import Image from "next/image";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import rehypeStringify from "rehype-stringify";
@@ -222,7 +222,6 @@ async function copyToClipboard(text: string) {
 }
 
 export default function BibleReader({ siteUrl }: BibleReaderProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const initialBookParam = searchParams?.get("book")?.trim() || "";
@@ -476,7 +475,11 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     if (!hasSyncedFromUrl) return;
     if (!selectedBook || !selectedChapter) return;
 
-    const params = new URLSearchParams(searchKey);
+    const currentSearch =
+      typeof window !== "undefined"
+        ? window.location.search.replace(/^\?/, "")
+        : searchKey;
+    const params = new URLSearchParams(currentSearch);
     const currentBook = params.get("book");
     const currentChapter = params.get("chapter");
     const currentVerses = params.get("verses") || "";
@@ -497,11 +500,12 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     } else {
       params.delete("verses");
     }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+
+    const nextUrl = `${pathname}?${params.toString()}`;
+    window.history.replaceState(window.history.state, "", nextUrl);
   }, [
     hasSyncedFromUrl,
     pathname,
-    router,
     searchKey,
     selectedBook,
     selectedChapter,
