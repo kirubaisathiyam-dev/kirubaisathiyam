@@ -6,6 +6,93 @@ import type {
 } from "@/lib/bible-search-worker";
 
 let index: Document<BibleSearchVerse> | null = null;
+let corpus: BibleSearchVerse[] = [];
+
+function normalizeValue(value: string) {
+  return value
+    .toLocaleLowerCase("ta")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isExactReferenceMatch(entry: BibleSearchVerse, query: string) {
+  const normalizedQuery = normalizeValue(query);
+  if (!normalizedQuery) {
+    return false;
+  }
+
+  const referenceVariants = [
+    entry.reference,
+    `${entry.bookTamil} ${entry.chapter}:${entry.verse}`,
+    `${entry.bookShort} ${entry.chapter}:${entry.verse}`,
+    `${entry.bookEnglish} ${entry.chapter}:${entry.verse}`,
+  ];
+
+  return referenceVariants.some(
+    (reference) => normalizeValue(reference) === normalizedQuery,
+  );
+}
+
+function isExactPhraseMatch(entry: BibleSearchVerse, query: string) {
+  const normalizedQuery = normalizeValue(query);
+  if (!normalizedQuery) {
+    return false;
+  }
+
+  const searchableValues = [
+    entry.text,
+    entry.reference,
+    entry.bookTamil,
+    entry.bookShort,
+    entry.bookEnglish,
+  ];
+
+  return searchableValues.some((value) =>
+    normalizeValue(value).includes(normalizedQuery),
+  );
+}
+
+function rankSearchResults(results: BibleSearchVerse[], query: string) {
+  return results
+    .map((entry, position) => {
+      if (isExactReferenceMatch(entry, query)) {
+        return { entry, priority: 0, position };
+      }
+
+      if (isExactPhraseMatch(entry, query)) {
+        return { entry, priority: 1, position };
+      }
+
+      return { entry, priority: 2, position };
+    })
+    .sort((left, right) => {
+      if (left.priority !== right.priority) {
+        return left.priority - right.priority;
+      }
+
+      if (left.priority < 2) {
+        return left.entry.id - right.entry.id;
+      }
+
+      if (left.position !== right.position) {
+        return left.position - right.position;
+      }
+
+      return left.entry.id - right.entry.id;
+    })
+    .map((item) => item.entry);
+}
+
+function findExactSubstringMatches(query: string, limit = 80) {
+  const normalizedQuery = normalizeValue(query);
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  return corpus
+    .filter((entry) => isExactPhraseMatch(entry, normalizedQuery))
+    .slice(0, limit);
+}
 
 function createIndex(corpus: BibleSearchVerse[]) {
   const nextIndex = new Document<BibleSearchVerse>({
@@ -38,9 +125,18 @@ function searchIndex(query: string, limit = 80) {
     merge: true,
   });
 
-  return results
+  const flexResults = results
     .map((entry) => entry.doc)
     .filter((entry): entry is BibleSearchVerse => Boolean(entry));
+
+  const exactSubstringMatches = findExactSubstringMatches(trimmedQuery, limit);
+  const mergedResults = Array.from(
+    new Map(
+      [...exactSubstringMatches, ...flexResults].map((entry) => [entry.id, entry]),
+    ).values(),
+  );
+
+  return rankSearchResults(mergedResults, trimmedQuery);
 }
 
 function postMessageToClient(message: BibleSearchWorkerResponse) {
@@ -52,6 +148,7 @@ self.onmessage = (event: MessageEvent<BibleSearchWorkerMessage>) => {
 
   try {
     if (message.type === "init") {
+      corpus = message.corpus;
       index = createIndex(message.corpus);
       postMessageToClient({ type: "ready" });
       return;
