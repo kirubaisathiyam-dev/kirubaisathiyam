@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRightIcon } from "@/components/Icons";
+import BibleSearchForm from "@/components/BibleSearchForm";
 import {
   BOOKS_CACHE_KEY,
   BOOK_CACHE_PREFIX,
@@ -203,10 +204,11 @@ export default function BibleFrontPage() {
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <header className="space-y-2">
+      <header className="space-y-4">
         <h1 className="text-2xl font-semibold leading-tight sm:text-3xl text-center mb-8">
           பரிசுத்த வேதாகமம்
         </h1>
+        <BibleSearchForm />
       </header>
 
       {error && (
