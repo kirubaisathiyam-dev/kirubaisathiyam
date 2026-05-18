@@ -1,7 +1,6 @@
 "use client";
 
 import { toBlob } from "html-to-image";
-import ShareButton from "@/components/ShareButton";
 
 type VerseOfTheDayShareButtonProps = {
   title: string;
@@ -50,7 +49,6 @@ export default function VerseOfTheDayShareButton({
       ) {
         await navigator.share({
           title,
-          text,
           url,
           files: [file],
         });
@@ -58,7 +56,7 @@ export default function VerseOfTheDayShareButton({
       }
 
       if (navigator.share) {
-        await navigator.share({ title, text, url });
+        await navigator.share({ title, url });
         return "shared";
       }
 
@@ -75,12 +73,39 @@ export default function VerseOfTheDayShareButton({
   };
 
   return (
-    <ShareButton
-      title={title}
-      text={text}
-      url={url}
-      className={className}
-      onShare={handleShare}
-    />
+    <button
+      type="button"
+      onClick={() => {
+        void handleShare();
+      }}
+      className={`inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80 ${
+        className ?? ""
+      }`}
+      style={{
+        borderColor: "var(--theme-border-color)",
+        backgroundColor: "var(--theme-foreground-bible)",
+        color: "var(--theme-foreground-contrast)",
+      }}
+      aria-label="Share or download verse image"
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          width: 20,
+          height: 20,
+          display: "inline-block",
+          backgroundColor: "currentColor",
+          maskImage: "url('/icons/line-md-image.svg')",
+          maskRepeat: "no-repeat",
+          maskPosition: "center",
+          maskSize: "contain",
+          WebkitMaskImage: "url('/icons/line-md-image.svg')",
+          WebkitMaskRepeat: "no-repeat",
+          WebkitMaskPosition: "center",
+          WebkitMaskSize: "contain",
+        }}
+      />
+      <span className="sr-only">Share Image</span>
+    </button>
   );
 }

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getVerseOfTheDay } from "@/lib/verse-of-the-day";
@@ -86,7 +87,13 @@ export default function VerseOfTheDayOverlay() {
           data-share-exclude="true"
           className="absolute inset-x-0 bottom-0 z-20 flex justify-center px-5 py-6 sm:px-8 lg:px-10"
         >
-          <div className="mx-auto flex w-full max-w-4xl justify-start">
+          <div className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3">
+            <ShareButton
+              title={shareTitle}
+              text={shareText}
+              url={shareUrl}
+              className="shadow-sm"
+            />
             <VerseOfTheDayShareButton
               title={shareTitle}
               text={shareText}
