@@ -39,14 +39,14 @@ export default function VerseOfTheDayOverlay() {
             </div>
 
             {verseOfTheDay.verse ? (
-              <blockquote className="text-lg leading-[2] sm:text-xl">
+              <blockquote className="leading-[1.9] sm:text-xl">
                 <span
                   className="inline"
                   style={{
                     backgroundColor: "var(--heighlight-bible)",
                     color: "var(--foreground)",
-                    padding: "0.12em 0.22em",
-                    borderRadius: "0.15em",
+                    padding: "0em 0.3em",
+                    borderRadius: "0",
                     boxDecorationBreak: "clone",
                     WebkitBoxDecorationBreak: "clone",
                   }}
@@ -56,7 +56,7 @@ export default function VerseOfTheDayOverlay() {
               </blockquote>
             ) : null}
 
-            <p className="text-lg leading-8 text-white sm:text-xl">
+            <p className="sm:leading-8 text-white sm:text-xl">
               {verseOfTheDay.explanation}
             </p>
           </div>
