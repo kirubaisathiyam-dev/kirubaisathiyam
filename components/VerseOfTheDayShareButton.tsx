@@ -28,6 +28,12 @@ export default function VerseOfTheDayShareButton({
       const blob = await toBlob(target, {
         cacheBust: true,
         pixelRatio: 2,
+        filter: (node) => {
+          if (!(node instanceof HTMLElement)) {
+            return true;
+          }
+          return node.dataset.shareExclude !== "true";
+        },
       });
       if (!blob) {
         return "error";

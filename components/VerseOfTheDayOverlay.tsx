@@ -30,6 +30,7 @@ export default function VerseOfTheDayOverlay() {
         <div
           id={shareTargetId}
           className="relative min-h-[24rem] sm:min-h-[30rem] lg:min-h-[36rem]"
+          style={{ backgroundColor: "#111111" }}
         >
           <Image
             src={verseOfTheDay.image}
@@ -38,10 +39,11 @@ export default function VerseOfTheDayOverlay() {
             sizes="100vw"
             className="object-cover"
             unoptimized
+            priority
           />
           <div className="absolute inset-0 bg-black/60" />
 
-          <div className="relative z-10 flex min-h-[24rem] items-center justify-center px-5 py-10 text-left sm:min-h-[30rem] sm:px-8 lg:min-h-[36rem] lg:px-10">
+          <div className="relative z-10 flex min-h-[24rem] items-center justify-center px-5 py-10 pb-24 text-left sm:min-h-[30rem] sm:px-8 sm:pb-28 lg:min-h-[36rem] lg:px-10">
             <div className="mx-auto flex max-w-4xl flex-col items-start justify-center gap-5">
               <div className="space-y-2">
                 <p
@@ -80,8 +82,11 @@ export default function VerseOfTheDayOverlay() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-5 py-6 sm:px-8 lg:px-10">
-          <div className="pointer-events-auto mx-auto flex w-full max-w-4xl justify-start">
+        <div
+          data-share-exclude="true"
+          className="absolute inset-x-0 bottom-0 z-20 flex justify-center px-5 py-6 sm:px-8 lg:px-10"
+        >
+          <div className="mx-auto flex w-full max-w-4xl justify-start">
             <VerseOfTheDayShareButton
               title={shareTitle}
               text={shareText}
