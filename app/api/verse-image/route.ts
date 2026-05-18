@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "edge";
+
 const IMAGE_WIDTH = 1600;
 const IMAGE_HEIGHT = 1200;
 
