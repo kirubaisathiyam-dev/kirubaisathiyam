@@ -1,4 +1,6 @@
 import Image from "next/image";
+import ShareButton from "@/components/ShareButton";
+import { toAbsoluteUrl } from "@/lib/seo";
 import { getVerseOfTheDay } from "@/lib/verse-of-the-day";
 
 export default function VerseOfTheDayOverlay() {
@@ -7,6 +9,16 @@ export default function VerseOfTheDayOverlay() {
   if (!verseOfTheDay) {
     return null;
   }
+
+  const shareUrl = toAbsoluteUrl("/");
+  const shareTitle = `Verse Of The Day - ${verseOfTheDay.reference}`;
+  const shareText = [
+    verseOfTheDay.reference,
+    verseOfTheDay.verse,
+    verseOfTheDay.explanation,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
   return (
     <section
@@ -59,6 +71,13 @@ export default function VerseOfTheDayOverlay() {
             <p className="sm:leading-8 text-white sm:text-xl">
               {verseOfTheDay.explanation}
             </p>
+
+            <ShareButton
+              title={shareTitle}
+              text={shareText}
+              url={shareUrl}
+              className="mt-2 shadow-sm"
+            />
           </div>
         </div>
       </div>
