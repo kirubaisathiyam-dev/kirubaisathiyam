@@ -56,6 +56,53 @@ export default function Home() {
     <div className="space-y-16">
       <VerseOfTheDayOverlay />
 
+      <section className="mx-auto w-full max-w-5xl px-4">
+        <Link
+          href="/bible"
+          className="group grid overflow-hidden border md:grid-cols-[0.5fr_1.28fr]"
+          style={{
+            borderColor: "var(--border-color)",
+            backgroundColor: "var(--muted-background)",
+          }}
+        >
+          <div
+            className="relative aspect-square border-b md:aspect-auto md:border-b-0 md:border-r"
+            style={{ borderColor: "var(--border-color)" }}
+          >
+            <Image
+              src="/images/bible.jpg"
+              alt="Open Bible"
+              fill
+              sizes="(min-width: 768px) 32rem, 100vw"
+              className="object-cover transition duration-300 group-hover:scale-[1.02]"
+            />
+          </div>
+
+          <div className="flex flex-col justify-center gap-5 p-6 sm:p-8">
+            <div className="space-y-2">
+              <h2 className="text-lg font-semibold leading-tight sm:text-xl">
+                வேதவசனம் உங்கள் நாளை வழிநடத்தட்டும்
+              </h2>
+            </div>
+
+            <p
+              className="text-sm leading-7 sm:text-base"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              “உம்முடைய வார்த்தை என் கால்களுக்கு தீபமும், என் பாதைக்கு
+              வெளிச்சமுமாயிருக்கிறது.” தினமும் வேதாகமத்தை வாசியுங்கள்.
+              தேவனுடைய வார்த்தை உங்கள் சிந்தனை, நடத்தை, வாழ்க்கை ஆகியவற்றை
+              ஒழுங்குபடுத்தும் பரிசுத்த பழக்கமாக அது மாறட்டும்.
+            </p>
+
+            <div className="flex items-center gap-2 text-xs font-semibold sm:text-sm">
+              <span className="group-hover:underline">வேதாகமத்தை திறக்கவும்</span>
+              <ArrowRightIcon style={{ width: 15, height: 15 }} />
+            </div>
+          </div>
+        </Link>
+      </section>
+
       <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">கட்டுரைகள்</h2>
