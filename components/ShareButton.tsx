@@ -8,6 +8,7 @@ type ShareButtonProps = {
   text?: string;
   url: string;
   className?: string;
+  onShare?: () => Promise<"shared" | "copied" | "error" | void> | "shared" | "copied" | "error" | void;
 };
 
 export default function ShareButton({
@@ -15,11 +16,26 @@ export default function ShareButton({
   text,
   url,
   className,
+  onShare,
 }: ShareButtonProps) {
   const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
 
   const handleShare = async () => {
     try {
+      if (onShare) {
+        const result = await onShare();
+        if (result === "copied") {
+          setStatus("copied");
+          window.setTimeout(() => setStatus("idle"), 2000);
+        } else if (result === "error") {
+          setStatus("error");
+          window.setTimeout(() => setStatus("idle"), 2000);
+        } else {
+          setStatus("idle");
+        }
+        return;
+      }
+
       if (navigator.share) {
         await navigator.share({ title, text, url });
         setStatus("idle");
