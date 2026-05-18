@@ -22,7 +22,7 @@ export default function VerseOfTheDayOverlay() {
           className="object-cover"
           unoptimized
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/60" />
 
         <div className="relative z-10 flex min-h-[24rem] items-center justify-center px-5 py-10 text-left sm:min-h-[30rem] sm:px-8 lg:min-h-[36rem] lg:px-10">
           <div className="mx-auto flex max-w-4xl flex-col items-start justify-center gap-5">
