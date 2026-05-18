@@ -1,6 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
+import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getVerseOfTheDay } from "@/lib/verse-of-the-day";
 
@@ -21,6 +23,18 @@ export default function VerseOfTheDayOverlay() {
   ]
     .filter(Boolean)
     .join("\n\n");
+  const parsedReference = parseBibleReference(verseOfTheDay.reference);
+  const [bookCode = "", chapter = "", verses = ""] =
+    parsedReference?.passageId.split(".") ?? [];
+  const readerBook = bookCode ? getBookByCode(bookCode)?.name ?? "" : "";
+  const readerHref =
+    readerBook && chapter && verses
+      ? `/bible/read?book=${encodeURIComponent(
+          readerBook,
+        )}&chapter=${encodeURIComponent(chapter)}&verses=${encodeURIComponent(
+          verses,
+        )}`
+      : "/bible/read";
 
   return (
     <section
@@ -88,6 +102,35 @@ export default function VerseOfTheDayOverlay() {
           className="absolute inset-x-0 bottom-0 z-20 flex justify-center px-5 py-6 sm:px-8 lg:px-10"
         >
           <div className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3">
+            <Link
+              href={readerHref}
+              className="inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80"
+              style={{
+                borderColor: "var(--theme-border-color)",
+                backgroundColor: "var(--theme-foreground-bible)",
+                color: "var(--theme-foreground-contrast)",
+              }}
+              aria-label="Open in Bible reader"
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 20,
+                  height: 20,
+                  display: "inline-block",
+                  backgroundColor: "currentColor",
+                  maskImage: "url('/icons/line-md-book.svg')",
+                  maskRepeat: "no-repeat",
+                  maskPosition: "center",
+                  maskSize: "contain",
+                  WebkitMaskImage: "url('/icons/line-md-book.svg')",
+                  WebkitMaskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                  WebkitMaskSize: "contain",
+                }}
+              />
+              <span className="sr-only">Open in Bible reader</span>
+            </Link>
             <ShareButton
               title={shareTitle}
               text={shareText}
