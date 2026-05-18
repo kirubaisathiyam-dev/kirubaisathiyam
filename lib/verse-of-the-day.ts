@@ -170,6 +170,6 @@ export function getVerseOfTheDay(): VerseOfTheDay | null {
     reference: getFullTamilReference(todayEntry.verse_reference),
     verse: getVerseText(todayEntry.verse_reference),
     explanation: todayEntry.explanation,
-    image: `/api/verse-image?day=${todayEntry.day}`,
+    image: `https://picsum.photos/seed/verse-${todayEntry.day}/1600/1200.jpg`,
   };
 }
