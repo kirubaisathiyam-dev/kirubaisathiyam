@@ -118,6 +118,38 @@ function getVerseText(reference: string) {
   return verses.map((entry) => `${entry.verse}. ${entry.text}`).join(" ");
 }
 
+function getFullTamilReference(reference: string) {
+  const normalizedReference = reference.replace(/[()]/g, "").trim();
+  const parsedReference = parseBibleReference(normalizedReference);
+  if (!parsedReference) {
+    return reference;
+  }
+
+  const [bookCode, chapterNumber, verseRange] = parsedReference.passageId.split(".");
+  if (!bookCode || !chapterNumber || !verseRange) {
+    return reference;
+  }
+
+  const book = getBookByCode(bookCode);
+  if (!book) {
+    return reference;
+  }
+
+  const bookPath = path.join(
+    LOCAL_BIBLE_DIRECTORY,
+    `${getBookFileSlug(book.name)}.json`,
+  );
+  if (!fs.existsSync(bookPath)) {
+    return reference;
+  }
+
+  const bookContents = fs.readFileSync(bookPath, "utf8");
+  const bookData = JSON.parse(bookContents) as LocalBibleBook;
+  const tamilBookName = bookData.book?.tamil?.trim();
+
+  return `${tamilBookName || book.name} ${chapterNumber}:${verseRange}`;
+}
+
 export function getVerseOfTheDay(): VerseOfTheDay | null {
   const entries = readVerseEntries();
   if (!entries.length) {
@@ -135,7 +167,7 @@ export function getVerseOfTheDay(): VerseOfTheDay | null {
 
   return {
     day: todayEntry.day,
-    reference: todayEntry.verse_reference,
+    reference: getFullTamilReference(todayEntry.verse_reference),
     verse: getVerseText(todayEntry.verse_reference),
     explanation: todayEntry.explanation,
     image: `https://loremflickr.com/800/600/landscape?lock=${todayEntry.day}`,

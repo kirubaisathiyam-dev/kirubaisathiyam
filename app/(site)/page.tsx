@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
-import VerseOfTheDay from "@/components/VerseOfTheDay";
+import VerseOfTheDayOverlay from "@/components/VerseOfTheDayOverlay";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
@@ -54,11 +54,9 @@ export default function Home() {
 
   return (
     <div className="space-y-16">
-      <VerseOfTheDay />
+      <VerseOfTheDayOverlay />
 
-      <hr style={{ borderColor: "var(--border-color)" }} />
-
-      <section className="space-y-6">
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">கட்டுரைகள்</h2>
           <Link
@@ -125,9 +123,11 @@ export default function Home() {
         </div>
       </section>
 
-      <hr style={{ borderColor: "var(--border-color)" }} />
+      <div className="mx-auto w-full max-w-5xl px-4">
+        <hr style={{ borderColor: "var(--border-color)" }} />
+      </div>
 
-      <section className="space-y-6">
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">இறையியல்</h2>
           <Link

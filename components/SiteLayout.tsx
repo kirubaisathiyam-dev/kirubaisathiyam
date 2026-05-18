@@ -1,4 +1,7 @@
-﻿import Link from "next/link";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeForm from "@/components/SubscribeForm";
@@ -8,11 +11,20 @@ type SiteLayoutProps = {
 };
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10">
+      <main
+        className={
+          isHomePage
+            ? "w-full flex-1 py-8 sm:py-10"
+            : "mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10"
+        }
+      >
         {children}
         <BibleReferenceTooltip />
       </main>
