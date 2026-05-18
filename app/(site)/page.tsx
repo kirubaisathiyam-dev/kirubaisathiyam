@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
+import VerseOfTheDay from "@/components/VerseOfTheDay";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
@@ -49,77 +50,17 @@ export const metadata: Metadata = {
 export default function Home() {
   const articles = getAllArticles();
   const theologySections = getTheologySectionsWithTopics();
-  const [featured, ...rest] = articles;
-  const recentArticles = rest.slice(0, 6);
+  const recentArticles = articles.slice(0, 6);
 
   return (
     <div className="space-y-16">
-      {featured && (
-        <section className="space-y-4">
-          <Link
-            href={`/articles/${featured.slug}`}
-            className="block border"
-            style={{ borderColor: "var(--border-color)" }}
-          >
-            <div
-              className={`grid ${
-                featured.image ? "md:grid-cols-[2fr,1fr]" : ""
-              }`}
-            >
-              {featured.image && (
-                <div
-                  className="overflow-hidden border"
-                  style={{ borderColor: "var(--border-color)" }}
-                >
-                  <div className="relative aspect-[4/3] w-full">
-                    <Image
-                      src={featured.image}
-                      alt={featured.title}
-                      fill
-                      sizes="(min-width: 1024px) 40rem, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="space-y-3 p-4 sm:p-6">
-                <div className="flex items-center gap-2">
-                  {featured.audio && (
-                    <span
-                      className="text-[0.8rem] opacity-70"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
-                      <VolumeIcon style={{ width: 20, height: 20 }} />
-                    </span>
-                  )}
-                  <p
-                    className="text-xs font-semibold uppercase tracking-wide"
-                    style={{ color: "var(--muted-foreground)" }}
-                  >
-                    {featured.type || "கட்டுரை"}
-                  </p>
-                </div>
-                <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">
-                  {featured.title}
-                </h2>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {formatTamilDate(featured.date)} · {featured.author}
-                </p>
-                {featured.excerpt && (
-                  <p className="leading-relaxed">{featured.excerpt}</p>
-                )}
-              </div>
-            </div>
-          </Link>
-        </section>
-      )}
+      <VerseOfTheDay />
+
+      <hr style={{ borderColor: "var(--border-color)" }} />
 
       <section className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">சமீபத்திய பதிவுகள்</h2>
+          <h2 className="text-xl font-semibold">கட்டுரைகள்</h2>
           <Link
             href="/articles"
             className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
@@ -184,6 +125,8 @@ export default function Home() {
         </div>
       </section>
 
+      <hr style={{ borderColor: "var(--border-color)" }} />
+
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">இறையியல்</h2>
@@ -206,7 +149,7 @@ export default function Home() {
                 backgroundColor: "var(--muted-background)",
               }}
             >
-              {section.image && (
+              {section.image ? (
                 <div
                   className="relative aspect-square w-full overflow-hidden border-b"
                   style={{ borderColor: "var(--border-color)" }}
@@ -219,7 +162,7 @@ export default function Home() {
                     className="object-cover transition duration-300 group-hover:scale-[1.02]"
                   />
                 </div>
-              )}
+              ) : null}
               <div className="space-y-3 p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-2">
@@ -240,10 +183,7 @@ export default function Home() {
                 className="mt-auto flex justify-end border-t p-5"
                 style={{ borderColor: "var(--border-color)" }}
               >
-                <span
-                  className="inline-flex items-center"
-                  aria-hidden="true"
-                >
+                <span className="inline-flex items-center" aria-hidden="true">
                   <ArrowRightIcon style={{ width: 15, height: 15 }} />
                 </span>
               </div>
