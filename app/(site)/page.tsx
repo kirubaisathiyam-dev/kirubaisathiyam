@@ -10,6 +10,8 @@ import { getTheologySectionsWithTopics } from "@/lib/theology";
 
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Tamil Christian Articles & Bible",
   description:
