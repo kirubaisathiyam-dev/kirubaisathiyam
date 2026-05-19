@@ -59,7 +59,7 @@ export default function Home() {
       <section className="mx-auto w-full max-w-5xl px-4">
         <Link
           href="/bible"
-          className="group grid overflow-hidden border md:grid-cols-[0.5fr_1.28fr]"
+          className="group grid overflow-hidden border md:grid-cols-[0.7fr_1.28fr]"
           style={{
             borderColor: "var(--border-color)",
             backgroundColor: "var(--muted-background)",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShareIcon } from "@/components/Icons";
+import { LoadingIcon, ShareIcon } from "@/components/Icons";
 
 type ShareButtonProps = {
   title: string;
@@ -18,9 +18,17 @@ export default function ShareButton({
   className,
   onShare,
 }: ShareButtonProps) {
-  const [status, setStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "sharing" | "copied" | "error"
+  >("idle");
 
   const handleShare = async () => {
+    if (status === "sharing") {
+      return;
+    }
+
+    setStatus("sharing");
+
     try {
       if (onShare) {
         const result = await onShare();
@@ -50,6 +58,7 @@ export default function ShareButton({
       }
 
       window.prompt("Copy this link:", url);
+      setStatus("idle");
     } catch {
       setStatus("error");
       window.setTimeout(() => setStatus("idle"), 2000);
@@ -57,17 +66,21 @@ export default function ShareButton({
   };
 
   const label =
-    status === "copied"
+    status === "sharing"
+      ? "Sharing..."
+      : status === "copied"
       ? "Copied!"
       : status === "error"
         ? "Try again"
         : "Share";
+  const isLoading = status === "sharing";
 
   return (
     <button
       type="button"
       onClick={handleShare}
-      className={`inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80 ${
+      disabled={isLoading}
+      className={`inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80 disabled:cursor-wait disabled:opacity-80 ${
         className ?? ""
       }`}
       style={{
@@ -77,9 +90,14 @@ export default function ShareButton({
       }}
       aria-label={label}
       aria-live="polite"
+      aria-busy={isLoading}
     >
       <span className="sr-only">{label}</span>
-      <ShareIcon style={{ width: 20, height: 20 }} />
+      {isLoading ? (
+        <LoadingIcon style={{ width: 20, height: 20 }} />
+      ) : (
+        <ShareIcon style={{ width: 20, height: 20 }} />
+      )}
     </button>
   );
 }

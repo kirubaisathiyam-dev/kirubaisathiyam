@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { doc, increment, onSnapshot, setDoc } from "firebase/firestore";
-import { HeartIcon } from "@/components/Icons";
+import { HeartIcon, LoadingIcon } from "@/components/Icons";
 import { db } from "@/lib/firebase";
 
 type LikeButtonProps = {
@@ -20,6 +20,7 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
     hasServerSnapshot: false,
   });
   const [error, setError] = useState<string | null>(null);
+  const [isLiking, setIsLiking] = useState(false);
 
   const articleRef = useMemo(
     () => doc(db, "articles", articleId),
@@ -66,7 +67,12 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
   }, [articleRef, articleId]);
 
   const handleLike = async () => {
+    if (isLiking) {
+      return;
+    }
+
     setError(null);
+    setIsLiking(true);
     try {
       await setDoc(
         articleRef,
@@ -77,6 +83,8 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
       );
     } catch {
       setError("Unable to like right now.");
+    } finally {
+      setIsLiking(false);
     }
   };
 
@@ -91,6 +99,7 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
           <button
             type="button"
             onClick={handleLike}
+            disabled={isLoading || isLiking}
             className="inline-flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition hover:opacity-80 shadow-sm"
             style={{
               borderColor: "var(--border-color)",
@@ -98,14 +107,22 @@ export default function LikeButton({ articleId }: LikeButtonProps) {
               color: "var(--foreground)",
             }}
             aria-label="Like this article"
+            aria-busy={isLoading || isLiking}
           >
             <span aria-hidden="true" className="text-base">
-              <HeartIcon
-                style={{ width: 20, height: 20 }}
-                className="text-[color:var(--theme-foreground-bible)]"
-              />
+              {isLoading || isLiking ? (
+                <LoadingIcon
+                  style={{ width: 20, height: 20 }}
+                  className="text-[color:var(--theme-foreground-bible)]"
+                />
+              ) : (
+                <HeartIcon
+                  style={{ width: 20, height: 20 }}
+                  className="text-[color:var(--theme-foreground-bible)]"
+                />
+              )}
             </span>
-            <span>{isLoading ? "..." : displayCount}</span>
+            <span>{displayCount}</span>
           </button>
         );
       })()}

@@ -1,6 +1,7 @@
 "use client";
 
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { LoadingIcon } from "@/components/Icons";
 import { useEffect, useMemo, useState } from "react";
 import { auth, db, provider } from "@/lib/firebase";
 import {
@@ -64,6 +65,10 @@ export default function Comments({ articleId }: CommentsProps) {
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState("");
   const [savingCommentId, setSavingCommentId] = useState<string | null>(null);
+  const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
+  const [authAction, setAuthAction] = useState<"idle" | "login" | "logout">(
+    "idle",
+  );
   const [status, setStatus] = useState<"idle" | "posting">("idle");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,19 +117,25 @@ export default function Comments({ articleId }: CommentsProps) {
 
   const handleLogin = async () => {
     setError(null);
+    setAuthAction("login");
     try {
       await signInWithPopup(auth, provider);
     } catch {
       setError("Google sign-in failed. Please try again.");
+    } finally {
+      setAuthAction("idle");
     }
   };
 
   const handleLogout = async () => {
     setError(null);
+    setAuthAction("logout");
     try {
       await signOut(auth);
     } catch {
       setError("Sign out failed. Please try again.");
+    } finally {
+      setAuthAction("idle");
     }
   };
 
@@ -164,10 +175,13 @@ export default function Comments({ articleId }: CommentsProps) {
 
   const handleDelete = async (commentId: string) => {
     setError(null);
+    setDeletingCommentId(commentId);
     try {
       await deleteDoc(doc(db, "articles", articleId, "comments", commentId));
     } catch {
       setError("Unable to delete right now. Please try again.");
+    } finally {
+      setDeletingCommentId(null);
     }
   };
 
@@ -211,14 +225,20 @@ export default function Comments({ articleId }: CommentsProps) {
           <button
             type="button"
             onClick={handleLogin}
-            className="inline-flex items-center justify-center border px-4 py-2 text-sm font-semibold transition hover:opacity-80"
+            disabled={authAction === "login"}
+            className="inline-flex items-center justify-center gap-2 border px-4 py-2 text-sm font-semibold transition hover:opacity-80 disabled:cursor-wait disabled:opacity-80"
             style={{
               borderColor: "var(--theme-border-color)",
               backgroundColor: "var(--theme-foreground-bible)",
               color: "var(--theme-foreground-contrast)",
             }}
           >
-            Continue with Google
+            {authAction === "login" && (
+              <LoadingIcon style={{ width: 16, height: 16 }} />
+            )}
+            <span>
+              {authAction === "login" ? "Opening Google..." : "Continue with Google"}
+            </span>
           </button>
         )}
       </div>
@@ -244,10 +264,14 @@ export default function Comments({ articleId }: CommentsProps) {
             <button
               type="button"
               onClick={handleLogout}
-              className="text-xs font-semibold underline tracking-wide"
+              disabled={authAction === "logout"}
+              className="inline-flex items-center gap-1 text-xs font-semibold underline tracking-wide disabled:cursor-wait disabled:opacity-70"
               style={{ color: "var(--muted-foreground)" }}
             >
-              Sign out
+              {authAction === "logout" && (
+                <LoadingIcon style={{ width: 14, height: 14 }} />
+              )}
+              <span>{authAction === "logout" ? "Signing out..." : "Sign out"}</span>
             </button>
           </div>
 
@@ -279,14 +303,17 @@ export default function Comments({ articleId }: CommentsProps) {
                 type="button"
                 onClick={handlePost}
                 disabled={status === "posting" || !text.trim()}
-                className="border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
                 style={{
                   borderColor: "var(--theme-border-color)",
                   backgroundColor: "var(--theme-foreground-bible)",
                   color: "var(--theme-foreground-contrast)",
                 }}
               >
-                {status === "posting" ? "Posting..." : "Post comment"}
+                {status === "posting" && (
+                  <LoadingIcon style={{ width: 14, height: 14 }} />
+                )}
+                <span>{status === "posting" ? "Posting..." : "Post comment"}</span>
               </button>
             </div>
           </div>
@@ -367,16 +394,19 @@ export default function Comments({ articleId }: CommentsProps) {
                           type="button"
                           onClick={() => handleEditSave(comment.id)}
                           disabled={savingCommentId === comment.id}
-                          className="border px-3 py-1 transition hover:opacity-80"
+                          className="inline-flex items-center justify-center gap-1 border px-3 py-1 transition hover:opacity-80 disabled:cursor-wait disabled:opacity-70"
                           style={{
                             borderColor: "var(--theme-border-color)",
                             backgroundColor: "var(--theme-foreground-bible)",
                             color: "var(--theme-foreground-contrast)",
                           }}
                         >
-                          {savingCommentId === comment.id
-                            ? "Saving..."
-                            : "Save"}
+                          {savingCommentId === comment.id && (
+                            <LoadingIcon style={{ width: 12, height: 12 }} />
+                          )}
+                          <span>
+                            {savingCommentId === comment.id ? "Saving..." : "Save"}
+                          </span>
                         </button>
                         <button
                           type="button"
@@ -416,12 +446,18 @@ export default function Comments({ articleId }: CommentsProps) {
                       <button
                         type="button"
                         onClick={() => handleDelete(comment.id)}
-                        className="transition opacity-50 hover:opacity-100"
+                        disabled={deletingCommentId === comment.id}
+                        className="inline-flex items-center gap-1 transition opacity-50 hover:opacity-100 disabled:cursor-wait disabled:opacity-70"
                         style={{
                           color: "var(--theme-foreground)",
                         }}
                       >
-                        Delete
+                        {deletingCommentId === comment.id && (
+                          <LoadingIcon style={{ width: 12, height: 12 }} />
+                        )}
+                        <span>
+                          {deletingCommentId === comment.id ? "Deleting..." : "Delete"}
+                        </span>
                       </button>
                     </div>
                   )}

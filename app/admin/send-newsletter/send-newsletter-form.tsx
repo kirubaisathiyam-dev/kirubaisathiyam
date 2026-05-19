@@ -1,6 +1,7 @@
 "use client";
 
 import { formatTamilDate } from "@/lib/date";
+import { LoadingIcon } from "@/components/Icons";
 import { useMemo, useState } from "react";
 
 export type NewsletterArticle = {
@@ -109,7 +110,7 @@ export default function SendNewsletterForm({ articles }: Props) {
         type="button"
         onClick={handleSend}
         disabled={status === "loading" || articles.length === 0}
-        className="border px-4 py-2 text-sm font-semibold"
+        className="inline-flex items-center justify-center gap-2 border px-4 py-2 text-sm font-semibold"
         style={{
           borderColor: "var(--foreground)",
           background: "var(--foreground)",
@@ -120,7 +121,8 @@ export default function SendNewsletterForm({ articles }: Props) {
               : "pointer",
         }}
       >
-        Send newsletter
+        {status === "loading" && <LoadingIcon style={{ width: 16, height: 16 }} />}
+        <span>{status === "loading" ? "Sending..." : "Send newsletter"}</span>
       </button>
 
       {message && (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LoadingIcon } from "@/components/Icons";
 
 const emailRegex =
   /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -65,7 +66,7 @@ export default function SubscribeForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="border px-4 py-2 text-sm font-semibold"
+        className="inline-flex items-center justify-center gap-2 border px-4 py-2 text-sm font-semibold"
         style={{
           borderColor: "var(--foreground)",
           background: "var(--foreground)",
@@ -73,7 +74,8 @@ export default function SubscribeForm() {
           cursor: status === "loading" ? "not-allowed" : "pointer",
         }}
       >
-        Subscribe
+        {status === "loading" && <LoadingIcon style={{ width: 16, height: 16 }} />}
+        <span>{status === "loading" ? "Subscribing..." : "Subscribe"}</span>
       </button>
 
       {status === "success" && (

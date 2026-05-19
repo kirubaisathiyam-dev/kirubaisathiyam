@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchIcon } from "@/components/Icons";
+import { LoadingIcon, SearchIcon } from "@/components/Icons";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
@@ -62,13 +62,17 @@ export default function BibleSearchForm({
         style={{ color: "var(--foreground)" }}
         aria-label="Search Bible"
       >
-        <SearchIcon
-          style={{
-            width: 20,
-            height: 20,
-            transform: "scaleX(-1)",
-          }}
-        />
+        {isPending ? (
+          <LoadingIcon style={{ width: 20, height: 20 }} />
+        ) : (
+          <SearchIcon
+            style={{
+              width: 20,
+              height: 20,
+              transform: "scaleX(-1)",
+            }}
+          />
+        )}
       </button>
     </form>
   );

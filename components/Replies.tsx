@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { LoadingIcon } from "@/components/Icons";
 import { auth, db } from "@/lib/firebase";
 import {
   addDoc,
@@ -58,6 +59,7 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
   const [editingText, setEditingText] = useState("");
   const [replyStatus, setReplyStatus] = useState<"idle" | "posting">("idle");
   const [savingReplyId, setSavingReplyId] = useState<string | null>(null);
+  const [deletingReplyId, setDeletingReplyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const repliesRef = useMemo(
@@ -125,6 +127,7 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
 
   const handleDelete = async (replyId: string) => {
     setError(null);
+    setDeletingReplyId(replyId);
     try {
       await deleteDoc(
         doc(
@@ -139,6 +142,8 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
       );
     } catch {
       setError("Unable to delete right now. Please try again.");
+    } finally {
+      setDeletingReplyId(null);
     }
   };
 
@@ -221,14 +226,17 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
               type="button"
               onClick={handleReply}
               disabled={replyStatus === "posting" || !text.trim()}
-              className="border px-4 py-1.5 text-xs font-semibold tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex items-center justify-center gap-2 border px-4 py-1.5 text-xs font-semibold tracking-wide transition disabled:cursor-not-allowed disabled:opacity-60"
               style={{
                 borderColor: "var(--theme-border-color)",
                 backgroundColor: "var(--theme-foreground-bible)",
                 color: "var(--theme-foreground-contrast)",
               }}
             >
-              {replyStatus === "posting" ? "Posting..." : "Post reply"}
+              {replyStatus === "posting" && (
+                <LoadingIcon style={{ width: 14, height: 14 }} />
+              )}
+              <span>{replyStatus === "posting" ? "Posting..." : "Post reply"}</span>
             </button>
           </div>
         </div>
@@ -299,14 +307,19 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
                         type="button"
                         onClick={() => handleEditSave(reply.id)}
                         disabled={savingReplyId === reply.id}
-                        className="border px-3 py-1 transition hover:opacity-80"
+                        className="inline-flex items-center justify-center gap-1 border px-3 py-1 transition hover:opacity-80 disabled:cursor-wait disabled:opacity-70"
                         style={{
                           borderColor: "var(--theme-border-color)",
                           backgroundColor: "var(--theme-foreground-bible)",
                           color: "var(--theme-foreground-contrast)",
                         }}
                       >
-                        {savingReplyId === reply.id ? "Saving..." : "Save"}
+                        {savingReplyId === reply.id && (
+                          <LoadingIcon style={{ width: 12, height: 12 }} />
+                        )}
+                        <span>
+                          {savingReplyId === reply.id ? "Saving..." : "Save"}
+                        </span>
                       </button>
                       <button
                         type="button"
@@ -349,12 +362,18 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
                       <button
                         type="button"
                         onClick={() => handleDelete(reply.id)}
-                        className="transition opacity-50 hover:opacity-100 "
+                        disabled={deletingReplyId === reply.id}
+                        className="inline-flex items-center gap-1 transition opacity-50 hover:opacity-100 disabled:cursor-wait disabled:opacity-70"
                         style={{
                           color: "var(--theme-foreground)",
                         }}
                       >
-                        Delete
+                        {deletingReplyId === reply.id && (
+                          <LoadingIcon style={{ width: 12, height: 12 }} />
+                        )}
+                        <span>
+                          {deletingReplyId === reply.id ? "Deleting..." : "Delete"}
+                        </span>
                       </button>
                     </div>
                   )}

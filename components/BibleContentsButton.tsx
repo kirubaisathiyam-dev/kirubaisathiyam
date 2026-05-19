@@ -1,6 +1,11 @@
 "use client";
 
-import { ArrowRightIcon, CloseIcon, ListIcon } from "@/components/Icons";
+import {
+  ArrowRightIcon,
+  CloseIcon,
+  ListIcon,
+  LoadingIcon,
+} from "@/components/Icons";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import {
   BOOKS_CACHE_KEY,
@@ -310,6 +315,8 @@ export default function BibleContentsButton({
                       {group.books.map((book) => {
                         const isOpen = expandedBook === book.english;
                         const chapters = chapterMap[book.english] || [];
+                        const isLoadingBook =
+                          loadingBook === book.english && !chapters.length;
 
                         return (
                           <section
@@ -332,14 +339,21 @@ export default function BibleContentsButton({
                               <span className="font-medium">
                                 {book.tamil || book.english}
                               </span>
-                              <span
-                                className={`inline-flex transition-transform ${
-                                  isOpen ? "rotate-90" : ""
-                                }`}
-                                aria-hidden="true"
-                              >
-                                <ArrowRightIcon style={{ width: 18, height: 18 }} />
-                              </span>
+                              {isLoadingBook ? (
+                                <LoadingIcon
+                                  style={{ width: 18, height: 18 }}
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <span
+                                  className={`inline-flex transition-transform ${
+                                    isOpen ? "rotate-90" : ""
+                                  }`}
+                                  aria-hidden="true"
+                                >
+                                  <ArrowRightIcon style={{ width: 18, height: 18 }} />
+                                </span>
+                              )}
                             </button>
 
                             <div
@@ -352,7 +366,7 @@ export default function BibleContentsButton({
                                   className="border-t px-5 pb-5 pt-4"
                                   style={{ borderColor: "var(--theme-border-color)" }}
                                 >
-                                  {loadingBook === book.english && !chapters.length ? (
+                                  {isLoadingBook ? (
                                     <LoadingIndicator className="py-4" size={24} />
                                   ) : (
                                     <div

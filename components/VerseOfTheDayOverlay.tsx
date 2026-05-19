@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
+import logoLight from "@/app/logo-light.svg";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
 
@@ -262,6 +263,23 @@ export default function VerseOfTheDayOverlay() {
               <p className="sm:leading-8 text-white sm:text-xl">
                 {verseOfTheDay.explanation}
               </p>
+            </div>
+          </div>
+
+          <div
+            data-share-only="true"
+            className="absolute inset-x-0 bottom-0 z-10 hidden justify-center px-5 py-6 sm:px-8 lg:px-10"
+          >
+            <div className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3 text-lg font-semibold tracking-tight text-white sm:text-xl">
+              <Image
+                src={logoLight}
+                alt="Kirubai Sathiyam logo"
+                width={36}
+                height={36}
+              />
+              <div>
+                கிருபை <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
+              </div>
             </div>
           </div>
         </div>
