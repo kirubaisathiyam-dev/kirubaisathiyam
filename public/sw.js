@@ -13,6 +13,7 @@ const CORE_ASSETS = [
   "/apple-icon.png",
   "/icon0.svg",
   "/icon1.png",
+  "/notification-badge.svg",
   "/web-app-manifest-192x192.png",
   "/web-app-manifest-512x512.png",
 ];
@@ -136,7 +137,7 @@ self.addEventListener("push", (event) => {
       "/web-app-manifest-192x192.png",
     badge:
       notification.badge ||
-      "/web-app-manifest-192x192.png",
+      "/notification-badge.svg",
     image: notification.image || data.image,
     data: {
       url: data.url || payload.fcmOptions?.link || "/",

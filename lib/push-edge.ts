@@ -255,6 +255,9 @@ export async function sendPushToToken(token: string, message: PushMessage) {
       : `${siteUrl}${message.url.startsWith("/") ? "" : "/"}${message.url}`
     : siteUrl || "/";
   const icon = siteUrl ? `${siteUrl}/web-app-manifest-192x192.png` : "/web-app-manifest-192x192.png";
+  const badge = siteUrl
+    ? `${siteUrl}/notification-badge.svg`
+    : "/notification-badge.svg";
 
   const response = await fetch(
     `https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`,
@@ -276,7 +279,7 @@ export async function sendPushToToken(token: string, message: PushMessage) {
             fcm_options: { link },
             notification: {
               icon,
-              badge: icon,
+              badge,
               ...(message.image ? { image: message.image } : {}),
             },
           },
