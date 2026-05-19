@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import StickyHeader from "@/components/StickyHeader";
+import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import ThemeToggle from "@/components/ThemeToggle";
 import logoDark from "@/app/logo-dark.svg";
 import logoLight from "@/app/logo-light.svg";
@@ -163,8 +164,9 @@ export default function SiteHeader() {
               style={{ borderColor: "var(--border-color)" }}
             >
               <div
-                className="flex w-full items-center justify-center px-3 py-4"
+                className="flex w-full items-center justify-center gap-6 px-3 py-4"
               >
+                <PushNotificationPrompt variant="icon" />
                 <ThemeToggle />
               </div>
             </div>

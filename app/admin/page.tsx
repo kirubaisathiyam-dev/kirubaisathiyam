@@ -64,15 +64,23 @@ export default function AdminHomePage() {
 
   if (!isAuthed) {
     return (
-      <div className="max-w-md space-y-4">
-        <h2 className="text-xl font-semibold">Admin Login</h2>
+      <div className="mx-auto max-w-md space-y-5 border p-6" style={{ borderColor: "var(--border-color)" }}>
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: "var(--muted-foreground)" }}>
+            Kirubai Sathiyam
+          </p>
+          <h2 className="text-2xl font-semibold">Admin Login</h2>
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+            Sign in to manage content, newsletters, and notifications.
+          </p>
+        </div>
         <form className="space-y-3" onSubmit={handleLogin}>
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full border px-3 py-2 text-sm"
+            className="w-full border px-3 py-3 text-sm"
             style={{ borderColor: "var(--border-color)" }}
             required
           />
@@ -81,13 +89,13 @@ export default function AdminHomePage() {
             placeholder="Password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full border px-3 py-2 text-sm"
+            className="w-full border px-3 py-3 text-sm"
             style={{ borderColor: "var(--border-color)" }}
             required
           />
           <button
             type="submit"
-            className="cursor-pointer border px-4 py-2 text-sm font-semibold"
+            className="w-full cursor-pointer border px-4 py-3 text-sm font-semibold"
             style={{
               borderColor: "var(--foreground)",
               background: "var(--foreground)",
@@ -107,39 +115,113 @@ export default function AdminHomePage() {
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Admin Dashboard</h2>
-      <div className="space-y-2">
-        <p style={{ color: "var(--muted-foreground)" }}>
-          Choose where you want to go next.
-        </p>
-        <p
-          className="max-w-2xl text-sm"
-          style={{ color: "var(--muted-foreground)" }}
-        >
+    <div className="space-y-8">
+      <section
+        className="border p-6"
+        style={{
+          borderColor: "var(--border-color)",
+          background:
+            "linear-gradient(135deg, var(--muted-background), var(--background))",
+        }}
+      >
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-2">
+            <p
+              className="text-xs font-semibold uppercase tracking-[0.18em]"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              Admin workspace
+            </p>
+            <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">
+              Dashboard
+            </h2>
+            <p className="max-w-2xl text-sm" style={{ color: "var(--muted-foreground)" }}>
+              Manage publishing, email campaigns, and push notifications from
+              one place.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="cursor-pointer self-start border px-4 py-2 text-sm font-semibold sm:self-auto"
+            style={{
+              borderColor: "var(--border-color)",
+              color: "var(--foreground)",
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </section>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <AdminCard
+          href="/admin/cms"
+          title="TinaCMS"
+          description="Create and update articles and theology content."
+          label="Open CMS"
+        />
+        <AdminCard
+          href="/admin/send-newsletter"
+          title="Newsletter"
+          description="Send the selected article to email subscribers."
+          label="Send email"
+        />
+        <AdminCard
+          href="/admin/notifications"
+          title="Push Notifications"
+          description="Send article, daily verse, or custom push messages."
+          label="Send push"
+        />
+      </div>
+
+      <section
+        className="border p-5 text-sm"
+        style={{ borderColor: "var(--border-color)" }}
+      >
+        <p className="font-semibold">Deployment note</p>
+        <p className="mt-2" style={{ color: "var(--muted-foreground)" }}>
           TinaCMS uses local mode in development and TinaCloud in production.
           On Cloudflare, `/admin/cms` works after the Tina env vars are set for
           the deployed app.
         </p>
-      </div>
-      <div className="flex flex-col items-start gap-2">
-        <Link href="/admin/cms" className="text-sm font-semibold hover:underline">
-          Open TinaCMS
-        </Link>
-        <Link
-          href="/admin/send-newsletter"
-          className="text-sm font-semibold hover:underline"
-        >
-          Send newsletters
-        </Link>
-      </div>
-      <button
-        type="button"
-        onClick={handleLogout}
-        className="cursor-pointer text-sm font-semibold hover:underline"
-      >
-        Logout
-      </button>
+      </section>
     </div>
+  );
+}
+
+function AdminCard({
+  href,
+  title,
+  description,
+  label,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  label: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex min-h-48 flex-col justify-between border p-5 transition hover:-translate-y-0.5 hover:shadow-lg"
+      style={{
+        borderColor: "var(--border-color)",
+        background: "var(--background)",
+      }}
+    >
+      <span className="space-y-2">
+        <span className="block text-lg font-semibold">{title}</span>
+        <span
+          className="block text-sm leading-6"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          {description}
+        </span>
+      </span>
+      <span className="mt-6 text-sm font-semibold group-hover:underline">
+        {label}
+      </span>
+    </Link>
   );
 }

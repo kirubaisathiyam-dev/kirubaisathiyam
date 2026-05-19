@@ -117,6 +117,62 @@ self.addEventListener("message", (event) => {
   }
 });
 
+self.addEventListener("push", (event) => {
+  let payload = {};
+
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    payload = { notification: { title: "Kirubai Sathiyam" } };
+  }
+
+  const notification = payload.notification || {};
+  const data = payload.data || {};
+  const title = notification.title || data.title || "Kirubai Sathiyam";
+  const options = {
+    body: notification.body || data.body || "",
+    icon:
+      notification.icon ||
+      "/web-app-manifest-192x192.png",
+    badge:
+      notification.badge ||
+      "/web-app-manifest-192x192.png",
+    image: notification.image || data.image,
+    data: {
+      url: data.url || payload.fcmOptions?.link || "/",
+    },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = new URL(event.notification.data?.url || "/", self.location.origin);
+
+  event.waitUntil(
+    (async () => {
+      const clientList = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      for (const client of clientList) {
+        const clientUrl = new URL(client.url);
+        if (clientUrl.origin === targetUrl.origin && "focus" in client) {
+          await client.focus();
+          if ("navigate" in client) {
+            await client.navigate(targetUrl.href);
+          }
+          return;
+        }
+      }
+
+      await self.clients.openWindow(targetUrl.href);
+    })(),
+  );
+});
+
 function isRangeRequest(request) {
   return request.headers.has("range");
 }

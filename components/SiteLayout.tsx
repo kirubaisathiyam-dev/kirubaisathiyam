@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
+import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeForm from "@/components/SubscribeForm";
 
@@ -87,6 +88,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
           </div>
         </div>
       </footer>
+      <PushNotificationPrompt variant="auto" />
     </div>
   );
 }
