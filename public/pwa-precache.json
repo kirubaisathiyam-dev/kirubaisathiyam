@@ -139,6 +139,7 @@
   "contentAssets": [
     "/bible-notes.json",
     "/images/1.png",
+    "/images/bible.jpg",
     "/images/history.jpg",
     "/images/reformed.jpg",
     "/images/systematic.jpg",
@@ -162,5 +163,5 @@
     "/uploads/long.jpg",
     "/uploads/map3.png"
   ],
-  "generatedAt": "2026-05-17T06:58:11.909Z"
+  "generatedAt": "2026-05-19T02:23:49.453Z"
 }

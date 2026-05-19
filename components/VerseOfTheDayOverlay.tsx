@@ -1,21 +1,202 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
-import { toAbsoluteUrl } from "@/lib/seo";
-import { getVerseOfTheDay } from "@/lib/verse-of-the-day";
+import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
 
-export default function VerseOfTheDayOverlay() {
-  const verseOfTheDay = getVerseOfTheDay();
+type VerseOfTheDayEntry = {
+  day: number;
+  verse_reference: string;
+  explanation: string;
+};
 
-  if (!verseOfTheDay) {
+type VerseOfTheDay = {
+  day: number;
+  reference: string;
+  rawReference: string;
+  verse: string;
+  explanation: string;
+  image: string;
+  readerHref: string;
+};
+
+const SITE_TIME_ZONE = "Asia/Colombo";
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
+function getDayOfYearInTimeZone(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+
+  if (!year || !month || !day) {
+    return 1;
+  }
+
+  const current = Date.UTC(year, month - 1, day);
+  const start = Date.UTC(year, 0, 1);
+  return Math.floor((current - start) / DAY_IN_MS) + 1;
+}
+
+function getVerseRange(verseRange: string) {
+  const [startValue, endValue] = verseRange.split("-");
+  const start = Number(startValue);
+  const end = Number(endValue ?? startValue);
+
+  if (!Number.isFinite(start) || !Number.isFinite(end)) {
+    return [];
+  }
+
+  return Array.from({ length: Math.max(end - start + 1, 0) }, (_, index) =>
+    String(start + index),
+  );
+}
+
+async function fetchJson<T>(url: string): Promise<T | null> {
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) {
+      return null;
+    }
+    return (await response.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+function buildImageUrl(day: number) {
+  return `https://picsum.photos/seed/verse-${day}/1600/1200.jpg`;
+}
+
+async function buildVerseOfTheDay(
+  entry: VerseOfTheDayEntry,
+): Promise<VerseOfTheDay> {
+  const rawReference = entry.verse_reference.replace(/[()]/g, "").trim();
+  const parsedReference = parseBibleReference(rawReference);
+
+  if (!parsedReference) {
+    return {
+      day: entry.day,
+      reference: rawReference || entry.verse_reference,
+      rawReference,
+      verse: "",
+      explanation: entry.explanation,
+      image: buildImageUrl(entry.day),
+      readerHref: "/bible/read",
+    };
+  }
+
+  const [bookCode = "", chapter = "", verseRange = ""] =
+    parsedReference.passageId.split(".");
+  const book = getBookByCode(bookCode);
+  const bookName = book?.name ?? "";
+  const bookData = bookName
+    ? await fetchJson<LocalBibleBook>(
+        `/local-bible/books/${getBookFileSlug(bookName)}.json`,
+      )
+    : null;
+  const tamilBookName = bookData?.book?.tamil?.trim() || bookName;
+  const chapterData = bookData?.chapters?.find(
+    (item) => item.chapter === chapter,
+  );
+  const verseNumbers = new Set(getVerseRange(verseRange));
+  const verse = (chapterData?.verses ?? [])
+    .filter((item) => verseNumbers.has(item.verse))
+    .map((item) => `${item.verse}. ${item.text}`)
+    .join(" ");
+  const readerHref =
+    bookName && chapter && verseRange
+      ? `/bible/read?book=${encodeURIComponent(
+          bookName,
+        )}&chapter=${encodeURIComponent(chapter)}&verses=${encodeURIComponent(
+          verseRange,
+        )}`
+      : "/bible/read";
+
+  return {
+    day: entry.day,
+    reference:
+      tamilBookName && chapter && verseRange
+        ? `${tamilBookName} ${chapter}:${verseRange}`
+        : rawReference,
+    rawReference,
+    verse,
+    explanation: entry.explanation,
+    image: buildImageUrl(entry.day),
+    readerHref,
+  };
+}
+
+async function getClientVerseOfTheDay() {
+  const entries = await fetchJson<VerseOfTheDayEntry[]>(
+    "/verse-of-the-day.json",
+  );
+
+  if (!entries?.length) {
     return null;
   }
 
-  const shareUrl = toAbsoluteUrl("/");
+  const dayOfYear = getDayOfYearInTimeZone(new Date(), SITE_TIME_ZONE);
+  const normalizedDay = ((dayOfYear - 1) % entries.length) + 1;
+  const entry =
+    entries.find((item) => item.day === normalizedDay) ??
+    entries[normalizedDay - 1] ??
+    entries[0];
+
+  return buildVerseOfTheDay(entry);
+}
+
+function VerseOfTheDaySkeleton() {
+  return (
+    <section
+      className="relative -mt-8 overflow-hidden sm:-mt-10"
+      style={{ borderColor: "var(--border-color)" }}
+      aria-hidden="true"
+    >
+      <div className="relative min-h-[24rem] bg-[#111111] sm:min-h-[30rem] lg:min-h-[36rem]" />
+    </section>
+  );
+}
+
+export default function VerseOfTheDayOverlay() {
+  const [verseOfTheDay, setVerseOfTheDay] = useState<VerseOfTheDay | null>(
+    null,
+  );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadVerse() {
+      const dailyVerse = await getClientVerseOfTheDay();
+      if (isMounted) {
+        setVerseOfTheDay(dailyVerse);
+      }
+    }
+
+    void loadVerse();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (!verseOfTheDay) {
+    return <VerseOfTheDaySkeleton />;
+  }
+
   const shareTitle = `Verse Of The Day - ${verseOfTheDay.reference}`;
   const shareTargetId = "verse-of-the-day-share-card";
+  const shareUrl =
+    typeof window === "undefined" ? "/" : `${window.location.origin}/`;
   const shareText = [
     verseOfTheDay.reference,
     verseOfTheDay.verse,
@@ -23,18 +204,6 @@ export default function VerseOfTheDayOverlay() {
   ]
     .filter(Boolean)
     .join("\n\n");
-  const parsedReference = parseBibleReference(verseOfTheDay.reference);
-  const [bookCode = "", chapter = "", verses = ""] =
-    parsedReference?.passageId.split(".") ?? [];
-  const readerBook = bookCode ? getBookByCode(bookCode)?.name ?? "" : "";
-  const readerHref =
-    readerBook && chapter && verses
-      ? `/bible/read?book=${encodeURIComponent(
-          readerBook,
-        )}&chapter=${encodeURIComponent(chapter)}&verses=${encodeURIComponent(
-          verses,
-        )}`
-      : "/bible/read";
 
   return (
     <section
@@ -103,7 +272,7 @@ export default function VerseOfTheDayOverlay() {
         >
           <div className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3">
             <Link
-              href={readerHref}
+              href={verseOfTheDay.readerHref}
               className="inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80"
               style={{
                 borderColor: "var(--theme-border-color)",
