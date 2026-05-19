@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
-import logoLight from "@/app/logo-light.svg";
+import logoDark from "@/app/logo-dark.svg";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
 
@@ -198,6 +198,11 @@ export default function VerseOfTheDayOverlay() {
   const shareTargetId = "verse-of-the-day-share-card";
   const shareUrl =
     typeof window === "undefined" ? "/" : `${window.location.origin}/`;
+  const heroButtonStyle = {
+    borderColor: "rgba(237, 237, 237, 0.16)",
+    backgroundColor: "#e9c36a",
+    color: "#0a0a0a",
+  };
   const shareText = [
     verseOfTheDay.reference,
     verseOfTheDay.verse,
@@ -247,8 +252,8 @@ export default function VerseOfTheDayOverlay() {
                   <span
                     className="inline"
                     style={{
-                      backgroundColor: "var(--heighlight-bible)",
-                      color: "var(--foreground)",
+                      backgroundColor: "#ffe3a1",
+                      color: "#171717",
                       padding: "0em 0.3em",
                       borderRadius: "0",
                       boxDecorationBreak: "clone",
@@ -270,15 +275,18 @@ export default function VerseOfTheDayOverlay() {
             data-share-only="true"
             className="absolute inset-x-0 bottom-0 z-10 hidden justify-center px-5 py-6 sm:px-8 lg:px-10"
           >
-            <div className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3 text-lg font-semibold tracking-tight text-white sm:text-xl">
+            <div
+              className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3 text-lg font-semibold tracking-tight sm:text-xl"
+              style={{ color: "#ededed" }}
+            >
               <Image
-                src={logoLight}
+                src={logoDark}
                 alt="Kirubai Sathiyam logo"
-                width={36}
-                height={36}
+                width={30}
+                height={30}
               />
               <div>
-                கிருபை <span style={{ color: "var(--foreground-bible)" }}>சத்தியம்</span>
+                கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
               </div>
             </div>
           </div>
@@ -292,11 +300,7 @@ export default function VerseOfTheDayOverlay() {
             <Link
               href={verseOfTheDay.readerHref}
               className="inline-flex cursor-pointer items-center justify-center rounded-full border p-3 text-sm font-semibold transition hover:opacity-80"
-              style={{
-                borderColor: "var(--theme-border-color)",
-                backgroundColor: "var(--theme-foreground-bible)",
-                color: "var(--theme-foreground-contrast)",
-              }}
+              style={heroButtonStyle}
               aria-label="Open in Bible reader"
             >
               <span
@@ -323,6 +327,7 @@ export default function VerseOfTheDayOverlay() {
               text={shareText}
               url={shareUrl}
               className="shadow-sm"
+              buttonStyle={heroButtonStyle}
             />
             <VerseOfTheDayShareButton
               title={shareTitle}
@@ -330,6 +335,7 @@ export default function VerseOfTheDayOverlay() {
               url={shareUrl}
               targetId={shareTargetId}
               className="shadow-sm"
+              buttonStyle={heroButtonStyle}
             />
           </div>
         </div>

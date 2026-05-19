@@ -10,6 +10,7 @@ type VerseOfTheDayShareButtonProps = {
   url: string;
   targetId: string;
   className?: string;
+  buttonStyle?: React.CSSProperties;
 };
 
 async function waitForImages(element: HTMLElement) {
@@ -38,6 +39,7 @@ export default function VerseOfTheDayShareButton({
   url,
   targetId,
   className,
+  buttonStyle,
 }: VerseOfTheDayShareButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -148,6 +150,7 @@ export default function VerseOfTheDayShareButton({
         borderColor: "var(--theme-border-color)",
         backgroundColor: "var(--theme-foreground-bible)",
         color: "var(--theme-foreground-contrast)",
+        ...buttonStyle,
       }}
       aria-label={isLoading ? "Preparing verse image" : "Share or download verse image"}
       aria-busy={isLoading}

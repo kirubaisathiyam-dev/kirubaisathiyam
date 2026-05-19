@@ -8,6 +8,7 @@ type ShareButtonProps = {
   text?: string;
   url: string;
   className?: string;
+  buttonStyle?: React.CSSProperties;
   onShare?: () => Promise<"shared" | "copied" | "error" | void> | "shared" | "copied" | "error" | void;
 };
 
@@ -16,6 +17,7 @@ export default function ShareButton({
   text,
   url,
   className,
+  buttonStyle,
   onShare,
 }: ShareButtonProps) {
   const [status, setStatus] = useState<
@@ -87,6 +89,7 @@ export default function ShareButton({
         borderColor: "var(--theme-border-color)",
         backgroundColor: "var(--theme-foreground-bible)",
         color: "var(--theme-foreground-contrast)",
+        ...buttonStyle,
       }}
       aria-label={label}
       aria-live="polite"
