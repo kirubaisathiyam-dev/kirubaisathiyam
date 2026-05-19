@@ -14,6 +14,14 @@ type PushNotificationPromptProps = {
 const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || "";
 const autoPromptStorageKey = "ks_push_auto_prompt_seen";
 
+function rememberAutoPromptSeen() {
+  try {
+    window.localStorage.setItem(autoPromptStorageKey, "true");
+  } catch {
+    // Ignore storage failures; the in-memory state still hides this render.
+  }
+}
+
 export default function PushNotificationPrompt({
   variant = "card",
 }: PushNotificationPromptProps) {
@@ -54,7 +62,9 @@ export default function PushNotificationPrompt({
 
       if (Notification.permission === "granted") {
         if (variant === "auto") {
-          window.localStorage.setItem(autoPromptStorageKey, "true");
+          rememberAutoPromptSeen();
+          setStatus("hidden");
+          return;
         }
         setStatus("enabled");
         setMessage("Notifications are enabled.");
@@ -69,7 +79,7 @@ export default function PushNotificationPrompt({
           setStatus("hidden");
         }
         if (variant === "auto") {
-          window.localStorage.setItem(autoPromptStorageKey, "true");
+          rememberAutoPromptSeen();
         }
         return;
       }
@@ -131,9 +141,14 @@ export default function PushNotificationPrompt({
         throw new Error(data?.error || "Unable to save push subscription.");
       }
 
+      rememberAutoPromptSeen();
+      if (variant === "auto") {
+        setStatus("hidden");
+        return;
+      }
+
       setStatus("enabled");
       setMessage("Notifications are enabled.");
-      window.localStorage.setItem(autoPromptStorageKey, "true");
     } catch (error) {
       const messageText =
         error instanceof Error ? error.message : "Push notification failed.";
@@ -165,7 +180,7 @@ export default function PushNotificationPrompt({
 
   if (variant === "auto") {
     function dismissAutoPrompt() {
-      window.localStorage.setItem(autoPromptStorageKey, "true");
+      rememberAutoPromptSeen();
       setStatus("hidden");
     }
 
