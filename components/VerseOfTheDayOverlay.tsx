@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import DailyVerseLikeButton from "@/components/DailyVerseLikeButton";
 import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
 import logoDark from "@/app/logo-dark.svg";
@@ -46,6 +47,24 @@ function getDayOfYearInTimeZone(date: Date, timeZone: string) {
   const current = Date.UTC(year, month - 1, day);
   const start = Date.UTC(year, 0, 1);
   return Math.floor((current - start) / DAY_IN_MS) + 1;
+}
+
+function getDateKeyInTimeZone(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+
+  if (!year || !month || !day) {
+    return "unknown-date";
+  }
+
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 function getVerseRange(verseRange: string) {
@@ -196,12 +215,13 @@ export default function VerseOfTheDayOverlay() {
 
   const shareTitle = `Verse Of The Day - ${verseOfTheDay.reference}`;
   const shareTargetId = "verse-of-the-day-share-card";
+  const dailyVerseId = getDateKeyInTimeZone(new Date(), SITE_TIME_ZONE);
   const shareUrl =
     typeof window === "undefined" ? "/" : `${window.location.origin}/`;
   const heroButtonStyle = {
     borderColor: "rgba(237, 237, 237, 0.16)",
-    backgroundColor: "#e9c36a",
-    color: "#0a0a0a",
+    backgroundColor: "transparent",
+    color: "#ffffff",
   };
   const shareText = [
     verseOfTheDay.reference,
@@ -322,6 +342,14 @@ export default function VerseOfTheDayOverlay() {
               />
               <span className="sr-only">Open in Bible reader</span>
             </Link>
+            <VerseOfTheDayShareButton
+              title={shareTitle}
+              text={shareText}
+              url={shareUrl}
+              targetId={shareTargetId}
+              className="shadow-sm"
+              buttonStyle={heroButtonStyle}
+            />
             <ShareButton
               title={shareTitle}
               text={shareText}
@@ -329,12 +357,11 @@ export default function VerseOfTheDayOverlay() {
               className="shadow-sm"
               buttonStyle={heroButtonStyle}
             />
-            <VerseOfTheDayShareButton
-              title={shareTitle}
-              text={shareText}
-              url={shareUrl}
-              targetId={shareTargetId}
-              className="shadow-sm"
+            <DailyVerseLikeButton
+              verseId={dailyVerseId}
+              day={verseOfTheDay.day}
+              reference={verseOfTheDay.reference}
+              rawReference={verseOfTheDay.rawReference}
               buttonStyle={heroButtonStyle}
             />
           </div>
