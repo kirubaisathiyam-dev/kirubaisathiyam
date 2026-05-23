@@ -4,7 +4,9 @@ import BibleSearchForm from "@/components/BibleSearchForm";
 import { SearchIcon } from "@/components/Icons";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import {
+  createBibleSearchIndex,
   loadBibleSearchCorpus,
+  searchBibleIndex,
   type BibleSearchVerse,
 } from "@/lib/bible-search";
 import type {
@@ -75,15 +77,31 @@ export default function BibleSearchPage() {
   const [error, setError] = useState("");
   const [lastResolvedQuery, setLastResolvedQuery] = useState("");
   const workerRef = useRef<Worker | null>(null);
+  const indexRef = useRef<ReturnType<typeof createBibleSearchIndex> | null>(null);
+  const corpusRef = useRef<BibleSearchVerse[]>([]);
   const requestIdRef = useRef(0);
 
   useEffect(() => {
     let active = true;
-    const worker = new Worker(
-      new URL("../lib/bible-search.worker.ts", import.meta.url),
-      { type: "module" },
-    );
-    workerRef.current = worker;
+    let worker: Worker | null = null;
+
+    const enableMainThreadSearch = (nextCorpus: BibleSearchVerse[]) => {
+      if (indexRef.current) {
+        return;
+      }
+
+      indexRef.current = createBibleSearchIndex(nextCorpus);
+      setIsLoading(false);
+    };
+
+    try {
+      worker = new Worker(new URL("../lib/bible-search.worker.ts", import.meta.url), {
+        type: "module",
+      });
+      workerRef.current = worker;
+    } catch {
+      workerRef.current = null;
+    }
 
     const handleWorkerMessage = (
       event: MessageEvent<BibleSearchWorkerResponse>,
@@ -113,21 +131,39 @@ export default function BibleSearchPage() {
       setIsLoading(false);
     };
 
-    worker.addEventListener("message", handleWorkerMessage);
+    const handleWorkerFailure = () => {
+      if (!active) return;
+
+      workerRef.current = null;
+      worker?.terminate();
+
+      if (corpusRef.current.length) {
+        enableMainThreadSearch(corpusRef.current);
+      }
+    };
+
+    worker?.addEventListener("message", handleWorkerMessage);
+    worker?.addEventListener("error", handleWorkerFailure);
 
     const loadSearch = async () => {
       try {
         const nextCorpus = await loadBibleSearchCorpus();
         if (!active) return;
 
+        corpusRef.current = nextCorpus;
         startTransition(() => {
           setCorpus(nextCorpus);
         });
 
-        worker.postMessage({
-          type: "init",
-          corpus: nextCorpus,
-        } satisfies BibleSearchWorkerMessage);
+        if (workerRef.current) {
+          workerRef.current.postMessage({
+            type: "init",
+            corpus: nextCorpus,
+          } satisfies BibleSearchWorkerMessage);
+          return;
+        }
+
+        enableMainThreadSearch(nextCorpus);
       } catch (loadError) {
         if (!active) return;
         setError(
@@ -143,15 +179,31 @@ export default function BibleSearchPage() {
 
     return () => {
       active = false;
-      worker.removeEventListener("message", handleWorkerMessage);
-      worker.terminate();
+      worker?.removeEventListener("message", handleWorkerMessage);
+      worker?.removeEventListener("error", handleWorkerFailure);
+      worker?.terminate();
       workerRef.current = null;
+      indexRef.current = null;
+      corpusRef.current = [];
     };
   }, []);
 
   useEffect(() => {
     const worker = workerRef.current;
-    if (!worker || isLoading) {
+    if (isLoading) {
+      return;
+    }
+
+    if (!worker) {
+      const index = indexRef.current;
+      if (!index) {
+        return;
+      }
+
+      startTransition(() => {
+        setResults(searchBibleIndex(index, deferredQuery));
+        setLastResolvedQuery(deferredQuery);
+      });
       return;
     }
 
