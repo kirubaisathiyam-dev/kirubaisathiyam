@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
-import VerseOfTheDayOverlay from "@/components/VerseOfTheDayOverlay";
+import DailyDevotionOverlay from "@/components/DailyDevotionOverlay";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
@@ -54,7 +54,7 @@ export default function Home() {
 
   return (
     <div className="space-y-16">
-      <VerseOfTheDayOverlay />
+      <DailyDevotionOverlay />
 
       <section className="mx-auto w-full max-w-5xl px-4">
         <Link
