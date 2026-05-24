@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
 import DailyDevotionOverlay from "@/components/DailyDevotionOverlay";
+import RecentArticlesCarousel from "@/components/RecentArticlesCarousel";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
@@ -121,7 +122,10 @@ export default function Home() {
             <ArrowRightIcon style={{ width: 15, height: 15 }} />
           </Link>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="sm:hidden">
+          <RecentArticlesCarousel articles={recentArticles} />
+        </div>
+        <div className="hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-3">
           {recentArticles.map((article) => (
             <Link
               href={`/articles/${article.slug}`}
