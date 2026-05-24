@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ArrowRightIcon } from "@/components/Icons";
 import Image from "next/image";
 import Link from "next/link";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -93,17 +92,6 @@ export default function TheologyPage() {
               </div>
             </div>
 
-            <div
-              className="mt-auto flex justify-end border-t p-5"
-              style={{ borderColor: "var(--border-color)" }}
-            >
-              <span
-                className="inline-flex items-center"
-                aria-hidden="true"
-              >
-                <ArrowRightIcon style={{ width: 15, height: 15 }} />
-              </span>
-            </div>
           </Link>
         ))}
       </div>

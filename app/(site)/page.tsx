@@ -99,7 +99,7 @@ export default function Home() {
         </Link>
       </section>
 
-      <section className="mx-auto w-full max-w-5xl space-y-6 px-4 pt-6">
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">கட்டுரைகள்</h2>
           <Link
@@ -170,11 +170,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* <div className="mx-auto w-full max-w-5xl px-4">
-        <hr style={{ borderColor: "var(--border-color)" }} />
-      </div> */}
 
-      <section className="mx-auto w-full max-w-5xl space-y-6 px-4 pt-6">
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">இறையியல்</h2>
           <Link
