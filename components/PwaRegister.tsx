@@ -25,6 +25,15 @@ const CORE_SYNC_URLS = [
   "/web-app-manifest-192x192.png",
   "/web-app-manifest-512x512.png",
 ];
+const CORE_ROUTE_ASSET_URLS = [
+  "/",
+  "/articles",
+  "/theology",
+  "/bible",
+  "/bible/read",
+  "/bible/search",
+  "/privacy-terms",
+];
 
 type OfflineManifest = {
   routes?: string[];
@@ -79,6 +88,57 @@ async function fetchManifest(): Promise<OfflineManifest> {
   }
 
   return (await response.json()) as OfflineManifest;
+}
+
+function extractBuildAssetUrlsFromHtml(html: string) {
+  const urls = new Set<string>();
+  const assetPattern = /(?:src|href)=["']([^"']+)["']/g;
+
+  for (const match of html.matchAll(assetPattern)) {
+    const rawUrl = match[1];
+    if (!rawUrl) {
+      continue;
+    }
+
+    try {
+      const url = new URL(rawUrl, window.location.origin);
+      if (url.origin !== window.location.origin) {
+        continue;
+      }
+
+      if (url.pathname.startsWith("/_next/")) {
+        urls.add(url.toString());
+      }
+    } catch {
+      // Ignore malformed asset URLs in HTML.
+    }
+  }
+
+  return Array.from(urls);
+}
+
+async function getRouteBuildAssetUrls(paths: string[]) {
+  const assets = new Set<string>();
+
+  await Promise.all(
+    paths.map(async (path) => {
+      try {
+        const response = await fetch(path, { cache: "no-cache" });
+        if (!response.ok) {
+          return;
+        }
+
+        const html = await response.text();
+        for (const assetUrl of extractBuildAssetUrlsFromHtml(html)) {
+          assets.add(assetUrl);
+        }
+      } catch {
+        // Ignore route asset discovery failures for individual pages.
+      }
+    }),
+  );
+
+  return Array.from(assets);
 }
 
 function getCurrentBuildAssetUrls() {
@@ -202,7 +262,13 @@ export default function PwaRegister() {
           // Ignore browsers that reject or do not support storage persistence.
         }
 
-        const shellResult = await prefetchUrls(getCurrentBuildAssetUrls());
+        const discoveredRouteAssets = await getRouteBuildAssetUrls(
+          CORE_ROUTE_ASSET_URLS,
+        );
+        const shellResult = await prefetchUrls([
+          ...getCurrentBuildAssetUrls(),
+          ...discoveredRouteAssets,
+        ]);
         const manifest = await fetchManifest();
         const currentVersion = manifest.generatedAt || "";
         const syncedVersion = window.localStorage.getItem(
@@ -218,7 +284,10 @@ export default function PwaRegister() {
         }
 
         const urls = buildSyncUrlList(manifest);
-        const result = await prefetchUrls(urls);
+        const result = await prefetchUrls([
+          ...urls,
+          ...discoveredRouteAssets,
+        ]);
 
         if (result.failures === 0 && currentVersion) {
           window.localStorage.setItem(OFFLINE_MANIFEST_VERSION_KEY, currentVersion);

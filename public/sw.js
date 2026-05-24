@@ -182,14 +182,27 @@ async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
   if (cached) return cached;
-  const response = await fetch(request);
-  if (response && response.ok) {
-    if (response.status === 206 || isRangeRequest(request)) {
-      return response;
+
+  try {
+    const response = await fetch(request);
+    if (response && response.ok) {
+      if (response.status === 206 || isRangeRequest(request)) {
+        return response;
+      }
+      await cache.put(request, response.clone());
     }
-    await cache.put(request, response.clone());
+    return response;
+  } catch {
+    const fallback = await cache.match(request);
+    if (fallback) {
+      return fallback;
+    }
+
+    return new Response("Offline asset not cached.", {
+      status: 503,
+      statusText: "Service Unavailable",
+    });
   }
-  return response;
 }
 
 async function networkFirst(request, cacheName, fallbackUrl) {
