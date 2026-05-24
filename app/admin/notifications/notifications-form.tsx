@@ -19,6 +19,17 @@ type VerseOfTheDayRecord = {
   explanation?: string;
 };
 
+type DailyDevotionSlot = {
+  verse?: string;
+  devotion?: string;
+};
+
+type DailyDevotionRecord = {
+  date?: string;
+  am?: DailyDevotionSlot;
+  pm?: DailyDevotionSlot;
+};
+
 type Props = {
   articles: NotificationArticle[];
 };
@@ -49,6 +60,35 @@ function trimNotificationBody(value: string, limit = 180) {
     return clean;
   }
   return `${clean.slice(0, limit - 3).trim()}...`;
+}
+
+function getColomboDateParts(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Colombo",
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+  });
+  const parts = Object.fromEntries(
+    formatter.formatToParts(date).map((part) => [part.type, part.value]),
+  );
+
+  return {
+    day: Number(parts.day),
+    monthShort: parts.month ?? "Jan",
+    hour: Number(parts.hour),
+  };
+}
+
+function getTodayDevotionCandidates(date = new Date()) {
+  const { day, monthShort } = getColomboDateParts(date);
+  const dayLabel = String(day).padStart(2, "0");
+  return [`${dayLabel} ${monthShort}`, `${dayLabel} Jan`];
+}
+
+function getCurrentDevotionSlot(date = new Date()) {
+  return getColomboDateParts(date).hour < 12 ? "am" : "pm";
 }
 
 export default function NotificationsForm({ articles }: Props) {
@@ -159,6 +199,43 @@ export default function NotificationsForm({ articles }: Props) {
     }
   }
 
+  async function sendDailyDevotionPush() {
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const response = await fetch("/daily-devotion.json", {
+        cache: "no-cache",
+      });
+      const records = (await response.json()) as DailyDevotionRecord[];
+      const slot = getCurrentDevotionSlot();
+      const record = getTodayDevotionCandidates()
+        .map((candidate) =>
+          records.find((item) => item.date === candidate && item[slot]?.verse),
+        )
+        .find(Boolean);
+
+      const slotRecord = record?.[slot];
+
+      if (!record || !slotRecord?.verse) {
+        throw new Error(`Daily devotion for the current ${slot.toUpperCase()} slot was not found.`);
+      }
+
+      await sendPush({
+        title: slot === "am" ? "Daily morning devotion" : "Daily evening devotion",
+        body: trimNotificationBody(
+          [slotRecord.verse, slotRecord.devotion].filter(Boolean).join(" "),
+        ),
+        url: "/",
+      });
+    } catch (error) {
+      const messageText =
+        error instanceof Error ? error.message : "Unable to send daily devotion.";
+      setStatus("error");
+      setMessage(messageText);
+    }
+  }
+
   async function sendCustomPush() {
     if (!customTitle.trim()) {
       setStatus("error");
@@ -233,20 +310,36 @@ export default function NotificationsForm({ articles }: Props) {
             className="border-t pt-4"
             style={{ borderColor: "var(--border-color)" }}
           >
-            <button
-              type="button"
-              onClick={sendDailyVersePush}
-              disabled={isLoading}
-              className="inline-flex cursor-pointer items-center justify-center gap-2 border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
-              style={{
-                borderColor: "var(--border-color)",
-                background: "var(--muted-background)",
-                color: "var(--foreground)",
-              }}
-            >
-              {isLoading && <LoadingIcon style={{ width: 16, height: 16 }} />}
-              <span>{isLoading ? "Sending..." : "Send today verse push"}</span>
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={sendDailyVersePush}
+                disabled={isLoading}
+                className="inline-flex cursor-pointer items-center justify-center gap-2 border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
+                style={{
+                  borderColor: "var(--border-color)",
+                  background: "var(--muted-background)",
+                  color: "var(--foreground)",
+                }}
+              >
+                {isLoading && <LoadingIcon style={{ width: 16, height: 16 }} />}
+                <span>{isLoading ? "Sending..." : "Send today verse push"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={sendDailyDevotionPush}
+                disabled={isLoading}
+                className="inline-flex cursor-pointer items-center justify-center gap-2 border px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
+                style={{
+                  borderColor: "var(--border-color)",
+                  background: "var(--muted-background)",
+                  color: "var(--foreground)",
+                }}
+              >
+                {isLoading && <LoadingIcon style={{ width: 16, height: 16 }} />}
+                <span>{isLoading ? "Sending..." : "Send today devotion push"}</span>
+              </button>
+            </div>
           </div>
         </section>
 

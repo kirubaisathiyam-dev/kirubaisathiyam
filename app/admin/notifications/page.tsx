@@ -13,8 +13,8 @@ export default function NotificationsPage() {
           Push Notifications
         </h1>
         <p className="max-w-2xl text-sm" style={{ color: "var(--muted-foreground)" }}>
-          Send manual push notifications for today&apos;s verse, new articles,
-          or a custom message.
+          Send manual push notifications for today&apos;s verse, today&apos;s
+          devotion, new articles, or a custom message.
         </p>
       </div>
 
