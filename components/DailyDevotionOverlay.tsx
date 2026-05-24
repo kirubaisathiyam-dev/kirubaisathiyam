@@ -605,7 +605,7 @@ export default function DailyDevotionOverlay() {
                   </blockquote>
                   <p
                     data-share-exclude="true"
-                    className="text-sm sm:text-base"
+                    className="text-sm sm:text-base mt-8"
                     style={{ color: "rgba(255, 255, 255, 0.78)" }}
                   >
                     சார்ல்ஸ் ஸ்பர்ஜனின் காலை மற்றும் மாலை தியானங்கள்
