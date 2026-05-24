@@ -11,6 +11,9 @@ type VerseOfTheDayShareButtonProps = {
   targetId: string;
   className?: string;
   buttonStyle?: React.CSSProperties;
+  exportWidth?: number;
+  exportHeight?: number;
+  fileName?: string;
 };
 
 async function waitForImages(element: HTMLElement) {
@@ -36,10 +39,14 @@ async function waitForImages(element: HTMLElement) {
 
 export default function VerseOfTheDayShareButton({
   title,
+  text,
   url,
   targetId,
   className,
   buttonStyle,
+  exportWidth,
+  exportHeight,
+  fileName = "verse-of-the-day.png",
 }: VerseOfTheDayShareButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,12 +66,14 @@ export default function VerseOfTheDayShareButton({
       }
 
       const targetRect = target.getBoundingClientRect();
+      const captureWidth = exportWidth ?? targetRect.width;
+      const captureHeight = exportHeight ?? targetRect.height;
       captureWrapper = document.createElement("div");
       captureWrapper.style.position = "fixed";
       captureWrapper.style.left = "0";
       captureWrapper.style.top = "0";
-      captureWrapper.style.width = `${targetRect.width}px`;
-      captureWrapper.style.height = `${targetRect.height}px`;
+      captureWrapper.style.width = `${captureWidth}px`;
+      captureWrapper.style.height = `${captureHeight}px`;
       captureWrapper.style.overflow = "hidden";
       captureWrapper.style.opacity = "0";
       captureWrapper.style.pointerEvents = "none";
@@ -72,8 +81,8 @@ export default function VerseOfTheDayShareButton({
 
       captureTarget = target.cloneNode(true) as HTMLElement;
       captureTarget.removeAttribute("id");
-      captureTarget.style.width = `${targetRect.width}px`;
-      captureTarget.style.height = `${targetRect.height}px`;
+      captureTarget.style.width = `${captureWidth}px`;
+      captureTarget.style.height = `${captureHeight}px`;
       captureTarget
         .querySelectorAll<HTMLElement>("[data-share-only='true']")
         .forEach((element) => {
@@ -85,9 +94,9 @@ export default function VerseOfTheDayShareButton({
 
       const blob = await toBlob(captureTarget, {
         cacheBust: true,
-        height: targetRect.height,
+        height: captureHeight,
         pixelRatio: 2,
-        width: targetRect.width,
+        width: captureWidth,
         filter: (node) => {
           if (!(node instanceof HTMLElement)) {
             return true;
@@ -99,7 +108,7 @@ export default function VerseOfTheDayShareButton({
         return "error";
       }
 
-      const file = new File([blob], "verse-of-the-day.png", {
+      const file = new File([blob], fileName, {
         type: "image/png",
       });
 
@@ -110,6 +119,7 @@ export default function VerseOfTheDayShareButton({
       ) {
         await navigator.share({
           title,
+          text,
           url,
           files: [file],
         });
@@ -117,14 +127,14 @@ export default function VerseOfTheDayShareButton({
       }
 
       if (navigator.share) {
-        await navigator.share({ title, url });
+        await navigator.share({ title, text, url });
         return "shared";
       }
 
       const downloadUrl = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = downloadUrl;
-      link.download = "verse-of-the-day.png";
+      link.download = fileName;
       link.click();
       URL.revokeObjectURL(downloadUrl);
       return "copied";

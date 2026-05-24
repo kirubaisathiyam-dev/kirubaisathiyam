@@ -270,7 +270,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="relative -mt-8 overflow-hidden sm:-mt-10">
+      <section className="relative -mt-4 overflow-hidden sm:-mt-10">
         <div
           className="relative min-h-[24rem] sm:min-h-[30rem] lg:min-h-[36rem]"
           style={{ backgroundColor: "#111111" }}

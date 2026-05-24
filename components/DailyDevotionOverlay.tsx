@@ -35,6 +35,27 @@ type DailyDevotion = {
   day: number;
 };
 
+function getShareVerseTypography(verse: string) {
+  const characterCount = verse.replace(/\s+/g, " ").trim().length;
+  const wordCount = verse.trim().split(/\s+/).filter(Boolean).length;
+
+  if (characterCount > 300 || wordCount > 52) {
+    return {
+      blockquoteClassName: "leading-[1.7] text-base",
+    };
+  }
+
+  if (characterCount > 220 || wordCount > 38) {
+    return {
+      blockquoteClassName: "leading-[1.78] text-md",
+    };
+  }
+
+  return {
+    blockquoteClassName: "leading-[1.85] text-lg",
+  };
+}
+
 function getVerseRange(verseRange: string) {
   const [startValue, endValue] = verseRange.split("-");
   const start = Number(startValue);
@@ -243,6 +264,7 @@ export default function DailyDevotionOverlay() {
   ]
     .filter(Boolean)
     .join("\n\n");
+  const shareVerseTypography = getShareVerseTypography(dailyDevotion.verse);
 
   return (
     <section
@@ -275,16 +297,20 @@ export default function DailyDevotionOverlay() {
                 <p
                   className="text-xs uppercase tracking-[0.3em]"
                   style={{ color: "rgba(255, 255, 255, 0.78)" }}
+                  data-share-exclude="true"
                 >
                   {formatDevotionLabel(dailyDevotion.date, dailyDevotion.slot)}
                 </p>
-                <h1 className="text-2xl leading-tight text-white sm:text-3xl">
+                <h1
+                  className="text-2xl leading-tight text-white sm:text-3xl"
+                  data-share-exclude="true"
+                >
                   {dailyDevotion.reference}
                 </h1>
               </div>
 
               {dailyDevotion.verse ? (
-                <div className="space-y-3">
+                <div className="space-y-3" data-share-exclude="true">
                   <blockquote className="leading-[1.9] sm:text-xl">
                     <span className="text-white">{dailyDevotion.verse}</span>
                   </blockquote>
@@ -312,20 +338,40 @@ export default function DailyDevotionOverlay() {
 
           <div
             data-share-only="true"
-            className="absolute inset-x-0 bottom-0 z-10 hidden justify-center px-5 pb-6 sm:px-8 lg:px-10"
+            className="absolute inset-0 z-10 hidden items-center justify-center px-5 sm:px-8 lg:px-10"
           >
-            <div
-              className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3 text-lg font-semibold tracking-tight sm:text-xl"
-              style={{ color: "#ededed" }}
-            >
-              <Image
-                src={logoDark}
-                alt="Kirubai Sathiyam logo"
-                width={30}
-                height={30}
-              />
-              <div>
-                கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
+            <div className="relative mx-auto flex h-full w-full max-w-[420px] items-center justify-center">
+              <div className="flex flex-col items-center justify-center gap-6 text-center">
+                <h2
+                  className="text-2xl leading-tight text-white"
+                  style={{ textWrap: "balance" }}
+                >
+                  {dailyDevotion.reference}
+                </h2>
+                {dailyDevotion.verse ? (
+                  <div className="space-y-3">
+                    <blockquote
+                      className={shareVerseTypography.blockquoteClassName}
+                      style={{ color: "#ffffff" }}
+                    >
+                      {dailyDevotion.verse}
+                    </blockquote>
+                  </div>
+                ) : null}
+              </div>
+              <div
+                className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center justify-center gap-3 font-semibold tracking-tight text-sm"
+                style={{ color: "#ededed" }}
+              >
+                <Image
+                  src={logoDark}
+                  alt="Kirubai Sathiyam logo"
+                  width={20}
+                  height={20}
+                />
+                <div>
+                  கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
+                </div>
               </div>
             </div>
           </div>
@@ -341,6 +387,9 @@ export default function DailyDevotionOverlay() {
               text={shareText}
               url={shareUrl}
               targetId={shareTargetId}
+              exportWidth={600}
+              exportHeight={600}
+              fileName="daily-devotion.png"
               className="shadow-sm"
               buttonStyle={heroButtonStyle}
             />
