@@ -102,7 +102,7 @@ export default function RecentArticlesCarousel({ articles }: Props) {
             {articles.map((article) => (
               <div
                 key={article.slug}
-                className="min-w-0 flex-[0_0_70vw] pl-4"
+                className="min-w-0 flex-[0_0_80vw] pl-4"
                 style={{ maxWidth: "20rem" }}
               >
                 <ArticleCard article={article} />
