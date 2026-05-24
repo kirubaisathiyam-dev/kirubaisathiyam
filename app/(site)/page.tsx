@@ -60,14 +60,14 @@ export default function Home() {
       <section className="mx-auto w-full max-w-5xl px-4">
         <Link
           href="/bible"
-          className="group grid overflow-hidden border md:grid-cols-[0.7fr_1.28fr]"
+          className="group grid overflow-hidden border sm:grid-cols-[0.7fr_1.1fr] md:grid-cols-[0.4fr_1.1fr]"
           style={{
             borderColor: "var(--border-color)",
             backgroundColor: "var(--muted-background)",
           }}
         >
           <div
-            className="relative aspect-square border-b md:aspect-auto md:border-b-0 md:border-r"
+            className="relative aspect-square border-b md:border-b-0 md:border-r"
             style={{ borderColor: "var(--border-color)" }}
           >
             <Image
@@ -80,31 +80,18 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col justify-center gap-5 p-6 sm:p-8">
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold leading-tight sm:text-xl">
-                இதோ, ஜீவனுள்ள தேவன் உங்களோடு பேசுகிறார்!
-              </h2>
-            </div>
-
             <p
               className="text-sm leading-7 sm:text-base"
               style={{ color: "var(--muted-foreground)" }}
             >
-              “உம்முடைய வார்த்தை என் கால்களுக்கு தீபமும், என் பாதைக்கு
-              வெளிச்சமுமாயிருக்கிறது.” (சங் 119:105)
-              <br />
-              <br />
-              உலகத்தின் மாயைகளினாலும் பாரங்களினாலும் சோர்வுற்றிருக்கிற
-              ஆத்துமாவே, கர்த்தருடைய வார்த்தை உனக்கு ஒளிகொடுக்கும் ஆயுதம்.
-              அது உன்னைக் குணமாக்கும் பரம அவுஷதம்; உன் கால்கள் இடறாதபடி
-              காக்கும் நித்திய வெளிச்சம். உன்னைத் தம்முடைய பரிசுத்தத்திற்குப்
-              பங்குள்ளவனாக்க விரும்புகிற பிதாவின் சித்தத்திற்கு (எபி 12:10)
-              உன்னை ஒப்புக்கொடுக்க, தினமும் பரிசுத்த வேதாகமத்தைத்
-              தியானிப்பதைத் தப்பவிடாதே.
+              தினமும் வேதாகமம் வாசிப்பதை ஒரு பழக்கமாக்கிக் கொள்ளுங்கள்.
+              கர்த்தருடைய வார்த்தை உங்களை வழிநடத்தட்டும்.
             </p>
 
-            <div className="flex items-center gap-2 text-xs font-semibold sm:text-sm">
-              <span className="group-hover:underline">வேதாகமத்தைத் திறக்கவும்</span>
+            <div className="flex items-center gap-2 text-md font-semibold sm:text-lg">
+              <span className="group-hover:underline">
+                வேதாகமத்தைத் திறக்கவும்
+              </span>
               <ArrowRightIcon style={{ width: 15, height: 15 }} />
             </div>
           </div>
