@@ -243,6 +243,7 @@ export default function DailyDevotionOverlay() {
   );
   const closeTimeoutRef = useRef<number | null>(null);
   const openFrameRef = useRef<number | null>(null);
+  const autoOpenHandledRef = useRef(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -292,7 +293,13 @@ export default function DailyDevotionOverlay() {
   }, []);
 
   useEffect(() => {
-    setShouldShowImage(isOnline);
+    const frame = window.requestAnimationFrame(() => {
+      setShouldShowImage(isOnline);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
   }, [dailyDevotion?.image, isOnline]);
 
   useEffect(() => {
@@ -342,6 +349,31 @@ export default function DailyDevotionOverlay() {
       closeTimeoutRef.current = null;
     }, 320);
   };
+
+  useEffect(() => {
+    if (!dailyDevotion || autoOpenHandledRef.current || typeof window === "undefined") {
+      return;
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get("openDevotion") !== "true") {
+      return;
+    }
+
+    autoOpenHandledRef.current = true;
+    const frame = window.requestAnimationFrame(() => {
+      openDialog();
+    });
+
+    searchParams.delete("openDevotion");
+    const nextSearch = searchParams.toString();
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+    window.history.replaceState({}, "", nextUrl);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [dailyDevotion]);
 
   if (!dailyDevotion) {
     return <DailyDevotionSkeleton />;

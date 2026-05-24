@@ -226,7 +226,7 @@ export default function NotificationsForm({ articles }: Props) {
         body: trimNotificationBody(
           [slotRecord.verse, slotRecord.devotion].filter(Boolean).join(" "),
         ),
-        url: "/",
+        url: "/?openDevotion=true",
       });
     } catch (error) {
       const messageText =
