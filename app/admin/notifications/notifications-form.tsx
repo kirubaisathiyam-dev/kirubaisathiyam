@@ -3,6 +3,14 @@
 import { LoadingIcon } from "@/components/Icons";
 import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import { formatTamilDate } from "@/lib/date";
+import {
+  getCurrentDevotionSlot,
+  getDevotionRoute,
+  getDevotionSlug,
+  getTodayDevotionCandidates,
+  SITE_TIME_ZONE,
+  type DailyDevotionRecord,
+} from "@/lib/daily-devotion";
 import { useMemo, useState } from "react";
 
 export type NotificationArticle = {
@@ -17,17 +25,6 @@ type VerseOfTheDayRecord = {
   day?: number;
   verse_reference?: string;
   explanation?: string;
-};
-
-type DailyDevotionSlot = {
-  verse?: string;
-  devotion?: string;
-};
-
-type DailyDevotionRecord = {
-  date?: string;
-  am?: DailyDevotionSlot;
-  pm?: DailyDevotionSlot;
 };
 
 type Props = {
@@ -60,35 +57,6 @@ function trimNotificationBody(value: string, limit = 180) {
     return clean;
   }
   return `${clean.slice(0, limit - 3).trim()}...`;
-}
-
-function getColomboDateParts(date = new Date()) {
-  const formatter = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Colombo",
-    month: "short",
-    day: "2-digit",
-    hour: "2-digit",
-    hour12: false,
-  });
-  const parts = Object.fromEntries(
-    formatter.formatToParts(date).map((part) => [part.type, part.value]),
-  );
-
-  return {
-    day: Number(parts.day),
-    monthShort: parts.month ?? "Jan",
-    hour: Number(parts.hour),
-  };
-}
-
-function getTodayDevotionCandidates(date = new Date()) {
-  const { day, monthShort } = getColomboDateParts(date);
-  const dayLabel = String(day).padStart(2, "0");
-  return [`${dayLabel} ${monthShort}`, `${dayLabel} Jan`];
-}
-
-function getCurrentDevotionSlot(date = new Date()) {
-  return getColomboDateParts(date).hour < 12 ? "am" : "pm";
 }
 
 export default function NotificationsForm({ articles }: Props) {
@@ -208,8 +176,8 @@ export default function NotificationsForm({ articles }: Props) {
         cache: "no-cache",
       });
       const records = (await response.json()) as DailyDevotionRecord[];
-      const slot = getCurrentDevotionSlot();
-      const record = getTodayDevotionCandidates()
+      const slot = getCurrentDevotionSlot(new Date(), SITE_TIME_ZONE);
+      const record = getTodayDevotionCandidates(new Date(), SITE_TIME_ZONE)
         .map((candidate) =>
           records.find((item) => item.date === candidate && item[slot]?.verse),
         )
@@ -226,7 +194,7 @@ export default function NotificationsForm({ articles }: Props) {
         body: trimNotificationBody(
           [slotRecord.verse, slotRecord.devotion].filter(Boolean).join(" "),
         ),
-        url: "/?openDevotion=true",
+        url: record.date ? getDevotionRoute(getDevotionSlug(record.date, slot)) : "/",
       });
     } catch (error) {
       const messageText =

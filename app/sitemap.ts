@@ -1,5 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/articles";
+import dailyDevotionRecords from "@/public/daily-devotion.json";
+import {
+  getDevotionSlug,
+  type DailyDevotionRecord,
+} from "@/lib/daily-devotion";
 import { getSiteUrl } from "@/lib/seo";
 import {
   getAllTheologyTopics,
@@ -11,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = getSiteUrl().toString().replace(/\/$/, "");
   const articles = getAllArticles();
   const theologyTopics = getAllTheologyTopics();
+  const devotionRecords = dailyDevotionRecords as DailyDevotionRecord[];
   const latestArticleDate = articles[0]?.date
     ? new Date(articles[0].date)
     : new Date();
@@ -105,11 +111,29 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   );
 
+  const devotionEntries: MetadataRoute.Sitemap = devotionRecords.flatMap(
+    (record) => {
+      if (!record.date) {
+        return [];
+      }
+
+      return (["am", "pm"] as const)
+        .filter((slot) => Boolean(record[slot]?.verse))
+        .map((slot) => ({
+          url: `${siteUrl}/devotions/${getDevotionSlug(record.date!, slot)}`,
+          lastModified: latestContentDate,
+          changeFrequency: "yearly" as const,
+          priority: 0.7,
+        }));
+    },
+  );
+
   return [
     ...staticEntries,
     ...articleEntries,
     ...theologySectionEntries,
     ...theologySubsectionEntries,
     ...theologyTopicEntries,
+    ...devotionEntries,
   ];
 }
