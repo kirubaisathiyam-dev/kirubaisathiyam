@@ -34,6 +34,24 @@ type DailyDevotion = {
 
 const SITE_TIME_ZONE = "Asia/Colombo";
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const MONTH_INDEX_BY_SHORT_NAME: Record<string, number> = {
+  jan: 0,
+  feb: 1,
+  mar: 2,
+  apr: 3,
+  may: 4,
+  jun: 5,
+  jul: 6,
+  aug: 7,
+  sep: 8,
+  oct: 9,
+  nov: 10,
+  dec: 11,
+};
+
+type DevotionQueryTarget =
+  | { mode: "current" }
+  | { mode: "specific"; date: string; slot: "am" | "pm" };
 
 function getTimePartsInTimeZone(date: Date, timeZone: string) {
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -75,38 +93,48 @@ function getDayOfYearInTimeZone(date: Date, timeZone: string) {
   return Math.floor((current - start) / DAY_IN_MS) + 1;
 }
 
-function getDateKeyInTimeZone(date: Date, timeZone: string) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(date);
-  const year = Number(parts.find((part) => part.type === "year")?.value);
-  const month = Number(parts.find((part) => part.type === "month")?.value);
-  const day = Number(parts.find((part) => part.type === "day")?.value);
-
-  if (!year || !month || !day) {
-    return "unknown-date";
-  }
-
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
 function getDevotionSlot(date: Date, timeZone: string) {
   const { hour } = getTimePartsInTimeZone(date, timeZone);
   return hour < 12 ? "am" : "pm";
 }
 
-function getDateCandidates(date: Date, timeZone: string) {
-  const { day, monthShort } = getTimePartsInTimeZone(date, timeZone);
-  const dayLabel = String(day).padStart(2, "0");
-  return [`${dayLabel} ${monthShort}`, `${dayLabel} Jan`];
-}
-
 function formatDevotionLabel(date: string, slot: "am" | "pm") {
   const [day = "", month = ""] = date.split(" ");
-  return `${month.toUpperCase()} ${day} ${slot.toUpperCase()}`;
+  return `${month.toUpperCase()} ${day} ${slot === "am" ? "MORNING" : "EVENING"}`;
+}
+
+function normalizeDevotionDateLabel(date: string) {
+  const [day = "", month = ""] = date.trim().split(/\s+/);
+  const normalizedDay = String(Number(day) || day).padStart(2, "0");
+  const normalizedMonth = month.slice(0, 3);
+  return `${normalizedDay} ${normalizedMonth}`;
+}
+
+function getDevotionQueryValue(date: string, slot: "am" | "pm") {
+  const [day = "", month = ""] = normalizeDevotionDateLabel(date).split(" ");
+  return `${day}_${month.toLowerCase()}_${slot}`;
+}
+
+function parseDevotionQueryValue(value: string | null): DevotionQueryTarget | null {
+  if (!value) {
+    return null;
+  }
+
+  if (value === "true") {
+    return { mode: "current" };
+  }
+
+  const match = value.match(/^(\d{1,2})[_-]([a-z]{3})[_-](am|pm)$/i);
+  if (!match) {
+    return null;
+  }
+
+  const [, day, month, slot] = match;
+  return {
+    mode: "specific",
+    date: `${String(Number(day)).padStart(2, "0")} ${month[0].toUpperCase()}${month.slice(1).toLowerCase()}`,
+    slot: slot.toLowerCase() as "am" | "pm",
+  };
 }
 
 function getVerseRange(verseRange: string) {
@@ -137,6 +165,33 @@ async function fetchJson<T>(url: string): Promise<T | null> {
 
 function buildImageUrl(dayOfYear: number, slot: "am" | "pm") {
   return `https://picsum.photos/seed/daily-devotion-${dayOfYear}-${slot}/1600/1200.jpg`;
+}
+
+function getDayOfYearFromDevotionDate(date: string, timeZone: string) {
+  const [day = "", month = ""] = normalizeDevotionDateLabel(date).split(" ");
+  const monthIndex = MONTH_INDEX_BY_SHORT_NAME[month.toLowerCase()];
+  const dayNumber = Number(day);
+
+  if (monthIndex === undefined || !Number.isFinite(dayNumber)) {
+    return 1;
+  }
+
+  const year = Number(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+    })
+      .formatToParts(new Date())
+      .find((part) => part.type === "year")?.value ?? "0",
+  );
+
+  if (!year) {
+    return 1;
+  }
+
+  const current = Date.UTC(year, monthIndex, dayNumber);
+  const start = Date.UTC(year, 0, 1);
+  return Math.floor((current - start) / DAY_IN_MS) + 1;
 }
 
 async function getVerseDetails(reference: string) {
@@ -180,7 +235,7 @@ async function getVerseDetails(reference: string) {
   };
 }
 
-async function getClientDailyDevotion() {
+async function getClientDailyDevotion(target: DevotionQueryTarget | null = null) {
   const entries = await fetchJson<DailyDevotionEntry[]>("/daily-devotion.json");
 
   if (!entries?.length) {
@@ -188,13 +243,28 @@ async function getClientDailyDevotion() {
   }
 
   const now = new Date();
-  const dateCandidates = getDateCandidates(now, SITE_TIME_ZONE);
-  const slot = getDevotionSlot(now, SITE_TIME_ZONE);
-  const entry = dateCandidates
-    .map((candidate) =>
-      entries.find((item) => item.date === candidate && item[slot]?.verse),
-    )
-    .find(Boolean);
+  const queryTarget = target ?? { mode: "current" as const };
+  const slot =
+    queryTarget.mode === "specific"
+      ? queryTarget.slot
+      : getDevotionSlot(now, SITE_TIME_ZONE);
+  const entry =
+    queryTarget.mode === "specific"
+      ? entries.find(
+          (item) =>
+            normalizeDevotionDateLabel(item.date) ===
+              normalizeDevotionDateLabel(queryTarget.date) && item[slot]?.verse,
+        ) ?? null
+      : [
+          `${String(getTimePartsInTimeZone(now, SITE_TIME_ZONE).day).padStart(2, "0")} ${
+            getTimePartsInTimeZone(now, SITE_TIME_ZONE).monthShort
+          }`,
+          `${String(getTimePartsInTimeZone(now, SITE_TIME_ZONE).day).padStart(2, "0")} Jan`,
+        ]
+          .map((candidate) =>
+            entries.find((item) => item.date === candidate && item[slot]?.verse),
+          )
+          .find(Boolean) ?? null;
 
   if (!entry) {
     return null;
@@ -205,7 +275,10 @@ async function getClientDailyDevotion() {
   }
 
   const verseDetails = await getVerseDetails(slotEntry.verse);
-  const dayOfYear = getDayOfYearInTimeZone(now, SITE_TIME_ZONE);
+  const dayOfYear =
+    queryTarget.mode === "specific"
+      ? getDayOfYearFromDevotionDate(entry.date, SITE_TIME_ZONE)
+      : getDayOfYearInTimeZone(now, SITE_TIME_ZONE);
 
   return {
     date: entry.date,
@@ -233,6 +306,7 @@ function DailyDevotionSkeleton() {
 
 export default function DailyDevotionOverlay() {
   const [dailyDevotion, setDailyDevotion] = useState<DailyDevotion | null>(null);
+  const [dialogDevotion, setDialogDevotion] = useState<DailyDevotion | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [isOnline, setIsOnline] = useState(
@@ -245,13 +319,44 @@ export default function DailyDevotionOverlay() {
   const openFrameRef = useRef<number | null>(null);
   const autoOpenHandledRef = useRef(false);
 
+  const clearOpenDevotionQuery = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const searchParams = new URLSearchParams(window.location.search);
+    if (!searchParams.has("openDevotion")) {
+      return;
+    }
+
+    searchParams.delete("openDevotion");
+    const nextSearch = searchParams.toString();
+    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
+    window.history.replaceState({}, "", nextUrl);
+  };
+
   useEffect(() => {
     let isMounted = true;
 
     async function loadDevotion() {
-      const devotion = await getClientDailyDevotion();
+      const queryTarget =
+        typeof window === "undefined"
+          ? null
+          : parseDevotionQueryValue(
+              new URLSearchParams(window.location.search).get("openDevotion"),
+            );
+      const currentDevotionPromise = getClientDailyDevotion();
+      const targetDevotionPromise = queryTarget
+        ? getClientDailyDevotion(queryTarget)
+        : Promise.resolve(null);
+      const [currentDevotion, targetDevotion] = await Promise.all([
+        currentDevotionPromise,
+        targetDevotionPromise,
+      ]);
+
       if (isMounted) {
-        setDailyDevotion(devotion);
+        setDailyDevotion(currentDevotion);
+        setDialogDevotion(targetDevotion ?? currentDevotion);
       }
     }
 
@@ -341,6 +446,8 @@ export default function DailyDevotionOverlay() {
 
   const closeDialog = () => {
     setIsDialogOpen(false);
+    setDialogDevotion(dailyDevotion);
+    clearOpenDevotionQuery();
     if (closeTimeoutRef.current !== null) {
       window.clearTimeout(closeTimeoutRef.current);
     }
@@ -351,12 +458,18 @@ export default function DailyDevotionOverlay() {
   };
 
   useEffect(() => {
-    if (!dailyDevotion || autoOpenHandledRef.current || typeof window === "undefined") {
+    if (
+      !dailyDevotion ||
+      !dialogDevotion ||
+      autoOpenHandledRef.current ||
+      typeof window === "undefined"
+    ) {
       return;
     }
 
     const searchParams = new URLSearchParams(window.location.search);
-    if (searchParams.get("openDevotion") !== "true") {
+    const queryValue = searchParams.get("openDevotion");
+    if (!parseDevotionQueryValue(queryValue)) {
       return;
     }
 
@@ -365,25 +478,30 @@ export default function DailyDevotionOverlay() {
       openDialog();
     });
 
-    searchParams.delete("openDevotion");
-    const nextSearch = searchParams.toString();
-    const nextUrl = `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}${window.location.hash}`;
-    window.history.replaceState({}, "", nextUrl);
+    if (queryValue === "true") {
+      clearOpenDevotionQuery();
+    }
 
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [dailyDevotion]);
+  }, [dailyDevotion, dialogDevotion]);
 
   if (!dailyDevotion) {
     return <DailyDevotionSkeleton />;
   }
 
+  const activeDialogDevotion = dialogDevotion ?? dailyDevotion;
+
   const shareTitle = `Daily Devotion - ${dailyDevotion.reference}`;
   const shareTargetId = "daily-devotion-share-card";
-  const dailyVerseId = `${getDateKeyInTimeZone(new Date(), SITE_TIME_ZONE)}-${dailyDevotion.slot}`;
+  const dailyVerseId = `${normalizeDevotionDateLabel(dailyDevotion.date).replace(/\s+/g, "-").toLowerCase()}-${dailyDevotion.slot}`;
   const shareUrl =
-    typeof window === "undefined" ? "/" : `${window.location.origin}/`;
+    typeof window === "undefined"
+      ? "/"
+      : `${window.location.origin}/?openDevotion=${encodeURIComponent(
+          getDevotionQueryValue(dailyDevotion.date, dailyDevotion.slot),
+        )}`;
   const heroButtonStyle = {
     borderColor: "rgba(237, 237, 237, 0.16)",
     backgroundColor: "transparent",
@@ -394,7 +512,18 @@ export default function DailyDevotionOverlay() {
     backgroundColor: "#e9c36a",
     color: "#171717",
   };
-  const shareText = [dailyDevotion.reference, dailyDevotion.verse]
+  const shareText = [
+    dailyDevotion.reference,
+    dailyDevotion.verse,
+    dailyDevotion.devotion,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+  const activeDialogShareText = [
+    activeDialogDevotion.reference,
+    activeDialogDevotion.verse,
+    activeDialogDevotion.devotion,
+  ]
     .filter(Boolean)
     .join("\n\n");
 
@@ -454,7 +583,10 @@ export default function DailyDevotionOverlay() {
 
               <button
                 type="button"
-                onClick={openDialog}
+                onClick={() => {
+                  setDialogDevotion(dailyDevotion);
+                  openDialog();
+                }}
                 data-share-exclude="true"
                 className="inline-flex items-center gap-2 border px-5 py-3 text-sm font-semibold transition hover:opacity-80 sm:text-base"
                 style={ctaButtonStyle}
@@ -534,7 +666,7 @@ export default function DailyDevotionOverlay() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="h-full overflow-y-auto bg-[var(--background)]">
-              <div className="sticky top-0 z-10 flex justify-end border-b bg-[var(--background)]/95 px-4 py-4 backdrop-blur sm:px-6">
+              <div className="sticky top-0 z-10 flex justify-end bg-[var(--background)]/90 px-4 py-4 backdrop-blur sm:px-6">
                 <button
                   type="button"
                   onClick={closeDialog}
@@ -554,10 +686,13 @@ export default function DailyDevotionOverlay() {
                     className="text-xs uppercase tracking-[0.3em]"
                     style={{ color: "var(--muted-foreground)" }}
                   >
-                    {formatDevotionLabel(dailyDevotion.date, dailyDevotion.slot)}
+                    {formatDevotionLabel(
+                      activeDialogDevotion.date,
+                      activeDialogDevotion.slot,
+                    )}
                   </p>
                   <h2 className="text-2xl font-semibold leading-tight sm:text-3xl">
-                    {dailyDevotion.reference}
+                    {activeDialogDevotion.reference}
                   </h2>
                   <p
                     className="text-sm sm:text-base"
@@ -567,30 +702,49 @@ export default function DailyDevotionOverlay() {
                   </p>
                 </div>
 
-                {dailyDevotion.verse ? (
+                {activeDialogDevotion.verse ? (
                   <blockquote
                     className="text-lg leading-[1.9] sm:text-xl"
                     style={{ color: "var(--foreground-bible)" }}
                   >
-                    {dailyDevotion.verse}
+                    {activeDialogDevotion.verse}
                   </blockquote>
                 ) : null}
 
-                {dailyDevotion.devotion ? (
+                {activeDialogDevotion.devotion ? (
                   <div
                     className="space-y-5 text-base leading-8 sm:text-lg"
                     style={{ color: "var(--foreground)" }}
                   >
-                    {dailyDevotion.devotion
+                    {activeDialogDevotion.devotion
                       .split(/\n\s*\n/)
                       .filter(Boolean)
                       .map((paragraph, index) => (
-                        <p key={`${dailyDevotion.date}-${dailyDevotion.slot}-${index}`}>
+                        <p
+                          key={`${activeDialogDevotion.date}-${activeDialogDevotion.slot}-${index}`}
+                        >
                           {paragraph.trim()}
                         </p>
                       ))}
                   </div>
                 ) : null}
+
+                <div className="pt-2">
+                  <ShareButton
+                    title={`Daily Devotion - ${activeDialogDevotion.reference}`}
+                    text={activeDialogShareText}
+                    url={
+                      typeof window === "undefined"
+                        ? "/"
+                        : `${window.location.origin}/?openDevotion=${encodeURIComponent(
+                            getDevotionQueryValue(
+                              activeDialogDevotion.date,
+                              activeDialogDevotion.slot,
+                            ),
+                          )}`
+                    }
+                  />
+                </div>
               </div>
             </div>
           </div>
