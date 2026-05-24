@@ -5,9 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import DevotionShareActions from "@/components/DevotionShareActions";
-import logoDark from "@/app/logo-dark.svg";
-import dailyDevotionRecords from "@/public/daily-devotion.json";
 import { ArrowLeftIcon } from "@/components/Icons";
+import logoDark from "@/app/logo-dark.svg";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import {
   buildDevotionImageUrl,
@@ -22,6 +21,7 @@ import {
 } from "@/lib/daily-devotion";
 import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
+import dailyDevotionRecords from "@/public/daily-devotion.json";
 
 export const dynamicParams = false;
 
@@ -46,6 +46,27 @@ type DevotionPageData = {
   imageUrl: string;
   canonicalPath: string;
 };
+
+function getShareVerseTypography(verse: string) {
+  const characterCount = verse.replace(/\s+/g, " ").trim().length;
+  const wordCount = verse.trim().split(/\s+/).filter(Boolean).length;
+
+  if (characterCount > 300 || wordCount > 52) {
+    return {
+      blockquoteClassName: "leading-[1.7] text-base",
+    };
+  }
+
+  if (characterCount > 220 || wordCount > 38) {
+    return {
+      blockquoteClassName: "leading-[1.78] text-md",
+    };
+  }
+
+  return {
+    blockquoteClassName: "leading-[1.85] text-lg",
+  };
+}
 
 function getVerseRange(verseRange: string) {
   const [startValue, endValue] = verseRange.split("-");
@@ -231,6 +252,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
   const devotionUrl = toAbsoluteUrl(devotion.canonicalPath);
   const shareTargetId = "devotion-reader-share-card";
   const imageFileName = getDevotionImageFileName(devotion.date);
+  const shareVerseTypography = getShareVerseTypography(devotion.verseText);
   const shareText = [
     devotion.label,
     DEVOTION_ATTRIBUTION,
@@ -312,13 +334,19 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
                 >
                   {devotion.label}
                 </p>
-                <h1 className="text-3xl font-semibold leading-tight text-white sm:text-4xl">
+                <h1
+                  className="text-3xl font-semibold leading-tight text-white sm:text-4xl"
+                  data-share-exclude="true"
+                >
                   {devotion.verseReference}
                 </h1>
               </div>
 
               {devotion.verseText ? (
-                <blockquote className="text-lg leading-[1.9] text-white sm:text-xl">
+                <blockquote
+                  className="text-lg leading-[1.9] text-white sm:text-xl"
+                  data-share-exclude="true"
+                >
                   {devotion.verseText}
                 </blockquote>
               ) : null}
@@ -327,20 +355,38 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
 
           <div
             data-share-only="true"
-            className="absolute inset-x-0 bottom-0 z-10 hidden justify-center px-5 pb-6 sm:px-8 lg:px-10"
+            className="absolute inset-0 z-10 hidden items-center justify-center px-5 sm:px-8 lg:px-10"
           >
-            <div
-              className="mx-auto flex items-center justify-center gap-3 text-sm font-semibold tracking-tight"
-              style={{ color: "#ededed" }}
-            >
-              <Image
-                src={logoDark}
-                alt="Kirubai Sathiyam logo"
-                width={20}
-                height={20}
-              />
-              <div>
-                கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
+            <div className="relative mx-auto flex h-full w-full max-w-[420px] items-center justify-center">
+              <div className="flex flex-col items-center justify-center gap-6 text-center">
+                <h2
+                  className="text-2xl leading-tight text-white"
+                  style={{ textWrap: "balance" }}
+                >
+                  {devotion.verseReference}
+                </h2>
+                {devotion.verseText ? (
+                  <blockquote
+                    className={shareVerseTypography.blockquoteClassName}
+                    style={{ color: "#ffffff" }}
+                  >
+                    {devotion.verseText}
+                  </blockquote>
+                ) : null}
+              </div>
+              <div
+                className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center justify-center gap-3 text-sm font-semibold tracking-tight"
+                style={{ color: "#ededed" }}
+              >
+                <Image
+                  src={logoDark}
+                  alt="Kirubai Sathiyam logo"
+                  width={20}
+                  height={20}
+                />
+                <div>
+                  கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
+                </div>
               </div>
             </div>
           </div>
