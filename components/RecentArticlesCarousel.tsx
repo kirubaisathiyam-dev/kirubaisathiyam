@@ -92,7 +92,7 @@ export default function RecentArticlesCarousel({ articles }: Props) {
                 className="min-w-0 flex-[0_0_90vw] pl-4"
                 style={{ maxWidth: "20rem" }}
               >
-                <ArticleCard article={article} showBorder={false} />
+                <ArticleCard article={article} showBorder={true} />
               </div>
             ))}
           </div>
