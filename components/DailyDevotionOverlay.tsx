@@ -6,13 +6,17 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@/components/Icons";
 import DailyVerseLikeButton from "@/components/DailyVerseLikeButton";
 import ShareButton from "@/components/ShareButton";
-import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
+import {
+  captureShareImage,
+  default as VerseOfTheDayShareButton,
+} from "@/components/VerseOfTheDayShareButton";
 import logoDark from "@/app/logo-dark.svg";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import {
   DEVOTION_ATTRIBUTION,
   buildDevotionImageUrl,
   formatDevotionLabel,
+  getDevotionImageFileName,
   getCurrentDevotionSlot,
   getDevotionPreviewText,
   getDevotionRoute,
@@ -265,6 +269,7 @@ export default function DailyDevotionOverlay() {
     .filter(Boolean)
     .join("\n\n");
   const shareVerseTypography = getShareVerseTypography(dailyDevotion.verse);
+  const imageFileName = getDevotionImageFileName(dailyDevotion.date);
 
   return (
     <section
@@ -389,7 +394,8 @@ export default function DailyDevotionOverlay() {
               targetId={shareTargetId}
               exportWidth={600}
               exportHeight={600}
-              fileName="daily-devotion.png"
+              fileName={imageFileName}
+              action="download"
               className="shadow-sm"
               buttonStyle={heroButtonStyle}
             />
@@ -397,6 +403,18 @@ export default function DailyDevotionOverlay() {
               title={shareTitle}
               text={shareText}
               url={shareUrl}
+              onShare={() =>
+                captureShareImage({
+                  title: shareTitle,
+                  text: shareText,
+                  url: shareUrl,
+                  targetId: shareTargetId,
+                  exportWidth: 600,
+                  exportHeight: 600,
+                  fileName: imageFileName,
+                  action: "share",
+                })
+              }
               className="shadow-sm"
               buttonStyle={heroButtonStyle}
             />

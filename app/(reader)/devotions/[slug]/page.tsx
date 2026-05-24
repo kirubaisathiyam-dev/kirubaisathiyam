@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ShareButton from "@/components/ShareButton";
+import DevotionShareActions from "@/components/DevotionShareActions";
+import logoDark from "@/app/logo-dark.svg";
 import dailyDevotionRecords from "@/public/daily-devotion.json";
 import { ArrowLeftIcon } from "@/components/Icons";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
@@ -12,6 +13,7 @@ import {
   buildDevotionImageUrl,
   DEVOTION_ATTRIBUTION,
   formatDevotionLabel,
+  getDevotionImageFileName,
   getDevotionPreviewText,
   getDevotionRoute,
   getDevotionSlug,
@@ -227,6 +229,8 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
   }
 
   const devotionUrl = toAbsoluteUrl(devotion.canonicalPath);
+  const shareTargetId = "devotion-reader-share-card";
+  const imageFileName = getDevotionImageFileName(devotion.date);
   const shareText = [
     devotion.label,
     DEVOTION_ATTRIBUTION,
@@ -272,6 +276,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
 
       <section className="relative -mt-4 overflow-hidden sm:-mt-10">
         <div
+          id={shareTargetId}
           className="relative min-h-[24rem] sm:min-h-[30rem] lg:min-h-[36rem]"
           style={{ backgroundColor: "#111111" }}
         >
@@ -290,6 +295,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
               <Link
                 href="/"
+                data-share-exclude="true"
                 className="transition hover:opacity-80"
                 style={{
                   color: "#ffffff",
@@ -302,6 +308,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
                 <p
                   className="text-xs uppercase tracking-[0.3em]"
                   style={{ color: "rgba(255, 255, 255, 0.78)" }}
+                  data-share-exclude="true"
                 >
                   {devotion.label}
                 </p>
@@ -315,6 +322,26 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
                   {devotion.verseText}
                 </blockquote>
               ) : null}
+            </div>
+          </div>
+
+          <div
+            data-share-only="true"
+            className="absolute inset-x-0 bottom-0 z-10 hidden justify-center px-5 pb-6 sm:px-8 lg:px-10"
+          >
+            <div
+              className="mx-auto flex items-center justify-center gap-3 text-sm font-semibold tracking-tight"
+              style={{ color: "#ededed" }}
+            >
+              <Image
+                src={logoDark}
+                alt="Kirubai Sathiyam logo"
+                width={20}
+                height={20}
+              />
+              <div>
+                கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
+              </div>
             </div>
           </div>
         </div>
@@ -340,10 +367,14 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
             {DEVOTION_ATTRIBUTION}
           </p>
           <div className="mb-8">
-            <ShareButton
+            <DevotionShareActions
               title={`Daily Devotion - ${devotion.verseReference}`}
               text={shareText}
               url={devotionUrl}
+              targetId={shareTargetId}
+              exportWidth={600}
+              exportHeight={600}
+              fileName={imageFileName}
             />
           </div>
         </div>

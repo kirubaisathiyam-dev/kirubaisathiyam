@@ -61,6 +61,11 @@ export function getDevotionRoute(slug: string) {
   return `/devotions/${slug}`;
 }
 
+export function getDevotionImageFileName(date: string) {
+  const [day = "", month = ""] = normalizeDevotionDateLabel(date).split(" ");
+  return `kirubaisathiyam_${month.toLowerCase()}_${Number(day) || day}_devotion.png`;
+}
+
 export function getDevotionPreviewText(devotion: string, wordLimit = 20) {
   const words = devotion.trim().split(/\s+/).filter(Boolean);
   if (words.length <= wordLimit) {

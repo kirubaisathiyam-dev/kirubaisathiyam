@@ -14,6 +14,18 @@ type VerseOfTheDayShareButtonProps = {
   exportWidth?: number;
   exportHeight?: number;
   fileName?: string;
+  action?: "share" | "download";
+};
+
+type CaptureShareImageOptions = {
+  title: string;
+  text: string;
+  url: string;
+  targetId: string;
+  exportWidth?: number;
+  exportHeight?: number;
+  fileName?: string;
+  action?: "share" | "download";
 };
 
 async function waitForImages(element: HTMLElement) {
@@ -37,6 +49,115 @@ async function waitForImages(element: HTMLElement) {
   );
 }
 
+export async function captureShareImage({
+  title,
+  text,
+  url,
+  targetId,
+  exportWidth,
+  exportHeight,
+  fileName = "verse-of-the-day.png",
+  action = "share",
+}: CaptureShareImageOptions): Promise<"shared" | "copied" | "error"> {
+  let captureWrapper: HTMLDivElement | null = null;
+  let captureTarget: HTMLElement | null = null;
+
+  try {
+    const target = document.getElementById(targetId);
+    if (!target) {
+      return "error";
+    }
+
+    const targetRect = target.getBoundingClientRect();
+    const captureWidth = exportWidth ?? targetRect.width;
+    const captureHeight = exportHeight ?? targetRect.height;
+    captureWrapper = document.createElement("div");
+    captureWrapper.style.position = "fixed";
+    captureWrapper.style.left = "0";
+    captureWrapper.style.top = "0";
+    captureWrapper.style.width = `${captureWidth}px`;
+    captureWrapper.style.height = `${captureHeight}px`;
+    captureWrapper.style.overflow = "hidden";
+    captureWrapper.style.opacity = "0";
+    captureWrapper.style.pointerEvents = "none";
+    captureWrapper.style.zIndex = "2147483647";
+
+    captureTarget = target.cloneNode(true) as HTMLElement;
+    captureTarget.removeAttribute("id");
+    captureTarget.style.width = `${captureWidth}px`;
+    captureTarget.style.height = `${captureHeight}px`;
+    captureTarget
+      .querySelectorAll<HTMLElement>("[data-share-only='true']")
+      .forEach((element) => {
+        element.style.display = "flex";
+      });
+    captureWrapper.appendChild(captureTarget);
+    document.body.appendChild(captureWrapper);
+    await waitForImages(captureTarget);
+
+    const blob = await toBlob(captureTarget, {
+      cacheBust: true,
+      height: captureHeight,
+      pixelRatio: 2,
+      width: captureWidth,
+      filter: (node) => {
+        if (!(node instanceof HTMLElement)) {
+          return true;
+        }
+        return node.dataset.shareExclude !== "true";
+      },
+    });
+    if (!blob) {
+      return "error";
+    }
+
+    const file = new File([blob], fileName, {
+      type: "image/png",
+    });
+
+    if (action === "download") {
+      const downloadUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = fileName;
+      link.click();
+      URL.revokeObjectURL(downloadUrl);
+      return "copied";
+    }
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({ files: [file] })
+    ) {
+      await navigator.share({
+        title,
+        text,
+        url,
+        files: [file],
+      });
+      return "shared";
+    }
+
+    if (navigator.share) {
+      await navigator.share({ title, text, url });
+      return "shared";
+    }
+
+    const downloadUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(downloadUrl);
+    return "copied";
+  } catch {
+    return "error";
+  } finally {
+    captureWrapper?.remove();
+  }
+}
+
 export default function VerseOfTheDayShareButton({
   title,
   text,
@@ -47,6 +168,7 @@ export default function VerseOfTheDayShareButton({
   exportWidth,
   exportHeight,
   fileName = "verse-of-the-day.png",
+  action = "share",
 }: VerseOfTheDayShareButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,92 +178,19 @@ export default function VerseOfTheDayShareButton({
     }
 
     setIsLoading(true);
-    let captureWrapper: HTMLDivElement | null = null;
-    let captureTarget: HTMLElement | null = null;
 
     try {
-      const target = document.getElementById(targetId);
-      if (!target) {
-        return "error";
-      }
-
-      const targetRect = target.getBoundingClientRect();
-      const captureWidth = exportWidth ?? targetRect.width;
-      const captureHeight = exportHeight ?? targetRect.height;
-      captureWrapper = document.createElement("div");
-      captureWrapper.style.position = "fixed";
-      captureWrapper.style.left = "0";
-      captureWrapper.style.top = "0";
-      captureWrapper.style.width = `${captureWidth}px`;
-      captureWrapper.style.height = `${captureHeight}px`;
-      captureWrapper.style.overflow = "hidden";
-      captureWrapper.style.opacity = "0";
-      captureWrapper.style.pointerEvents = "none";
-      captureWrapper.style.zIndex = "2147483647";
-
-      captureTarget = target.cloneNode(true) as HTMLElement;
-      captureTarget.removeAttribute("id");
-      captureTarget.style.width = `${captureWidth}px`;
-      captureTarget.style.height = `${captureHeight}px`;
-      captureTarget
-        .querySelectorAll<HTMLElement>("[data-share-only='true']")
-        .forEach((element) => {
-          element.style.display = "flex";
-        });
-      captureWrapper.appendChild(captureTarget);
-      document.body.appendChild(captureWrapper);
-      await waitForImages(captureTarget);
-
-      const blob = await toBlob(captureTarget, {
-        cacheBust: true,
-        height: captureHeight,
-        pixelRatio: 2,
-        width: captureWidth,
-        filter: (node) => {
-          if (!(node instanceof HTMLElement)) {
-            return true;
-          }
-          return node.dataset.shareExclude !== "true";
-        },
+      return await captureShareImage({
+        title,
+        text,
+        url,
+        targetId,
+        exportWidth,
+        exportHeight,
+        fileName,
+        action,
       });
-      if (!blob) {
-        return "error";
-      }
-
-      const file = new File([blob], fileName, {
-        type: "image/png",
-      });
-
-      if (
-        navigator.share &&
-        navigator.canShare &&
-        navigator.canShare({ files: [file] })
-      ) {
-        await navigator.share({
-          title,
-          text,
-          url,
-          files: [file],
-        });
-        return "shared";
-      }
-
-      if (navigator.share) {
-        await navigator.share({ title, text, url });
-        return "shared";
-      }
-
-      const downloadUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(downloadUrl);
-      return "copied";
-    } catch {
-      return "error";
     } finally {
-      captureWrapper?.remove();
       setIsLoading(false);
     }
   };
@@ -162,7 +211,13 @@ export default function VerseOfTheDayShareButton({
         color: "var(--theme-foreground-contrast)",
         ...buttonStyle,
       }}
-      aria-label={isLoading ? "Preparing verse image" : "Share or download verse image"}
+      aria-label={
+        isLoading
+          ? "Preparing verse image"
+          : action === "download"
+            ? "Download verse image"
+            : "Share or download verse image"
+      }
       aria-busy={isLoading}
     >
       {isLoading ? (
@@ -187,7 +242,11 @@ export default function VerseOfTheDayShareButton({
         />
       )}
       <span className="sr-only">
-        {isLoading ? "Preparing verse image" : "Share Image"}
+        {isLoading
+          ? "Preparing verse image"
+          : action === "download"
+            ? "Download Image"
+            : "Share Image"}
       </span>
     </button>
   );
