@@ -48,6 +48,7 @@ function getCacheName(pathname: string) {
   }
 
   if (
+    pathname === "/daily-devotion.json" ||
     pathname === "/bible-notes.json" ||
     pathname.startsWith("/local-bible/") ||
     pathname.startsWith("/articles/") ||

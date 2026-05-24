@@ -235,6 +235,12 @@ export default function DailyDevotionOverlay() {
   const [dailyDevotion, setDailyDevotion] = useState<DailyDevotion | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator === "undefined" ? true : navigator.onLine,
+  );
+  const [shouldShowImage, setShouldShowImage] = useState(
+    typeof navigator === "undefined" ? true : navigator.onLine,
+  );
   const closeTimeoutRef = useRef<number | null>(null);
   const openFrameRef = useRef<number | null>(null);
 
@@ -265,6 +271,29 @@ export default function DailyDevotionOverlay() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+      setShouldShowImage(false);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    setShouldShowImage(isOnline);
+  }, [dailyDevotion?.image, isOnline]);
 
   useEffect(() => {
     if (!isDialogVisible) {
@@ -348,15 +377,18 @@ export default function DailyDevotionOverlay() {
           className="relative"
           style={{ backgroundColor: "#111111" }}
         >
-          <Image
-            src={dailyDevotion.image}
-            alt="Daily devotion landscape"
-            fill
-            sizes="100vw"
-            className="object-cover"
-            unoptimized
-            priority
-          />
+          {shouldShowImage ? (
+            <Image
+              src={dailyDevotion.image}
+              alt="Daily devotion landscape"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              unoptimized
+              priority
+              onError={() => setShouldShowImage(false)}
+            />
+          ) : null}
           <div className="absolute inset-0 bg-black/60" />
 
           <div className="relative z-10 flex items-center justify-center px-5 py-10 pb-24 md:pt-20 text-left sm:px-8 sm:pb-28 lg:px-10">

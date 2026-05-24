@@ -24,6 +24,7 @@ function getCacheName(pathname) {
   }
 
   if (
+    pathname === "/daily-devotion.json" ||
     pathname === "/bible-notes.json" ||
     pathname.startsWith("/local-bible/") ||
     pathname.startsWith("/articles/") ||
@@ -257,7 +258,9 @@ self.addEventListener("fetch", (event) => {
   }
 
   const isDynamicContent =
-    pathname === "/bible-notes.json" || pathname.startsWith("/local-bible/");
+    pathname === "/daily-devotion.json" ||
+    pathname === "/bible-notes.json" ||
+    pathname.startsWith("/local-bible/");
 
   if (isDynamicContent) {
     event.respondWith(networkFirst(request, CONTENT));

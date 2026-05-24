@@ -115,6 +115,7 @@ for (const file of theologyFiles) {
 }
 
 const contentAssets = [
+  "/daily-devotion.json",
   "/bible-notes.json",
   "/local-bible/Books.json",
   ...listPublicAssets(uploadsDir, "/uploads"),
