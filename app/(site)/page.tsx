@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
 import DailyDevotionOverlay from "@/components/DailyDevotionOverlay";
 import RecentArticlesCarousel from "@/components/RecentArticlesCarousel";
+import RecentTheologyCarousel from "@/components/RecentTheologyCarousel";
 import Image from "next/image";
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
@@ -75,7 +76,7 @@ export default function Home() {
               alt="Open Bible"
               fill
               sizes="(min-width: 768px) 32rem, 100vw"
-              className="object-cover transition duration-300 group-hover:scale-[1.02]"
+              className="object-cover transition duration-300"
             />
           </div>
 
@@ -98,12 +99,13 @@ export default function Home() {
         </Link>
       </section>
 
-      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4 pt-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">கட்டுரைகள்</h2>
           <Link
             href="/articles"
-            className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold hover:underline"
+            style={{ color: "var(--muted-foreground)" }}
           >
             மேலும்
             <ArrowRightIcon style={{ width: 15, height: 15 }} />
@@ -168,73 +170,23 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-5xl px-4">
+      {/* <div className="mx-auto w-full max-w-5xl px-4">
         <hr style={{ borderColor: "var(--border-color)" }} />
-      </div>
+      </div> */}
 
-      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4 pt-6">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">இறையியல்</h2>
           <Link
             href="/theology"
-            className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold hover:underline"
+            style={{ color: "var(--muted-foreground)" }}
           >
             மேலும்
             <ArrowRightIcon style={{ width: 15, height: 15 }} />
           </Link>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {theologySections.map((section) => (
-            <Link
-              href={`/theology/${section.slug}`}
-              key={section.slug}
-              className="group flex h-full flex-col border"
-              style={{
-                borderColor: "var(--border-color)",
-                backgroundColor: "var(--muted-background)",
-              }}
-            >
-              {section.image ? (
-                <div
-                  className="relative aspect-square w-full overflow-hidden border-b"
-                  style={{ borderColor: "var(--border-color)" }}
-                >
-                  <Image
-                    src={section.image}
-                    alt={section.label}
-                    fill
-                    sizes="(min-width: 768px) 24rem, 100vw"
-                    className="object-cover transition duration-300 group-hover:scale-[1.02]"
-                  />
-                </div>
-              ) : null}
-              <div className="space-y-3 p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold group-hover:underline">
-                      {section.label}
-                    </h3>
-                    <p
-                      className="text-sm leading-relaxed"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
-                      {section.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                className="mt-auto flex justify-end border-t p-5"
-                style={{ borderColor: "var(--border-color)" }}
-              >
-                <span className="inline-flex items-center" aria-hidden="true">
-                  <ArrowRightIcon style={{ width: 15, height: 15 }} />
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <RecentTheologyCarousel sections={theologySections} />
       </section>
     </div>
   );

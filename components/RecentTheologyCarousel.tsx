@@ -1,69 +1,71 @@
 "use client";
 
-import { ArrowLeftIcon, ArrowRightIcon, VolumeIcon } from "@/components/Icons";
-import type { ArticleMeta } from "@/lib/articles";
-import { formatTamilDate } from "@/lib/date";
+import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
+import type { THEOLOGY_SECTIONS } from "@/lib/theology";
 import useEmblaCarousel from "embla-carousel-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+type TheologySectionCard = (typeof THEOLOGY_SECTIONS)[number];
+
 type Props = {
-  articles: ArticleMeta[];
+  sections: TheologySectionCard[];
 };
 
-function ArticleCard({ article }: { article: ArticleMeta }) {
+function TheologyCard({ section }: { section: TheologySectionCard }) {
   return (
     <Link
-      href={`/articles/${article.slug}`}
-      className="flex h-full flex-col border"
-      style={{ borderColor: "var(--border-color)" }}
+      href={`/theology/${section.slug}`}
+      className="group flex h-full flex-col border"
+      style={{
+        borderColor: "var(--border-color)",
+        backgroundColor: "var(--muted-background)",
+      }}
     >
-      {article.image && (
+      {section.image ? (
         <div
-          className="overflow-hidden border"
+          className="relative aspect-square w-full overflow-hidden border-b"
           style={{ borderColor: "var(--border-color)" }}
         >
-          <div className="relative aspect-[16/9] w-full">
-            <Image
-              src={article.image}
-              alt={article.title}
-              fill
-              sizes="(min-width: 1024px) 18rem, (min-width: 640px) 50vw, 70vw"
-              className="object-cover"
-            />
-          </div>
+          <Image
+            src={section.image}
+            alt={section.label}
+            fill
+            sizes="(min-width: 768px) 24rem, 80vw"
+            className="object-cover transition duration-300"
+          />
         </div>
-      )}
-      <div className="space-y-2 p-4">
-        <div className="flex items-center gap-1">
-          {article.audio && (
-            <span
-              className="text-[0.8rem] opacity-70"
+      ) : null}
+      <div className="space-y-3 p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold group-hover:underline">
+              {section.label}
+            </h3>
+            <p
+              className="text-sm leading-relaxed"
               style={{ color: "var(--muted-foreground)" }}
             >
-              <VolumeIcon style={{ width: 15, height: 15 }} />
-            </span>
-          )}
-          <p
-            className="text-xs font-semibold uppercase tracking-wide"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            {article.type || "à®•à®Ÿà¯à®Ÿà¯à®°à¯ˆ"}
-          </p>
+              {section.description}
+            </p>
+          </div>
         </div>
-        <div className="text-lg font-semibold leading-snug hover:underline">
-          {article.title}
-        </div>
-        <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-          {formatTamilDate(article.date)} · {article.author}
-        </p>
+      </div>
+
+      <div
+        className="mt-auto flex justify-end border-t p-5"
+        style={{ borderColor: "var(--border-color)" }}
+      >
+        <span className="inline-flex items-center" aria-hidden="true">
+          <ArrowRightIcon style={{ width: 15, height: 15 }} />
+        </span>
       </div>
     </Link>
   );
 }
 
-export default function RecentArticlesCarousel({ articles }: Props) {
+export default function RecentTheologyCarousel({ sections }: Props) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
@@ -71,7 +73,7 @@ export default function RecentArticlesCarousel({ articles }: Props) {
     slidesToScroll: 1,
   });
   const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(articles.length > 1);
+  const [canScrollNext, setCanScrollNext] = useState(sections.length > 1);
 
   useEffect(() => {
     if (!emblaApi) {
@@ -96,16 +98,16 @@ export default function RecentArticlesCarousel({ articles }: Props) {
 
   return (
     <>
-      <div className="space-y-4 sm:hidden">
+      <div className="space-y-4 md:hidden">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="-ml-4 flex touch-pan-y">
-            {articles.map((article) => (
+            {sections.map((section) => (
               <div
-                key={article.slug}
-                className="min-w-0 flex-[0_0_90vw] pl-4"
-                style={{ maxWidth: "20rem" }}
+                key={section.slug}
+                className="min-w-0 flex-[0_0_85vw] pl-4"
+                style={{ maxWidth: "22rem" }}
               >
-                <ArticleCard article={article} />
+                <TheologyCard section={section} />
               </div>
             ))}
           </div>
@@ -122,7 +124,7 @@ export default function RecentArticlesCarousel({ articles }: Props) {
               background: "var(--muted-background)",
               color: "var(--foreground)",
             }}
-            aria-label="Previous articles"
+            aria-label="Previous theology sections"
           >
             <ArrowLeftIcon style={{ width: 18, height: 18 }} />
           </button>
@@ -136,16 +138,16 @@ export default function RecentArticlesCarousel({ articles }: Props) {
               background: "var(--muted-background)",
               color: "var(--foreground)",
             }}
-            aria-label="Next articles"
+            aria-label="Next theology sections"
           >
             <ArrowRightIcon style={{ width: 18, height: 18 }} />
           </button>
         </div> */}
       </div>
 
-      <div className="hidden gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-3">
-        {articles.map((article) => (
-          <ArticleCard key={article.slug} article={article} />
+      <div className="hidden gap-6 md:grid md:grid-cols-2">
+        {sections.map((section) => (
+          <TheologyCard key={section.slug} section={section} />
         ))}
       </div>
     </>
