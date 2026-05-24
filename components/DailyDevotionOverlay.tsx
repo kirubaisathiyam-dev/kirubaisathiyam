@@ -115,6 +115,15 @@ function getDevotionQueryValue(date: string, slot: "am" | "pm") {
   return `${day}_${month.toLowerCase()}_${slot}`;
 }
 
+function getDevotionPreviewText(devotion: string, wordLimit = 20) {
+  const words = devotion.trim().split(/\s+/).filter(Boolean);
+  if (words.length <= wordLimit) {
+    return devotion.trim();
+  }
+
+  return `${words.slice(0, wordLimit).join(" ")}...`;
+}
+
 function parseDevotionQueryValue(value: string | null): DevotionQueryTarget | null {
   if (!value) {
     return null;
@@ -512,17 +521,40 @@ export default function DailyDevotionOverlay() {
     backgroundColor: "#e9c36a",
     color: "#171717",
   };
+  const devotionAttribution =
+    "சார்ல்ஸ் ஸ்பர்ஜனின் காலை மற்றும் மாலை தியானங்கள்";
+  const activeDialogShareUrl =
+    typeof window === "undefined"
+      ? "/"
+      : `${window.location.origin}/?openDevotion=${encodeURIComponent(
+          getDevotionQueryValue(
+            activeDialogDevotion.date,
+            activeDialogDevotion.slot,
+          ),
+        )}`;
   const shareText = [
-    dailyDevotion.reference,
-    dailyDevotion.verse,
-    dailyDevotion.devotion,
+    formatDevotionLabel(dailyDevotion.date, dailyDevotion.slot),
+    devotionAttribution,
+    dailyDevotion.verse
+      ? `${dailyDevotion.verse}${dailyDevotion.reference ? ` (${dailyDevotion.reference})` : ""}`
+      : dailyDevotion.reference,
+    getDevotionPreviewText(dailyDevotion.devotion),
+    "Read more",
   ]
     .filter(Boolean)
     .join("\n\n");
   const activeDialogShareText = [
-    activeDialogDevotion.reference,
-    activeDialogDevotion.verse,
-    activeDialogDevotion.devotion,
+    formatDevotionLabel(activeDialogDevotion.date, activeDialogDevotion.slot),
+    devotionAttribution,
+    activeDialogDevotion.verse
+      ? `${activeDialogDevotion.verse}${
+          activeDialogDevotion.reference
+            ? ` (${activeDialogDevotion.reference})`
+            : ""
+        }`
+      : activeDialogDevotion.reference,
+    getDevotionPreviewText(activeDialogDevotion.devotion),
+    "Read more",
   ]
     .filter(Boolean)
     .join("\n\n");
@@ -733,16 +765,7 @@ export default function DailyDevotionOverlay() {
                   <ShareButton
                     title={`Daily Devotion - ${activeDialogDevotion.reference}`}
                     text={activeDialogShareText}
-                    url={
-                      typeof window === "undefined"
-                        ? "/"
-                        : `${window.location.origin}/?openDevotion=${encodeURIComponent(
-                            getDevotionQueryValue(
-                              activeDialogDevotion.date,
-                              activeDialogDevotion.slot,
-                            ),
-                          )}`
-                    }
+                    url={activeDialogShareUrl}
                   />
                 </div>
               </div>
