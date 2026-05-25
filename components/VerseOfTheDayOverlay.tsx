@@ -92,7 +92,7 @@ function getVerseRange(verseRange: string) {
 }
 
 function getVerseImageStorageKey(day: number) {
-  return `unsplash-image:verse:${day}`;
+  return `hero-image:v2:verse:${day}`;
 }
 
 function readCachedVerseImage(day: number) {

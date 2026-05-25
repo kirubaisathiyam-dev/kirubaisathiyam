@@ -1,4 +1,5 @@
-import { getFallbackUnsplashImage, type UnsplashImage } from "@/lib/unsplash";
+import { getOrCreateHeroImage } from "@/lib/hero-images";
+import type { UnsplashImage } from "@/lib/unsplash";
 
 export type DailyDevotionSlotKey = "am" | "pm";
 
@@ -56,7 +57,7 @@ export function formatDevotionLabel(
 }
 
 export async function getDevotionImage(slug: string): Promise<UnsplashImage> {
-  return getFallbackUnsplashImage("devotion", slug);
+  return getOrCreateHeroImage("devotion", slug);
 }
 
 export function getDevotionRoute(slug: string) {

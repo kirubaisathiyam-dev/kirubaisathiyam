@@ -5,7 +5,7 @@ export type UnsplashImage = {
   unsplashUrl: string | null;
 };
 
-type UnsplashContext = "devotion" | "verse";
+export type UnsplashContext = "devotion" | "verse";
 
 type UnsplashPhotoResponse = {
   links?: {

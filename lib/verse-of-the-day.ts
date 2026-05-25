@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
+import { getOrCreateHeroImage } from "@/lib/hero-images";
 import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
-import { getCachedUnsplashImage } from "@/lib/unsplash";
 
 type VerseOfTheDayEntry = {
   day: number;
@@ -169,7 +169,7 @@ export async function getVerseOfTheDay(): Promise<VerseOfTheDay | null> {
     return null;
   }
 
-  const image = await getCachedUnsplashImage("verse", String(todayEntry.day));
+  const image = await getOrCreateHeroImage("verse", String(todayEntry.day));
 
   return {
     day: todayEntry.day,

@@ -84,7 +84,7 @@ function getVerseRange(verseRange: string) {
 }
 
 function getDevotionImageStorageKey(slug: string) {
-  return `unsplash-image:devotion:${slug}`;
+  return `hero-image:v2:devotion:${slug}`;
 }
 
 function readCachedDevotionImage(slug: string) {

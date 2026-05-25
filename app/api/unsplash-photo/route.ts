@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUnsplashImage } from "@/lib/unsplash";
+import { getOrCreateHeroImage } from "@/lib/hero-images";
 
 export const runtime = "edge";
 
@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const image = await getUnsplashImage(context, id);
+  const image = await getOrCreateHeroImage(context, id);
   return NextResponse.json(image, {
     headers: {
       "Cache-Control": "no-store",
