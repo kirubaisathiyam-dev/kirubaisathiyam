@@ -8,16 +8,19 @@ import {
 } from "@/lib/church-history";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
-export const runtime = "edge";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return getAllChurchHistoryTopics()
+  const params = getAllChurchHistoryTopics()
     .filter((topic) => !topic.groupSlug)
     .map((topic) => ({
       subsection: topic.subsectionSlug,
       slug: topic.slug,
     }));
+
+  return params.length > 0
+    ? params
+    : [{ subsection: "__placeholder__", slug: "__placeholder__" }];
 }
 
 const siteUrl = getSiteUrl();

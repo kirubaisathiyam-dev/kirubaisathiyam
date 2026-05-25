@@ -6,7 +6,6 @@ import {
   getChurchHistorySubsections,
 } from "@/lib/church-history";
 
-export const runtime = "edge";
 export const dynamicParams = false;
 
 type ChurchHistorySubsectionPageProps = {
@@ -16,9 +15,11 @@ type ChurchHistorySubsectionPageProps = {
 };
 
 export function generateStaticParams() {
-  return getChurchHistorySubsections().map((subsection) => ({
+  const params = getChurchHistorySubsections().map((subsection) => ({
     subsection: subsection.slug,
   }));
+
+  return params.length > 0 ? params : [{ subsection: "__placeholder__" }];
 }
 
 export async function generateMetadata({
