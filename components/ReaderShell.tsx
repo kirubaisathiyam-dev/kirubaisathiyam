@@ -24,6 +24,13 @@ export default function ReaderShell({ children }: ReaderShellProps) {
     if (!pathname) return "/";
     if (pathname.startsWith("/articles/")) return "/articles";
     if (pathname.startsWith("/bible/read")) return "/bible";
+    if (pathname.startsWith("/church-history/")) {
+      const parts = pathname.split("/").filter(Boolean);
+      if (parts.length >= 2) {
+        return `/church-history#${parts[1]}`;
+      }
+      return "/church-history";
+    }
     if (pathname.startsWith("/theology/")) {
       const parts = pathname.split("/").filter(Boolean);
       if (parts.length >= 3) {

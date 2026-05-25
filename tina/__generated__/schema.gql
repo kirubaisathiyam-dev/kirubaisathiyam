@@ -60,12 +60,15 @@ type Query {
   systematicTheologyConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: SystematicTheologyFilter): SystematicTheologyConnection!
   reformedTheology(relativePath: String): ReformedTheology!
   reformedTheologyConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ReformedTheologyFilter): ReformedTheologyConnection!
+  churchHistory(relativePath: String): ChurchHistory!
+  churchHistoryConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ChurchHistoryFilter): ChurchHistoryConnection!
 }
 
 input DocumentFilter {
   article: ArticleFilter
   systematicTheology: SystematicTheologyFilter
   reformedTheology: ReformedTheologyFilter
+  churchHistory: ChurchHistoryFilter
 }
 
 type DocumentConnectionEdges {
@@ -91,7 +94,7 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float, sort: String, filter: DocumentFilter, folder: String): DocumentConnection!
 }
 
-union DocumentNode = Article | SystematicTheology | ReformedTheology | Folder
+union DocumentNode = Article | SystematicTheology | ReformedTheology | ChurchHistory | Folder
 
 type Article implements Node & Document {
   title: String!
@@ -235,6 +238,38 @@ type ReformedTheologyConnection implements Connection {
   edges: [ReformedTheologyConnectionEdges]
 }
 
+type ChurchHistory implements Node & Document {
+  title: String!
+  subsection: String!
+  subsectionFolder: String
+  order: Float
+  date: String!
+  body: JSON!
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input ChurchHistoryFilter {
+  title: StringFilter
+  subsection: StringFilter
+  subsectionFolder: StringFilter
+  order: NumberFilter
+  date: DatetimeFilter
+  body: RichTextFilter
+}
+
+type ChurchHistoryConnectionEdges {
+  cursor: String!
+  node: ChurchHistory
+}
+
+type ChurchHistoryConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [ChurchHistoryConnectionEdges]
+}
+
 type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentUpdateMutation!): DocumentNode!
@@ -247,12 +282,15 @@ type Mutation {
   createSystematicTheology(relativePath: String!, params: SystematicTheologyMutation!): SystematicTheology!
   updateReformedTheology(relativePath: String!, params: ReformedTheologyMutation!): ReformedTheology!
   createReformedTheology(relativePath: String!, params: ReformedTheologyMutation!): ReformedTheology!
+  updateChurchHistory(relativePath: String!, params: ChurchHistoryMutation!): ChurchHistory!
+  createChurchHistory(relativePath: String!, params: ChurchHistoryMutation!): ChurchHistory!
 }
 
 input DocumentUpdateMutation {
   article: ArticleMutation
   systematicTheology: SystematicTheologyMutation
   reformedTheology: ReformedTheologyMutation
+  churchHistory: ChurchHistoryMutation
   relativePath: String
 }
 
@@ -260,6 +298,7 @@ input DocumentMutation {
   article: ArticleMutation
   systematicTheology: SystematicTheologyMutation
   reformedTheology: ReformedTheologyMutation
+  churchHistory: ChurchHistoryMutation
 }
 
 input ArticleMutation {
@@ -285,6 +324,15 @@ input SystematicTheologyMutation {
 }
 
 input ReformedTheologyMutation {
+  title: String
+  subsection: String
+  subsectionFolder: String
+  order: Float
+  date: String
+  body: JSON
+}
+
+input ChurchHistoryMutation {
   title: String
   subsection: String
   subsectionFolder: String

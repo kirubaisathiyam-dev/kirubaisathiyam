@@ -13,6 +13,7 @@ const OFFLINE_LAST_SYNC_KEY = "kirubai-offline:last-sync";
 const CORE_SYNC_URLS = [
   "/",
   "/articles",
+  "/church-history",
   "/theology",
   "/bible",
   "/bible/read",
@@ -28,6 +29,7 @@ const CORE_SYNC_URLS = [
 const CORE_ROUTE_ASSET_URLS = [
   "/",
   "/articles",
+  "/church-history",
   "/theology",
   "/bible",
   "/bible/read",
@@ -52,6 +54,7 @@ function getCacheName(pathname: string) {
     pathname === "/bible-notes.json" ||
     pathname.startsWith("/local-bible/") ||
     pathname.startsWith("/articles/") ||
+    pathname.startsWith("/church-history/") ||
     pathname.startsWith("/theology/") ||
     pathname.startsWith("/uploads/") ||
     pathname.startsWith("/images/")

@@ -140,6 +140,14 @@ export default function SiteHeader() {
                   இறையியல்
                 </Link>
                 <Link
+                  href="/church-history"
+                  className="px-3 py-4 hover:opacity-70 border-t"
+                  style={{ borderColor: "var(--border-color)" }}
+                  onClick={() => setOpen(false)}
+                >
+                  திருச்சபை வரலாறு
+                </Link>
+                <Link
                   href="/articles"
                   className="px-3 py-4 hover:opacity-70 border-t"
                   style={{ borderColor: "var(--border-color)" }}

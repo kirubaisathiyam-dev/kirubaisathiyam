@@ -274,6 +274,30 @@ var config_default = defineConfig({
           createSubsectionFolderField(),
           ...createTheologyFields()
         ]
+      },
+      {
+        name: "churchHistory",
+        label: "Church History",
+        path: "content/church-history",
+        format: "md",
+        ui: {
+          filename: {
+            slugify: (values) => createTheologyFilePath(values.subsectionFolder, values.date),
+            description: "Each topic is stored as a timestamp-named markdown file inside the English subsection folder."
+          }
+        },
+        fields: [
+          {
+            type: "string",
+            name: "title",
+            label: "Title",
+            isTitle: true,
+            required: true
+          },
+          createSubsectionField(),
+          createSubsectionFolderField(),
+          ...createTheologyFields()
+        ]
       }
     ]
   }

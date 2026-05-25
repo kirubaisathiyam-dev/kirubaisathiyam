@@ -31,3 +31,13 @@ fragment ReformedTheologyParts on ReformedTheology {
   date
   body
 }
+
+fragment ChurchHistoryParts on ChurchHistory {
+  __typename
+  title
+  subsection
+  subsectionFolder
+  order
+  date
+  body
+}

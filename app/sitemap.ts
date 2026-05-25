@@ -2,6 +2,10 @@ import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/articles";
 import dailyDevotionRecords from "@/public/daily-devotion.json";
 import {
+  getAllChurchHistoryTopics,
+  getChurchHistorySubsections,
+} from "@/lib/church-history";
+import {
   getDevotionSlug,
   type DailyDevotionRecord,
 } from "@/lib/daily-devotion";
@@ -15,6 +19,7 @@ import {
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = getSiteUrl().toString().replace(/\/$/, "");
   const articles = getAllArticles();
+  const churchHistoryTopics = getAllChurchHistoryTopics();
   const theologyTopics = getAllTheologyTopics();
   const devotionRecords = dailyDevotionRecords as DailyDevotionRecord[];
   const latestArticleDate = articles[0]?.date
@@ -23,10 +28,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const latestTheologyDate = theologyTopics[0]?.date
     ? new Date(theologyTopics[0].date)
     : latestArticleDate;
+  const latestChurchHistoryDate = churchHistoryTopics[0]?.date
+    ? new Date(churchHistoryTopics[0].date)
+    : latestArticleDate;
   const latestContentDate =
-    latestTheologyDate.getTime() > latestArticleDate.getTime()
+    Math.max(
+      latestTheologyDate.getTime(),
+      latestChurchHistoryDate.getTime(),
+      latestArticleDate.getTime(),
+    ) === latestTheologyDate.getTime()
       ? latestTheologyDate
-      : latestArticleDate;
+      : Math.max(
+            latestChurchHistoryDate.getTime(),
+            latestArticleDate.getTime(),
+          ) === latestChurchHistoryDate.getTime()
+        ? latestChurchHistoryDate
+        : latestArticleDate;
 
   const staticEntries: MetadataRoute.Sitemap = [
     {
@@ -46,6 +63,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: latestTheologyDate,
       changeFrequency: "weekly",
       priority: 0.85,
+    },
+    {
+      url: `${siteUrl}/church-history`,
+      lastModified: latestChurchHistoryDate,
+      changeFrequency: "weekly",
+      priority: 0.8,
     },
     {
       url: `${siteUrl}/bible`,
@@ -111,6 +134,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   );
 
+  const churchHistorySubsectionEntries: MetadataRoute.Sitemap =
+    getChurchHistorySubsections().map((subsection) => ({
+      url: `${siteUrl}/church-history/${subsection.slug}`,
+      lastModified: subsection.latestDate
+        ? new Date(subsection.latestDate)
+        : latestChurchHistoryDate,
+      changeFrequency: "monthly",
+      priority: 0.72,
+    }));
+
+  const churchHistoryTopicEntries: MetadataRoute.Sitemap =
+    churchHistoryTopics.map((topic) => ({
+      url: `${siteUrl}/church-history/${topic.subsectionSlug}/${topic.slug}`,
+      lastModified: new Date(topic.date),
+      changeFrequency: "monthly",
+      priority: 0.72,
+    }));
+
   const devotionEntries: MetadataRoute.Sitemap = devotionRecords.flatMap(
     (record) => {
       if (!record.date) {
@@ -134,6 +175,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...theologySectionEntries,
     ...theologySubsectionEntries,
     ...theologyTopicEntries,
+    ...churchHistorySubsectionEntries,
+    ...churchHistoryTopicEntries,
     ...devotionEntries,
   ];
 }

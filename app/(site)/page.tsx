@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
 import DailyDevotionOverlay from "@/components/DailyDevotionOverlay";
 import RecentArticlesCarousel from "@/components/RecentArticlesCarousel";
 import RecentTheologyCarousel from "@/components/RecentTheologyCarousel";
-import Image from "next/image";
-import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
+import { CHURCH_HISTORY_SECTION } from "@/lib/church-history";
 import { formatTamilDate } from "@/lib/date";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getTheologySectionsWithTopics } from "@/lib/theology";
@@ -85,7 +86,7 @@ export default function Home() {
               className="text-sm leading-7 sm:text-base"
               style={{ color: "var(--muted-foreground)" }}
             >
-              தினமும் வேதாகமம் வாசிப்பதை ஒரு பழக்கமாக்கிக் கொள்ளுங்கள்.
+              தினமும் வேதாகமம் வாசிப்பதை ஒரு பழக்கமாக்கிக்கொள்ளுங்கள்.
               கர்த்தருடைய வார்த்தை உங்களை வழிநடத்தட்டும்.
             </p>
 
@@ -170,7 +171,6 @@ export default function Home() {
         </div>
       </section>
 
-
       <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold">இறையியல்</h2>
@@ -184,6 +184,47 @@ export default function Home() {
           </Link>
         </div>
         <RecentTheologyCarousel sections={theologySections} />
+      </section>
+
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
+        <h2 className="text-xl font-semibold">திருச்சபை வரலாறு</h2>
+        <Link
+          href="/church-history"
+          className="group grid overflow-hidden border sm:grid-cols-[0.7fr_1.1fr] md:grid-cols-[0.4fr_1.1fr]"
+          style={{
+            borderColor: "var(--border-color)",
+            backgroundColor: "var(--muted-background)",
+          }}
+        >
+          <div
+            className="relative aspect-square border-b md:border-b-0 md:border-r"
+            style={{ borderColor: "var(--border-color)" }}
+          >
+            <Image
+              src={CHURCH_HISTORY_SECTION.image}
+              alt={CHURCH_HISTORY_SECTION.label}
+              fill
+              sizes="(min-width: 768px) 32rem, 100vw"
+              className="object-cover transition duration-300"
+            />
+          </div>
+
+          <div className="flex flex-col justify-center gap-5 p-6 sm:p-8">
+            <p
+              className="text-sm leading-7 sm:text-base"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              {CHURCH_HISTORY_SECTION.description}
+            </p>
+
+            <div className="flex items-center gap-2 text-md font-semibold sm:text-lg">
+              <span className="group-hover:underline">
+                திருச்சபை வரலாற்றைப் பார்க்கவும்
+              </span>
+              <ArrowRightIcon style={{ width: 15, height: 15 }} />
+            </div>
+          </div>
+        </Link>
       </section>
     </div>
   );
