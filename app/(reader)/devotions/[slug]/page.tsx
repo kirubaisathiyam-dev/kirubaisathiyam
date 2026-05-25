@@ -10,7 +10,6 @@ import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import {
   DEVOTION_ATTRIBUTION,
   formatDevotionLabel,
-  getDevotionImage,
   getDevotionImageFileName,
   getDevotionPreviewText,
   getDevotionRoute,
@@ -42,10 +41,6 @@ type DevotionPageData = {
   verseReference: string;
   verseText: string;
   devotion: string;
-  imageUrl: string;
-  imagePhotographerName: string | null;
-  imagePhotographerUrl: string | null;
-  imageUnsplashUrl: string | null;
   canonicalPath: string;
 };
 
@@ -162,7 +157,6 @@ async function getDevotionPageData(
 
   const verseDetails = await getVerseDetails(slotEntry.verse);
   const canonicalPath = getDevotionRoute(slug);
-  const image = await getDevotionImage(slug);
 
   return {
     slug,
@@ -172,10 +166,6 @@ async function getDevotionPageData(
     verseReference: verseDetails.reference,
     verseText: verseDetails.verse,
     devotion: slotEntry.devotion ?? "",
-    imageUrl: image.url,
-    imagePhotographerName: image.photographerName,
-    imagePhotographerUrl: image.photographerUrl,
-    imageUnsplashUrl: image.unsplashUrl,
     canonicalPath,
   };
 }
@@ -236,13 +226,13 @@ export async function generateMetadata({
       description,
       siteName,
       locale: "ta-IN",
-      images: [{ url: devotion.imageUrl }, { url: fallbackImage }],
+      images: [{ url: fallbackImage }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [devotion.imageUrl, fallbackImage],
+      images: [fallbackImage],
     },
   };
 }
@@ -282,7 +272,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
       "@type": "Person",
       name: "Charles Spurgeon",
     },
-    image: [devotion.imageUrl],
+    image: [fallbackImage],
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": devotionUrl,
@@ -312,10 +302,10 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
           verseReference={devotion.verseReference}
           verseText={devotion.verseText}
           initialImage={{
-            url: devotion.imageUrl,
-            photographerName: devotion.imagePhotographerName,
-            photographerUrl: devotion.imagePhotographerUrl,
-            unsplashUrl: devotion.imageUnsplashUrl,
+            url: "",
+            photographerName: null,
+            photographerUrl: null,
+            unsplashUrl: null,
           }}
         />
         <div
@@ -376,39 +366,6 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
           >
             {DEVOTION_ATTRIBUTION}
           </p>
-          {devotion.imagePhotographerName ? (
-            <p
-              className="text-xs"
-              style={{ color: "rgba(255, 255, 255, 0.5)" }}
-            >
-              Photo by{" "}
-              {devotion.imagePhotographerUrl ? (
-                <a
-                  href={devotion.imagePhotographerUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-2"
-                >
-                  {devotion.imagePhotographerName}
-                </a>
-              ) : (
-                devotion.imagePhotographerName
-              )}{" "}
-              on{" "}
-              {devotion.imageUnsplashUrl ? (
-                <a
-                  href={devotion.imageUnsplashUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline underline-offset-2"
-                >
-                  Unsplash
-                </a>
-              ) : (
-                "Unsplash"
-              )}
-            </p>
-          ) : null}
           <div className="mb-8">
             <DevotionShareActions
               title={`Daily Devotion - ${devotion.verseReference}`}
