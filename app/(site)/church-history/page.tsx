@@ -87,33 +87,77 @@ export default function ChurchHistoryPage() {
               key={subsection.slug}
               className="list-none scroll-mt-24"
             >
-              <div className="space-y-4 pl-4">
+              <div className="space-y-5 pl-4">
                 <div className="flex items-baseline">
-                  <span className="w-8 flex-none text-xl font-semibold">
+                  <span className="w-10 flex-none text-xl font-semibold">
                     {subsectionIndex + 1}.
                   </span>
                   <h2 className="flex-1 text-xl font-semibold">
                     {subsection.label}
                   </h2>
                 </div>
-                <div className="pl-4">
-                  <ol className="space-y-3">
-                    {subsection.topics.map((topic, topicIndex) => (
-                      <li key={topic.slug} className="list-none">
-                        <Link
-                          href={`/church-history/${subsection.slug}/${topic.slug}`}
-                          className="group flex items-baseline text-base leading-relaxed"
-                        >
-                          <span className="w-12 flex-none">
-                            {subsectionIndex + 1}.{topicIndex + 1}.
+
+                <div className="space-y-6 pl-5">
+                  {subsection.directTopics.length > 0 ? (
+                    <ol className="space-y-3">
+                      {subsection.directTopics.map((topic, topicIndex) => (
+                        <li key={topic.slug} className="list-none">
+                          <Link
+                            href={`/church-history/${subsection.slug}/${topic.slug}`}
+                            className="group flex items-baseline text-base leading-relaxed"
+                          >
+                            <span className="w-20 flex-none">
+                              {subsectionIndex + 1}.{topicIndex + 1}.
+                            </span>
+                            <span className="flex-1 underline-offset-4 group-hover:underline">
+                              {topic.title}
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : null}
+
+                  {subsection.groups.map((group, groupIndex) => {
+                    const groupNumber =
+                      subsection.directTopics.length + groupIndex + 1;
+
+                    return (
+                      <section
+                        id={`${subsection.slug}-${group.slug}`}
+                        key={group.slug}
+                        className="space-y-3 scroll-mt-24"
+                      >
+                        <div className="flex items-baseline">
+                          <span className="w-16 flex-none text-base font-semibold">
+                            {subsectionIndex + 1}.{groupNumber}.
                           </span>
-                          <span className="flex-1 underline-offset-4 group-hover:underline">
-                            {topic.title}
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ol>
+                          <h3 className="flex-1 text-lg font-semibold">
+                            {group.label}
+                          </h3>
+                        </div>
+
+                        <ol className="space-y-3 pl-6">
+                          {group.topics.map((topic, topicIndex) => (
+                            <li key={topic.slug} className="list-none">
+                              <Link
+                                href={`/church-history/${subsection.slug}/${group.slug}/${topic.slug}`}
+                                className="group flex items-baseline text-base leading-relaxed"
+                              >
+                                <span className="w-20 flex-none">
+                                  {subsectionIndex + 1}.{groupNumber}.
+                                  {topicIndex + 1}.
+                                </span>
+                                <span className="flex-1 underline-offset-4 group-hover:underline">
+                                  {topic.title}
+                                </span>
+                              </Link>
+                            </li>
+                          ))}
+                        </ol>
+                      </section>
+                    );
+                  })}
                 </div>
               </div>
             </li>

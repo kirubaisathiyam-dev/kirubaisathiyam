@@ -146,7 +146,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const churchHistoryTopicEntries: MetadataRoute.Sitemap =
     churchHistoryTopics.map((topic) => ({
-      url: `${siteUrl}/church-history/${topic.subsectionSlug}/${topic.slug}`,
+      url: topic.groupSlug
+        ? `${siteUrl}/church-history/${topic.subsectionSlug}/${topic.groupSlug}/${topic.slug}`
+        : `${siteUrl}/church-history/${topic.subsectionSlug}/${topic.slug}`,
       lastModified: new Date(topic.date),
       changeFrequency: "monthly",
       priority: 0.72,

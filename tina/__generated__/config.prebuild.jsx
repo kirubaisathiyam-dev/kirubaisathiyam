@@ -40,6 +40,18 @@ function createTheologyFilePath(subsectionFolderValue, dateValue) {
   }
   return fileName;
 }
+function createChurchHistoryFilePath(subsectionFolderValue, groupFolderValue, dateValue) {
+  const fileName = createTimestampSlug(dateValue);
+  const subsectionFolder = createSubsectionFolderSlug(
+    subsectionFolderValue,
+    dateValue
+  );
+  if (typeof groupFolderValue === "string" && groupFolderValue.trim()) {
+    const groupFolder = createSubsectionFolderSlug(groupFolderValue, dateValue);
+    return `${subsectionFolder}/${groupFolder}/${fileName}`;
+  }
+  return `${subsectionFolder}/${fileName}`;
+}
 function createDateField() {
   return {
     type: "datetime",
@@ -136,6 +148,24 @@ function createSubsectionFolderField() {
     label: "Subsection Folder",
     required: false,
     description: "English folder name for a new subsection, for example: theology-proper, christology, salvation. Leave this empty when creating inside an existing subsection folder."
+  };
+}
+function createGroupField() {
+  return {
+    type: "string",
+    name: "group",
+    label: "Sub-subsection",
+    required: false,
+    description: "Optional nested group name, for example: Preparation for Christianity. Leave empty if the topic belongs directly under the subsection."
+  };
+}
+function createGroupFolderField() {
+  return {
+    type: "string",
+    name: "groupFolder",
+    label: "Sub-subsection Folder",
+    required: false,
+    description: "English folder name for the nested group, for example: preparation-for-christianity."
   };
 }
 function createArticleFields() {
@@ -282,8 +312,12 @@ var config_default = defineConfig({
         format: "md",
         ui: {
           filename: {
-            slugify: (values) => createTheologyFilePath(values.subsectionFolder, values.date),
-            description: "Each topic is stored as a timestamp-named markdown file inside the English subsection folder."
+            slugify: (values) => createChurchHistoryFilePath(
+              values.subsectionFolder,
+              values.groupFolder,
+              values.date
+            ),
+            description: "Each topic is stored as a timestamp-named markdown file inside subsection and nested group folders."
           }
         },
         fields: [
@@ -296,6 +330,8 @@ var config_default = defineConfig({
           },
           createSubsectionField(),
           createSubsectionFolderField(),
+          createGroupField(),
+          createGroupFolderField(),
           ...createTheologyFields()
         ]
       }

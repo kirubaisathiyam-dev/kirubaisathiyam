@@ -20,6 +20,8 @@ export type MarkdownFrontmatter = {
   order?: unknown;
   subsection?: unknown;
   subsectionFolder?: unknown;
+  group?: unknown;
+  groupFolder?: unknown;
 };
 
 export function listMarkdownFiles(directory: string) {

@@ -242,6 +242,8 @@ type ChurchHistory implements Node & Document {
   title: String!
   subsection: String!
   subsectionFolder: String
+  group: String
+  groupFolder: String
   order: Float
   date: String!
   body: JSON!
@@ -254,6 +256,8 @@ input ChurchHistoryFilter {
   title: StringFilter
   subsection: StringFilter
   subsectionFolder: StringFilter
+  group: StringFilter
+  groupFolder: StringFilter
   order: NumberFilter
   date: DatetimeFilter
   body: RichTextFilter
@@ -336,6 +340,8 @@ input ChurchHistoryMutation {
   title: String
   subsection: String
   subsectionFolder: String
+  group: String
+  groupFolder: String
   order: Float
   date: String
   body: JSON

@@ -37,6 +37,8 @@ fragment ChurchHistoryParts on ChurchHistory {
   title
   subsection
   subsectionFolder
+  group
+  groupFolder
   order
   date
   body

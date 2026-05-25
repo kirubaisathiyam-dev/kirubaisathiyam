@@ -375,6 +375,8 @@ export type ChurchHistory = Node & Document & {
   title: Scalars['String']['output'];
   subsection: Scalars['String']['output'];
   subsectionFolder?: Maybe<Scalars['String']['output']>;
+  group?: Maybe<Scalars['String']['output']>;
+  groupFolder?: Maybe<Scalars['String']['output']>;
   order?: Maybe<Scalars['Float']['output']>;
   date: Scalars['String']['output'];
   body: Scalars['JSON']['output'];
@@ -387,6 +389,8 @@ export type ChurchHistoryFilter = {
   title?: InputMaybe<StringFilter>;
   subsection?: InputMaybe<StringFilter>;
   subsectionFolder?: InputMaybe<StringFilter>;
+  group?: InputMaybe<StringFilter>;
+  groupFolder?: InputMaybe<StringFilter>;
   order?: InputMaybe<NumberFilter>;
   date?: InputMaybe<DatetimeFilter>;
   body?: InputMaybe<RichTextFilter>;
@@ -553,6 +557,8 @@ export type ChurchHistoryMutation = {
   title?: InputMaybe<Scalars['String']['input']>;
   subsection?: InputMaybe<Scalars['String']['input']>;
   subsectionFolder?: InputMaybe<Scalars['String']['input']>;
+  group?: InputMaybe<Scalars['String']['input']>;
+  groupFolder?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Scalars['Float']['input']>;
   date?: InputMaybe<Scalars['String']['input']>;
   body?: InputMaybe<Scalars['JSON']['input']>;
@@ -564,7 +570,7 @@ export type SystematicTheologyPartsFragment = { __typename: 'SystematicTheology'
 
 export type ReformedTheologyPartsFragment = { __typename: 'ReformedTheology', title: string, subsection: string, subsectionFolder?: string | null, order?: number | null, date: string, body: any };
 
-export type ChurchHistoryPartsFragment = { __typename: 'ChurchHistory', title: string, subsection: string, subsectionFolder?: string | null, order?: number | null, date: string, body: any };
+export type ChurchHistoryPartsFragment = { __typename: 'ChurchHistory', title: string, subsection: string, subsectionFolder?: string | null, group?: string | null, groupFolder?: string | null, order?: number | null, date: string, body: any };
 
 export type ArticleQueryVariables = Exact<{
   relativePath: Scalars['String']['input'];
@@ -628,7 +634,7 @@ export type ChurchHistoryQueryVariables = Exact<{
 }>;
 
 
-export type ChurchHistoryQuery = { __typename?: 'Query', churchHistory: { __typename: 'ChurchHistory', id: string, title: string, subsection: string, subsectionFolder?: string | null, order?: number | null, date: string, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
+export type ChurchHistoryQuery = { __typename?: 'Query', churchHistory: { __typename: 'ChurchHistory', id: string, title: string, subsection: string, subsectionFolder?: string | null, group?: string | null, groupFolder?: string | null, order?: number | null, date: string, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } };
 
 export type ChurchHistoryConnectionQueryVariables = Exact<{
   before?: InputMaybe<Scalars['String']['input']>;
@@ -640,7 +646,7 @@ export type ChurchHistoryConnectionQueryVariables = Exact<{
 }>;
 
 
-export type ChurchHistoryConnectionQuery = { __typename?: 'Query', churchHistoryConnection: { __typename?: 'ChurchHistoryConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ChurchHistoryConnectionEdges', cursor: string, node?: { __typename: 'ChurchHistory', id: string, title: string, subsection: string, subsectionFolder?: string | null, order?: number | null, date: string, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
+export type ChurchHistoryConnectionQuery = { __typename?: 'Query', churchHistoryConnection: { __typename?: 'ChurchHistoryConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasPreviousPage: boolean, hasNextPage: boolean, startCursor: string, endCursor: string }, edges?: Array<{ __typename?: 'ChurchHistoryConnectionEdges', cursor: string, node?: { __typename: 'ChurchHistory', id: string, title: string, subsection: string, subsectionFolder?: string | null, group?: string | null, groupFolder?: string | null, order?: number | null, date: string, body: any, _sys: { __typename?: 'SystemInfo', filename: string, basename: string, hasReferences?: boolean | null, breadcrumbs: Array<string>, path: string, relativePath: string, extension: string } } | null } | null> | null } };
 
 export const ArticlePartsFragmentDoc = gql`
     fragment ArticleParts on Article {
@@ -685,6 +691,8 @@ export const ChurchHistoryPartsFragmentDoc = gql`
   title
   subsection
   subsectionFolder
+  group
+  groupFolder
   order
   date
   body

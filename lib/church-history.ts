@@ -11,6 +11,7 @@ import {
 } from "@/lib/content-utils";
 
 const churchHistoryDirectory = path.join(process.cwd(), "content/church-history");
+const GENERAL_GROUP_SLUG = "general";
 
 export const CHURCH_HISTORY_SECTION = {
   slug: "church-history",
@@ -31,10 +32,20 @@ export type ChurchHistoryTopicMeta = {
   image?: string;
   subsectionSlug: string;
   subsectionLabel: string;
+  groupSlug: string | null;
+  groupLabel: string | null;
 };
 
 export type ChurchHistoryTopic = ChurchHistoryTopicMeta & {
   contentHtml: string;
+};
+
+export type ChurchHistoryGroup = {
+  slug: string;
+  label: string;
+  topicCount: number;
+  latestDate?: string;
+  topics: ChurchHistoryTopicMeta[];
 };
 
 export type ChurchHistorySubsection = {
@@ -42,7 +53,8 @@ export type ChurchHistorySubsection = {
   label: string;
   topicCount: number;
   latestDate?: string;
-  topics: ChurchHistoryTopicMeta[];
+  directTopics: ChurchHistoryTopicMeta[];
+  groups: ChurchHistoryGroup[];
 };
 
 type ChurchHistoryTopicMetaWithSort = ChurchHistoryTopicMeta & {
@@ -64,7 +76,7 @@ function parseOrder(value: unknown) {
   return Number.MAX_SAFE_INTEGER;
 }
 
-function createSubsectionSlug(value: unknown) {
+function createSlug(value: unknown, fallback = "general") {
   if (typeof value === "string" && value.trim()) {
     const cleaned = value
       .trim()
@@ -78,10 +90,10 @@ function createSubsectionSlug(value: unknown) {
     }
   }
 
-  return "general";
+  return fallback;
 }
 
-function formatSubsectionLabel(value: string) {
+function formatLabel(value: string) {
   const normalized = value.replace(/[-_]+/g, " ").trim();
 
   if (!normalized) {
@@ -95,12 +107,16 @@ function compareTopics(
   a: ChurchHistoryTopicMetaWithSort,
   b: ChurchHistoryTopicMetaWithSort,
 ) {
-  if (a.order !== b.order) {
-    return a.order - b.order;
-  }
-
   if (a.subsectionLabel !== b.subsectionLabel) {
     return a.subsectionLabel.localeCompare(b.subsectionLabel);
+  }
+
+  if ((a.groupLabel || "") !== (b.groupLabel || "")) {
+    return (a.groupLabel || "").localeCompare(b.groupLabel || "");
+  }
+
+  if (a.order !== b.order) {
+    return a.order - b.order;
   }
 
   if (a.title !== b.title) {
@@ -117,17 +133,30 @@ function readTopicMeta(relativePath: string): ChurchHistoryTopicMetaWithSort {
   const parsedDate = parseDate(data.date, stats.mtime);
   const image = getCoverImage(content, { image: data.image });
   const keywords = normalizeStringList(data.keywords);
-  const subsectionDirectory = path.dirname(relativePath).replace(/\\/g, "/");
-  const subsectionSlug =
-    subsectionDirectory !== "." && subsectionDirectory
-      ? subsectionDirectory
-      : createSubsectionSlug(data.subsectionFolder ?? data.subsection);
+  const directory = path.dirname(relativePath).replace(/\\/g, "/");
+  const segments = directory === "." ? [] : directory.split("/");
+  const subsectionDir = segments[0] ?? "";
+  const groupDir = segments[1] ?? "";
+
+  const subsectionSlug = subsectionDir
+    ? subsectionDir
+    : createSlug(data.subsectionFolder ?? data.subsection, "general");
+  const rawGroupSlug =
+    groupDir ||
+    (typeof data.group === "string" && data.group.trim()
+      ? createSlug(data.groupFolder ?? data.group, GENERAL_GROUP_SLUG)
+      : "");
+
   const subsectionLabel =
     typeof data.subsection === "string" && data.subsection.trim()
       ? data.subsection.trim()
-      : formatSubsectionLabel(
-          subsectionDirectory !== "." ? subsectionDirectory : subsectionSlug,
-        );
+      : formatLabel(subsectionSlug);
+  const groupLabel =
+    typeof data.group === "string" && data.group.trim()
+      ? data.group.trim()
+      : rawGroupSlug
+        ? formatLabel(rawGroupSlug)
+        : null;
 
   return {
     slug,
@@ -143,6 +172,8 @@ function readTopicMeta(relativePath: string): ChurchHistoryTopicMetaWithSort {
     image: image || undefined,
     subsectionSlug,
     subsectionLabel,
+    groupSlug: rawGroupSlug || null,
+    groupLabel,
     sortDate: parsedDate,
   };
 }
@@ -162,6 +193,8 @@ export function getAllChurchHistoryTopics(): ChurchHistoryTopicMeta[] {
       image: topic.image,
       subsectionSlug: topic.subsectionSlug,
       subsectionLabel: topic.subsectionLabel,
+      groupSlug: topic.groupSlug,
+      groupLabel: topic.groupLabel,
     }));
 }
 
@@ -169,39 +202,80 @@ export function getChurchHistorySubsections() {
   const grouped = new Map<string, ChurchHistorySubsection>();
 
   for (const topic of getAllChurchHistoryTopics()) {
-    const existing = grouped.get(topic.subsectionSlug);
+    let subsection = grouped.get(topic.subsectionSlug);
 
-    if (!existing) {
-      grouped.set(topic.subsectionSlug, {
+    if (!subsection) {
+      subsection = {
         slug: topic.subsectionSlug,
         label: topic.subsectionLabel,
-        topicCount: 1,
+        topicCount: 0,
         latestDate: topic.date,
-        topics: [topic],
-      });
+        directTopics: [],
+        groups: [],
+      };
+      grouped.set(topic.subsectionSlug, subsection);
+    }
+
+    subsection.topicCount += 1;
+    if (
+      !subsection.latestDate ||
+      new Date(topic.date).getTime() > new Date(subsection.latestDate).getTime()
+    ) {
+      subsection.latestDate = topic.date;
+    }
+
+    if (!topic.groupSlug) {
+      subsection.directTopics.push(topic);
       continue;
     }
 
-    existing.topicCount += 1;
-    existing.topics.push(topic);
-    if (
-      !existing.latestDate ||
-      new Date(topic.date).getTime() > new Date(existing.latestDate).getTime()
-    ) {
-      existing.latestDate = topic.date;
+    let group = subsection.groups.find((entry) => entry.slug === topic.groupSlug);
+
+    if (!group) {
+      group = {
+        slug: topic.groupSlug,
+        label: topic.groupLabel || formatLabel(topic.groupSlug),
+        topicCount: 0,
+        latestDate: topic.date,
+        topics: [],
+      };
+      subsection.groups.push(group);
     }
+
+    group.topicCount += 1;
+    if (
+      !group.latestDate ||
+      new Date(topic.date).getTime() > new Date(group.latestDate).getTime()
+    ) {
+      group.latestDate = topic.date;
+    }
+    group.topics.push(topic);
   }
 
-  return Array.from(grouped.values()).map((subsection) => ({
-    ...subsection,
-    topics: subsection.topics.sort((a, b) => {
-      if (a.order !== b.order) {
-        return a.order - b.order;
-      }
+  return Array.from(grouped.values())
+    .map((subsection) => ({
+      ...subsection,
+      directTopics: subsection.directTopics.sort((a, b) => {
+        if (a.order !== b.order) {
+          return a.order - b.order;
+        }
 
-      return a.title.localeCompare(b.title);
-    }),
-  }));
+        return a.title.localeCompare(b.title);
+      }),
+      groups: subsection.groups
+        .map((group) => ({
+          ...group,
+          topics: group.topics.sort((a, b) => {
+            if (a.order !== b.order) {
+              return a.order - b.order;
+            }
+
+            return a.title.localeCompare(b.title);
+          }),
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 }
 
 export function getChurchHistorySubsection(subsectionSlug: string) {
@@ -212,14 +286,28 @@ export function getChurchHistorySubsection(subsectionSlug: string) {
   );
 }
 
+export function getChurchHistoryGroup(
+  subsectionSlug: string,
+  groupSlug: string,
+) {
+  return (
+    getChurchHistorySubsection(subsectionSlug)?.groups.find(
+      (group) => group.slug === groupSlug,
+    ) ?? null
+  );
+}
+
 export async function getChurchHistoryTopic(
   subsectionSlug: string,
   slug: string,
+  groupSlug?: string | null,
 ): Promise<ChurchHistoryTopic | null> {
-  let fullPath = path.join(churchHistoryDirectory, subsectionSlug, `${slug}.md`);
+  let fullPath = groupSlug
+    ? path.join(churchHistoryDirectory, subsectionSlug, groupSlug, `${slug}.md`)
+    : path.join(churchHistoryDirectory, subsectionSlug, `${slug}.md`);
 
-  if (!fs.existsSync(fullPath) && subsectionSlug === "general") {
-    fullPath = path.join(churchHistoryDirectory, `${slug}.md`);
+  if (!fs.existsSync(fullPath) && groupSlug === GENERAL_GROUP_SLUG) {
+    fullPath = path.join(churchHistoryDirectory, subsectionSlug, `${slug}.md`);
   }
 
   if (!fs.existsSync(fullPath)) {
@@ -234,7 +322,12 @@ export async function getChurchHistoryTopic(
   const subsectionLabel =
     typeof data.subsection === "string" && data.subsection.trim()
       ? data.subsection.trim()
-      : formatSubsectionLabel(subsectionSlug);
+      : formatLabel(subsectionSlug);
+  const rawGroupLabel =
+    typeof data.group === "string" && data.group.trim() ? data.group.trim() : "";
+  const resolvedGroupSlug = rawGroupLabel
+    ? createSlug(data.groupFolder ?? data.group, GENERAL_GROUP_SLUG)
+    : groupSlug || null;
 
   return {
     slug,
@@ -250,6 +343,8 @@ export async function getChurchHistoryTopic(
     image: image || undefined,
     subsectionSlug,
     subsectionLabel,
+    groupSlug: resolvedGroupSlug,
+    groupLabel: rawGroupLabel || (resolvedGroupSlug ? formatLabel(resolvedGroupSlug) : null),
     contentHtml,
   };
 }
