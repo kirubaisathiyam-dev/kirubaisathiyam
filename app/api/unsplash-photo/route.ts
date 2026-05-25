@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCachedUnsplashImage } from "@/lib/unsplash";
 
+export const runtime = "edge";
+
 export async function GET(request: NextRequest) {
   const contextParam = request.nextUrl.searchParams.get("context");
   const id = request.nextUrl.searchParams.get("id")?.trim();
