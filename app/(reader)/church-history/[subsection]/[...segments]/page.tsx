@@ -194,6 +194,26 @@ export default async function ChurchHistoryTopicPage({
       shareText={shareText}
       shareUrl={topicUrl}
       jsonLd={jsonLd}
+      footerNote={
+        <p>
+          Source: <em>History of the Christian Church</em> by Philip Schaff. Read
+          the original at{" "}
+          <a
+            href="https://www.ccel.org/s/schaff/history/About.htm"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              color: "var(--foreground-bible)",
+              textDecoration: "underline",
+              textUnderlineOffset: "2px",
+            }}
+          >
+            CCEL
+          </a>
+          . This Tamil version was translated using Gemini AI and reviewed by
+          kirubaisathiyam.org.
+        </p>
+      }
       showDate={false}
       showEngagement={false}
       navigation={{

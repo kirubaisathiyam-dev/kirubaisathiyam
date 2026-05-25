@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Comments from "@/components/Comments";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
 import LikeButton from "@/components/LikeButton";
@@ -38,6 +39,7 @@ type ContentReaderProps = {
   shareText: string;
   shareUrl: string;
   jsonLd?: Record<string, unknown>;
+  footerNote?: ReactNode;
   showDate?: boolean;
   showEngagement?: boolean;
   navigation?: {
@@ -60,6 +62,7 @@ export default function ContentReader({
   shareText,
   shareUrl,
   jsonLd,
+  footerNote,
   showDate = true,
   showEngagement = true,
   navigation,
@@ -70,7 +73,8 @@ export default function ContentReader({
 
   useEffect(() => {
     if (!topRef.current || typeof window === "undefined") return;
-    const top = topRef.current.getBoundingClientRect().top + window.scrollY - 24;
+    const top =
+      topRef.current.getBoundingClientRect().top + window.scrollY - 24;
     window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
   }, [itemId]);
 
@@ -84,13 +88,12 @@ export default function ContentReader({
         />
       )}
 
-      <header className="space-y-3 text-center">
+      <header className="space-y-3 text-center mb-12">
         {eyebrow && (
           <p
             className="text-xs font-semibold uppercase tracking-wide"
             style={{
               color: "var(--muted-foreground)",
-              fontSize: "calc(0.75rem * var(--reader-font-scale, 1))",
             }}
           >
             {eyebrow}
@@ -99,8 +102,7 @@ export default function ContentReader({
         <h1
           className="font-semibold leading-tight"
           style={{
-            fontSize:
-              "calc(clamp(2rem, 1.6rem + 1.6vw, 2.8rem) * var(--reader-font-scale, 1))",
+            fontSize: "calc(clamp(1rem, 1.2rem + 1.6vw, 2.2rem))",
           }}
         >
           {title}
@@ -109,22 +111,22 @@ export default function ContentReader({
           className="text-sm"
           style={{
             color: "var(--muted-foreground)",
-            fontSize: "calc(0.875rem * var(--reader-font-scale, 1))",
           }}
         >
           {author}
+
+          {showDate && (
+            <span
+              className="text-sm"
+              style={{
+                color: "var(--muted-foreground)",
+              }}
+            >
+              <span className="px-2">·</span>
+              {formatTamilDate(date)}
+            </span>
+          )}
         </p>
-        {showDate && (
-          <p
-            className="text-sm"
-            style={{
-              color: "var(--muted-foreground)",
-              fontSize: "calc(0.875rem * var(--reader-font-scale, 1))",
-            }}
-          >
-            {formatTamilDate(date)}
-          </p>
-        )}
       </header>
 
       {audio && (
@@ -169,6 +171,18 @@ export default function ContentReader({
         style={{ fontSize: "calc(1em * var(--reader-font-scale, 1))" }}
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
+
+      {footerNote && (
+        <div
+          className="mx-auto max-w-3xl border-t pt-5 text-sm leading-7"
+          style={{
+            color: "var(--muted-foreground)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          {footerNote}
+        </div>
+      )}
 
       {(navigation?.previous || navigation?.next || navigation?.toc) && (
         <nav

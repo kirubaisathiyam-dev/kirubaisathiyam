@@ -157,6 +157,27 @@ export default async function TheologyTopicPage({
       url: siteUrl.toString(),
     },
   };
+  const systematicTheologyFooterNote =
+    topic.sectionSlug === "systematic-theology" ? (
+      <p>
+        Source: <em>Everyone&apos;s a Theologian: An Introduction to Systematic Theology</em>,
+        © 2014 by R.C. Sproul. Read more at{" "}
+        <a
+          href="https://store.ligonier.org/everyones-a-theologian-hardcover?utm_source=LMBlog&utm_medium=post&utm_campaign=everyonesatheologian"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            color: "var(--foreground-bible)",
+            textDecoration: "underline",
+            textUnderlineOffset: "2px",
+          }}
+        >
+          Ligonier
+        </a>
+        . This Tamil version was translated using Gemini AI and reviewed by
+        kirubaisathiyam.org.
+      </p>
+    ) : undefined;
 
   return (
     <ContentReader
@@ -171,6 +192,7 @@ export default async function TheologyTopicPage({
       shareText={shareText}
       shareUrl={topicUrl}
       jsonLd={jsonLd}
+      footerNote={systematicTheologyFooterNote}
       showDate={false}
       showEngagement={false}
       navigation={{
