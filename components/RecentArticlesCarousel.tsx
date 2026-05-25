@@ -23,12 +23,21 @@ function ArticleCard({
     <Link
       href={`/articles/${article.slug}`}
       className={`flex h-full flex-col ${showBorder ? "border" : ""}`}
-      style={showBorder ? { borderColor: "var(--border-color)" } : undefined}
+      style={
+        showBorder
+          ? {
+              borderColor: "var(--border-color)",
+              backgroundColor: "var(--muted-background)",
+            }
+          : { backgroundColor: "var(--muted-background)" }
+      }
     >
       {article.image && (
         <div
           className={`overflow-hidden ${showBorder ? "border" : ""}`}
-          style={showBorder ? { borderColor: "var(--border-color)" } : undefined}
+          style={
+            showBorder ? { borderColor: "var(--border-color)" } : undefined
+          }
         >
           <div className="relative aspect-[16/9] w-full">
             <Image
