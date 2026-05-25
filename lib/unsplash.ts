@@ -31,6 +31,18 @@ function getFallbackImageUrl(seed: string) {
   return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${IMAGE_WIDTH}/${IMAGE_HEIGHT}.jpg`;
 }
 
+export function getFallbackUnsplashImage(
+  context: UnsplashContext,
+  cacheKey: string,
+): UnsplashImage {
+  return {
+    url: getFallbackImageUrl(`${context}-${cacheKey}`),
+    photographerName: null,
+    photographerUrl: null,
+    unsplashUrl: null,
+  };
+}
+
 function getQueryForContext(context: UnsplashContext) {
   if (context === "devotion") {
     return "nature landscape mountains river sea forest wilderness";
@@ -59,12 +71,7 @@ export async function getUnsplashImage(
   cacheKey: string,
 ): Promise<UnsplashImage> {
   if (!UNSPLASH_ACCESS_KEY) {
-    return {
-      url: getFallbackImageUrl(`${context}-${cacheKey}`),
-      photographerName: null,
-      photographerUrl: null,
-      unsplashUrl: null,
-    };
+    return getFallbackUnsplashImage(context, cacheKey);
   }
 
   const query = new URLSearchParams({
@@ -104,12 +111,7 @@ export async function getUnsplashImage(
       unsplashUrl: photo.links?.html?.trim() || null,
     };
   } catch {
-    return {
-      url: getFallbackImageUrl(`${context}-${cacheKey}`),
-      photographerName: null,
-      photographerUrl: null,
-      unsplashUrl: null,
-    };
+    return getFallbackUnsplashImage(context, cacheKey);
   }
 }
 

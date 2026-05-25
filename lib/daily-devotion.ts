@@ -1,4 +1,4 @@
-import { getCachedUnsplashImage, type UnsplashImage } from "@/lib/unsplash";
+import { getFallbackUnsplashImage, type UnsplashImage } from "@/lib/unsplash";
 
 export type DailyDevotionSlotKey = "am" | "pm";
 
@@ -56,7 +56,7 @@ export function formatDevotionLabel(
 }
 
 export async function getDevotionImage(slug: string): Promise<UnsplashImage> {
-  return getCachedUnsplashImage("devotion", slug);
+  return getFallbackUnsplashImage("devotion", slug);
 }
 
 export function getDevotionRoute(slug: string) {
