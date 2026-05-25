@@ -10,6 +10,7 @@ export type UnsplashImage = {
 type UnsplashContext = "devotion" | "verse";
 
 type UnsplashPhotoResponse = {
+  id?: string;
   links?: {
     html?: string;
   };
@@ -23,6 +24,10 @@ type UnsplashPhotoResponse = {
       html?: string;
     };
   };
+};
+
+type UnsplashSearchResponse = {
+  results?: UnsplashPhotoResponse[];
 };
 
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY?.trim() || "";
@@ -56,6 +61,19 @@ function buildUnsplashCdnUrl(rawUrl?: string, regularUrl?: string) {
   return regularUrl || "";
 }
 
+function getStableIndex(seed: string, length: number) {
+  if (length <= 0) {
+    return 0;
+  }
+
+  let hash = 0;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+  }
+
+  return hash % length;
+}
+
 async function fetchUnsplashImage(
   context: UnsplashContext,
   cacheKey: string,
@@ -73,11 +91,14 @@ async function fetchUnsplashImage(
     query: getQueryForContext(context),
     orientation: "landscape",
     content_filter: "high",
+    per_page: "30",
+    page: "1",
+    order_by: "relevant",
   });
 
   try {
     const response = await fetch(
-      `https://api.unsplash.com/photos/random?${query.toString()}`,
+      `https://api.unsplash.com/search/photos?${query.toString()}`,
       {
         headers: {
           Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
@@ -93,7 +114,14 @@ async function fetchUnsplashImage(
       throw new Error(`Unsplash returned ${response.status}`);
     }
 
-    const photo = (await response.json()) as UnsplashPhotoResponse;
+    const payload = (await response.json()) as UnsplashSearchResponse;
+    const photos = payload.results?.filter((photo) => Boolean(photo.urls?.raw || photo.urls?.regular)) ?? [];
+    const photo = photos[getStableIndex(`${context}:${cacheKey}`, photos.length)];
+
+    if (!photo) {
+      throw new Error("Unsplash search response did not include any usable photos.");
+    }
+
     const url = buildUnsplashCdnUrl(photo.urls?.raw, photo.urls?.regular);
 
     if (!url) {

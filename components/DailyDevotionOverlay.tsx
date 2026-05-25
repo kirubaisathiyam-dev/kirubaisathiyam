@@ -83,6 +83,42 @@ function getVerseRange(verseRange: string) {
   );
 }
 
+function getDevotionImageStorageKey(slug: string) {
+  return `unsplash-image:devotion:${slug}`;
+}
+
+function readCachedDevotionImage(slug: string) {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getDevotionImageStorageKey(slug));
+    if (!raw) {
+      return null;
+    }
+
+    return JSON.parse(raw) as UnsplashImageResponse;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedDevotionImage(slug: string, image: UnsplashImageResponse) {
+  if (typeof window === "undefined" || !image.url || !image.unsplashUrl) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(
+      getDevotionImageStorageKey(slug),
+      JSON.stringify(image),
+    );
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
     const response = await fetch(url, { cache: "no-store" });
@@ -162,9 +198,6 @@ async function getClientDailyDevotion() {
 
   const slug = getDevotionSlug(entry.date, slot);
   const verseDetails = await getVerseDetails(slotEntry.verse);
-  const image = await fetchJson<UnsplashImageResponse>(
-    `/api/unsplash-photo?context=devotion&id=${encodeURIComponent(slug)}`,
-  );
 
   return {
     date: entry.date,
@@ -173,10 +206,10 @@ async function getClientDailyDevotion() {
     reference: verseDetails.reference,
     verse: verseDetails.verse,
     devotion: slotEntry.devotion ?? "",
-    image: image?.url || "",
-    imagePhotographerName: image?.photographerName ?? null,
-    imagePhotographerUrl: image?.photographerUrl ?? null,
-    imageUnsplashUrl: image?.unsplashUrl ?? null,
+    image: "",
+    imagePhotographerName: null,
+    imagePhotographerUrl: null,
+    imageUnsplashUrl: null,
     slug,
     day: Number(entry.date.split(" ")[0]) || 1,
   } satisfies DailyDevotion;
@@ -199,9 +232,7 @@ export default function DailyDevotionOverlay() {
   const [isOnline, setIsOnline] = useState(
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
-  const [shouldShowImage, setShouldShowImage] = useState(
-    typeof navigator === "undefined" ? true : navigator.onLine,
-  );
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -221,13 +252,55 @@ export default function DailyDevotionOverlay() {
   }, []);
 
   useEffect(() => {
+    if (!dailyDevotion?.slug) {
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadImage() {
+      const cachedImage = readCachedDevotionImage(dailyDevotion.slug);
+      const image =
+        cachedImage?.url
+          ? cachedImage
+          : await fetchJson<UnsplashImageResponse>(
+              `/api/unsplash-photo?context=devotion&id=${encodeURIComponent(dailyDevotion.slug)}`,
+            );
+
+      if (!isMounted || !image?.url) {
+        return;
+      }
+
+      writeCachedDevotionImage(dailyDevotion.slug, image);
+      setImageLoadFailed(false);
+      setDailyDevotion((current) =>
+        current?.slug === dailyDevotion.slug
+          ? {
+              ...current,
+              image: image.url,
+              imagePhotographerName: image.photographerName,
+              imagePhotographerUrl: image.photographerUrl,
+              imageUnsplashUrl: image.unsplashUrl,
+            }
+          : current,
+      );
+    }
+
+    void loadImage();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dailyDevotion?.slug]);
+
+  useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
+      setImageLoadFailed(false);
     };
 
     const handleOffline = () => {
       setIsOnline(false);
-      setShouldShowImage(false);
     };
 
     window.addEventListener("online", handleOnline);
@@ -239,20 +312,12 @@ export default function DailyDevotionOverlay() {
     };
   }, []);
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      setShouldShowImage(isOnline);
-    });
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-    };
-  }, [dailyDevotion?.image, isOnline]);
-
   if (!dailyDevotion) {
     return <DailyDevotionSkeleton />;
   }
 
+  const shouldShowImage =
+    Boolean(dailyDevotion.image) && isOnline && !imageLoadFailed;
   const shareTitle = `Daily Devotion - ${dailyDevotion.reference}`;
   const shareTargetId = "daily-devotion-share-card";
   const sharePath = getDevotionRoute(dailyDevotion.slug);
@@ -306,7 +371,7 @@ export default function DailyDevotionOverlay() {
               className="object-cover"
               unoptimized
               priority
-              onError={() => setShouldShowImage(false)}
+              onError={() => setImageLoadFailed(true)}
             />
           ) : null}
           <div className="absolute inset-0 bg-black/60" />

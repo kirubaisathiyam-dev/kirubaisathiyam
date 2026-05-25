@@ -142,9 +142,13 @@
     "/bible-notes.json",
     "/daily-devotion.json",
     "/images/1.png",
+    "/images/bible-x.jpg",
     "/images/bible.jpg",
+    "/images/church-history.jpg",
     "/images/history.jpg",
+    "/images/reformed-x.jpg",
     "/images/reformed.jpg",
+    "/images/systematic-x.jpg",
     "/images/systematic.jpg",
     "/local-bible/Books.json",
     "/uploads/078bb49dee95eea73e02b316d59ebf7a.jpg",
@@ -167,5 +171,5 @@
     "/uploads/long.jpg",
     "/uploads/map3.png"
   ],
-  "generatedAt": "2026-05-24T08:19:37.422Z"
+  "generatedAt": "2026-05-25T15:26:30.601Z"
 }

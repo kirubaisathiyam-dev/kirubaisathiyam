@@ -91,6 +91,42 @@ function getVerseRange(verseRange: string) {
   );
 }
 
+function getVerseImageStorageKey(day: number) {
+  return `unsplash-image:verse:${day}`;
+}
+
+function readCachedVerseImage(day: number) {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(getVerseImageStorageKey(day));
+    if (!raw) {
+      return null;
+    }
+
+    return JSON.parse(raw) as UnsplashImageResponse;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedVerseImage(day: number, image: UnsplashImageResponse) {
+  if (typeof window === "undefined" || !image.url || !image.unsplashUrl) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(
+      getVerseImageStorageKey(day),
+      JSON.stringify(image),
+    );
+  } catch {
+    // Ignore storage failures.
+  }
+}
+
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
     const response = await fetch(url, { cache: "no-store" });
@@ -108,9 +144,6 @@ async function buildVerseOfTheDay(
 ): Promise<VerseOfTheDay> {
   const rawReference = entry.verse_reference.replace(/[()]/g, "").trim();
   const parsedReference = parseBibleReference(rawReference);
-  const image = await fetchJson<UnsplashImageResponse>(
-    `/api/unsplash-photo?context=verse&id=${encodeURIComponent(String(entry.day))}`,
-  );
 
   if (!parsedReference) {
     return {
@@ -119,10 +152,10 @@ async function buildVerseOfTheDay(
       rawReference,
       verse: "",
       explanation: entry.explanation,
-      image: image?.url || "",
-      imagePhotographerName: image?.photographerName ?? null,
-      imagePhotographerUrl: image?.photographerUrl ?? null,
-      imageUnsplashUrl: image?.unsplashUrl ?? null,
+      image: "",
+      imagePhotographerName: null,
+      imagePhotographerUrl: null,
+      imageUnsplashUrl: null,
       readerHref: "/bible/read",
     };
   }
@@ -163,10 +196,10 @@ async function buildVerseOfTheDay(
     rawReference,
     verse,
     explanation: entry.explanation,
-    image: image?.url || "",
-    imagePhotographerName: image?.photographerName ?? null,
-    imagePhotographerUrl: image?.photographerUrl ?? null,
-    imageUnsplashUrl: image?.unsplashUrl ?? null,
+    image: "",
+    imagePhotographerName: null,
+    imagePhotographerUrl: null,
+    imageUnsplashUrl: null,
     readerHref,
   };
 }
@@ -206,6 +239,7 @@ export default function VerseOfTheDayOverlay() {
   const [verseOfTheDay, setVerseOfTheDay] = useState<VerseOfTheDay | null>(
     null,
   );
+  const [imageLoadFailed, setImageLoadFailed] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -224,10 +258,53 @@ export default function VerseOfTheDayOverlay() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!verseOfTheDay?.day) {
+      return;
+    }
+
+    let isMounted = true;
+
+    async function loadImage() {
+      const cachedImage = readCachedVerseImage(verseOfTheDay.day);
+      const image =
+        cachedImage?.url
+          ? cachedImage
+          : await fetchJson<UnsplashImageResponse>(
+              `/api/unsplash-photo?context=verse&id=${encodeURIComponent(String(verseOfTheDay.day))}`,
+            );
+
+      if (!isMounted || !image?.url) {
+        return;
+      }
+
+      writeCachedVerseImage(verseOfTheDay.day, image);
+      setImageLoadFailed(false);
+      setVerseOfTheDay((current) =>
+        current?.day === verseOfTheDay.day
+          ? {
+              ...current,
+              image: image.url,
+              imagePhotographerName: image.photographerName,
+              imagePhotographerUrl: image.photographerUrl,
+              imageUnsplashUrl: image.unsplashUrl,
+            }
+          : current,
+      );
+    }
+
+    void loadImage();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [verseOfTheDay?.day]);
+
   if (!verseOfTheDay) {
     return <VerseOfTheDaySkeleton />;
   }
 
+  const shouldShowImage = Boolean(verseOfTheDay.image) && !imageLoadFailed;
   const shareTitle = `Verse Of The Day - ${verseOfTheDay.reference}`;
   const shareTargetId = "verse-of-the-day-share-card";
   const dailyVerseId = getDateKeyInTimeZone(new Date(), SITE_TIME_ZONE);
@@ -257,15 +334,18 @@ export default function VerseOfTheDayOverlay() {
           className="relative min-h-[24rem] sm:min-h-[30rem] lg:min-h-[36rem]"
           style={{ backgroundColor: "#111111" }}
         >
-          <Image
-            src={verseOfTheDay.image}
-            alt="Verse of the day landscape"
-            fill
-            sizes="100vw"
-            className="object-cover"
-            unoptimized
-            priority
-          />
+          {shouldShowImage ? (
+            <Image
+              src={verseOfTheDay.image}
+              alt="Verse of the day landscape"
+              fill
+              sizes="100vw"
+              className="object-cover"
+              unoptimized
+              priority
+              onError={() => setImageLoadFailed(true)}
+            />
+          ) : null}
           <div className="absolute inset-0 bg-black/60" />
 
           <div className="relative z-10 flex min-h-[24rem] items-center justify-center px-5 py-10 pb-24 text-left sm:min-h-[30rem] sm:px-8 sm:pb-28 lg:min-h-[36rem] lg:px-10">
