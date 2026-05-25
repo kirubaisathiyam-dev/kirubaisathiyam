@@ -112,3 +112,10 @@ export async function getUnsplashImage(
     };
   }
 }
+
+export async function getCachedUnsplashImage(
+  context: UnsplashContext,
+  cacheKey: string,
+): Promise<UnsplashImage> {
+  return getUnsplashImage(context, cacheKey);
+}
