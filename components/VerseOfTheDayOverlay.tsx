@@ -34,6 +34,7 @@ type UnsplashImageResponse = {
   photographerName: string | null;
   photographerUrl: string | null;
   unsplashUrl: string | null;
+  source: "unsplash" | "picsum";
 };
 
 const SITE_TIME_ZONE = "Asia/Colombo";
@@ -92,7 +93,7 @@ function getVerseRange(verseRange: string) {
 }
 
 function getVerseImageStorageKey(day: number) {
-  return `hero-image:v2:verse:${day}`;
+  return `hero-image:v3:verse:${day}`;
 }
 
 function readCachedVerseImage(day: number) {
@@ -270,7 +271,7 @@ export default function VerseOfTheDayOverlay() {
     async function loadImage() {
       const cachedImage = readCachedVerseImage(resolvedVerseDay);
       const image =
-        cachedImage?.url
+        cachedImage?.url && cachedImage.source === "unsplash"
           ? cachedImage
           : await fetchJson<UnsplashImageResponse>(
               `/api/unsplash-photo?context=verse&id=${encodeURIComponent(String(resolvedVerseDay))}`,

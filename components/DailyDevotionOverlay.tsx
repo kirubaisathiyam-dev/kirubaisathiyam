@@ -46,6 +46,7 @@ type UnsplashImageResponse = {
   photographerName: string | null;
   photographerUrl: string | null;
   unsplashUrl: string | null;
+  source: "unsplash" | "picsum";
 };
 
 function getShareVerseTypography(verse: string) {
@@ -84,7 +85,7 @@ function getVerseRange(verseRange: string) {
 }
 
 function getDevotionImageStorageKey(slug: string) {
-  return `hero-image:v2:devotion:${slug}`;
+  return `hero-image:v3:devotion:${slug}`;
 }
 
 function readCachedDevotionImage(slug: string) {
@@ -263,7 +264,7 @@ export default function DailyDevotionOverlay() {
     async function loadImage() {
       const cachedImage = readCachedDevotionImage(resolvedDevotionSlug);
       const image =
-        cachedImage?.url
+        cachedImage?.url && cachedImage.source === "unsplash"
           ? cachedImage
           : await fetchJson<UnsplashImageResponse>(
               `/api/unsplash-photo?context=devotion&id=${encodeURIComponent(resolvedDevotionSlug)}`,

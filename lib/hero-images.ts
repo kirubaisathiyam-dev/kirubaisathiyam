@@ -43,12 +43,14 @@ function toStoredImage(document: FirestoreDocument | null): UnsplashImage | null
   const photographerName = getStringValue(document, "photographerName");
   const photographerUrl = getStringValue(document, "photographerUrl");
   const unsplashUrl = getStringValue(document, "unsplashUrl");
+  const source = getStringValue(document, "source");
 
   return {
     url,
     photographerName: photographerName || null,
     photographerUrl: photographerUrl || null,
     unsplashUrl: unsplashUrl || null,
+    source: source === "unsplash" ? "unsplash" : "picsum",
   };
 }
 
@@ -64,6 +66,7 @@ function toFirestoreFields(
     photographerName: { stringValue: image.photographerName || "" },
     photographerUrl: { stringValue: image.photographerUrl || "" },
     unsplashUrl: { stringValue: image.unsplashUrl || "" },
+    source: { stringValue: image.source },
     updatedAt: { timestampValue: new Date().toISOString() },
   } satisfies Record<string, FirestoreValue>;
 }
@@ -112,7 +115,7 @@ async function readHeroImageRecord(
   return toStoredImage(document);
 }
 
-async function createHeroImageRecord(
+async function saveHeroImageRecord(
   context: UnsplashContext,
   cacheKey: string,
   image: UnsplashImage,
@@ -125,9 +128,9 @@ async function createHeroImageRecord(
   const accessToken = await getGoogleAccessToken();
   const documentId = getDocumentId(context, cacheKey);
   const response = await fetch(
-    `${firestoreBaseUrl(projectId)}/${heroImagesCollection}?documentId=${encodeURIComponent(documentId)}`,
+    `${firestoreBaseUrl(projectId)}/${heroImagesCollection}/${documentId}`,
     {
-      method: "POST",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -140,13 +143,6 @@ async function createHeroImageRecord(
 
   if (response.ok) {
     return image;
-  }
-
-  if (response.status === 409) {
-    const existingImage = await readHeroImageRecord(context, cacheKey);
-    if (existingImage) {
-      return existingImage;
-    }
   }
 
   throw new Error("Unable to save hero image record.");
@@ -168,14 +164,25 @@ export async function getOrCreateHeroImage(
   cacheKey: string,
 ): Promise<UnsplashImage> {
   const storedImage = await getStoredHeroImage(context, cacheKey);
-  if (storedImage?.url) {
+  if (storedImage?.url && storedImage.source === "unsplash") {
     return storedImage;
   }
 
   const freshImage = await getUnsplashImage(context, cacheKey);
+  if (freshImage.source === "unsplash") {
+    try {
+      return await saveHeroImageRecord(context, cacheKey, freshImage);
+    } catch {
+      return freshImage;
+    }
+  }
+
+  if (storedImage?.url) {
+    return storedImage;
+  }
 
   try {
-    return await createHeroImageRecord(context, cacheKey, freshImage);
+    return await saveHeroImageRecord(context, cacheKey, freshImage);
   } catch {
     return freshImage;
   }

@@ -306,6 +306,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
             photographerName: null,
             photographerUrl: null,
             unsplashUrl: null,
+            source: "picsum",
           }}
         />
         <div

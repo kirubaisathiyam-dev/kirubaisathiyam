@@ -3,6 +3,7 @@ export type UnsplashImage = {
   photographerName: string | null;
   photographerUrl: string | null;
   unsplashUrl: string | null;
+  source: "unsplash" | "picsum";
 };
 
 export type UnsplashContext = "devotion" | "verse";
@@ -40,6 +41,7 @@ export function getFallbackUnsplashImage(
     photographerName: null,
     photographerUrl: null,
     unsplashUrl: null,
+    source: "picsum",
   };
 }
 
@@ -109,6 +111,7 @@ export async function getUnsplashImage(
       photographerName: photo.user?.name?.trim() || null,
       photographerUrl: photo.user?.links?.html?.trim() || null,
       unsplashUrl: photo.links?.html?.trim() || null,
+      source: "unsplash",
     };
   } catch {
     return getFallbackUnsplashImage(context, cacheKey);

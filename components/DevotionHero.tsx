@@ -10,6 +10,7 @@ type UnsplashImageResponse = {
   photographerName: string | null;
   photographerUrl: string | null;
   unsplashUrl: string | null;
+  source: "unsplash" | "picsum";
 };
 
 type DevotionHeroProps = {
@@ -21,7 +22,7 @@ type DevotionHeroProps = {
 };
 
 function getDevotionImageStorageKey(slug: string) {
-  return `hero-image:v2:devotion:${slug}`;
+  return `hero-image:v3:devotion:${slug}`;
 }
 
 function readCachedDevotionImage(slug: string) {
@@ -85,7 +86,7 @@ export default function DevotionHero({
     async function loadImage() {
       const cachedImage = readCachedDevotionImage(slug);
       const nextImage =
-        cachedImage?.url
+        cachedImage?.url && cachedImage.source === "unsplash"
           ? cachedImage
           : await fetchJson<UnsplashImageResponse>(
               `/api/unsplash-photo?context=devotion&id=${encodeURIComponent(slug)}`,
