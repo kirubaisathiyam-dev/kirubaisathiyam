@@ -6,6 +6,7 @@ import {
   getChurchHistorySubsections,
 } from "@/lib/church-history";
 
+export const runtime = "edge";
 export const dynamicParams = false;
 
 type ChurchHistorySubsectionPageProps = {

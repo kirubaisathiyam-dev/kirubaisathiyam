@@ -8,6 +8,7 @@ import {
 } from "@/lib/church-history";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
+export const runtime = "edge";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
