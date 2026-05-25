@@ -87,9 +87,9 @@ export default function ChurchHistoryPage() {
               key={subsection.slug}
               className="list-none scroll-mt-24"
             >
-              <div className="space-y-5 pl-4">
+              <div className="space-y-4 pl-4">
                 <div className="flex items-baseline">
-                  <span className="w-10 flex-none text-xl font-semibold">
+                  <span className="w-8 flex-none text-xl font-semibold">
                     {subsectionIndex + 1}.
                   </span>
                   <h2 className="flex-1 text-xl font-semibold">
@@ -97,7 +97,7 @@ export default function ChurchHistoryPage() {
                   </h2>
                 </div>
 
-                <div className="space-y-6 pl-5">
+                <div className="space-y-4 pl-4">
                   {subsection.directTopics.length > 0 ? (
                     <ol className="space-y-3">
                       {subsection.directTopics.map((topic, topicIndex) => (
@@ -106,7 +106,7 @@ export default function ChurchHistoryPage() {
                             href={`/church-history/${subsection.slug}/${topic.slug}`}
                             className="group flex items-baseline text-base leading-relaxed"
                           >
-                            <span className="w-20 flex-none">
+                            <span className="w-12 flex-none">
                               {subsectionIndex + 1}.{topicIndex + 1}.
                             </span>
                             <span className="flex-1 underline-offset-4 group-hover:underline">
