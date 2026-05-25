@@ -252,38 +252,42 @@ export default function DailyDevotionOverlay() {
   }, []);
 
   useEffect(() => {
-    if (!dailyDevotion?.slug) {
+    const devotionSlug: string | null = dailyDevotion?.slug ?? null;
+    if (devotionSlug === null) {
       return;
     }
+    const resolvedDevotionSlug = devotionSlug;
 
     let isMounted = true;
 
     async function loadImage() {
-      const cachedImage = readCachedDevotionImage(dailyDevotion.slug);
+      const cachedImage = readCachedDevotionImage(resolvedDevotionSlug);
       const image =
         cachedImage?.url
           ? cachedImage
           : await fetchJson<UnsplashImageResponse>(
-              `/api/unsplash-photo?context=devotion&id=${encodeURIComponent(dailyDevotion.slug)}`,
+              `/api/unsplash-photo?context=devotion&id=${encodeURIComponent(resolvedDevotionSlug)}`,
             );
 
       if (!isMounted || !image?.url) {
         return;
       }
 
-      writeCachedDevotionImage(dailyDevotion.slug, image);
+      writeCachedDevotionImage(resolvedDevotionSlug, image);
       setImageLoadFailed(false);
-      setDailyDevotion((current) =>
-        current?.slug === dailyDevotion.slug
-          ? {
-              ...current,
-              image: image.url,
-              imagePhotographerName: image.photographerName,
-              imagePhotographerUrl: image.photographerUrl,
-              imageUnsplashUrl: image.unsplashUrl,
-            }
-          : current,
-      );
+      setDailyDevotion((current) => {
+        if (!current || current.slug !== resolvedDevotionSlug) {
+          return current;
+        }
+
+        return {
+          ...current,
+          image: image.url,
+          imagePhotographerName: image.photographerName,
+          imagePhotographerUrl: image.photographerUrl,
+          imageUnsplashUrl: image.unsplashUrl,
+        };
+      });
     }
 
     void loadImage();

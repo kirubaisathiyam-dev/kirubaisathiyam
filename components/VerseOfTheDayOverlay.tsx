@@ -259,38 +259,42 @@ export default function VerseOfTheDayOverlay() {
   }, []);
 
   useEffect(() => {
-    if (!verseOfTheDay?.day) {
+    const verseDay: number | null = verseOfTheDay?.day ?? null;
+    if (verseDay === null) {
       return;
     }
+    const resolvedVerseDay = verseDay;
 
     let isMounted = true;
 
     async function loadImage() {
-      const cachedImage = readCachedVerseImage(verseOfTheDay.day);
+      const cachedImage = readCachedVerseImage(resolvedVerseDay);
       const image =
         cachedImage?.url
           ? cachedImage
           : await fetchJson<UnsplashImageResponse>(
-              `/api/unsplash-photo?context=verse&id=${encodeURIComponent(String(verseOfTheDay.day))}`,
+              `/api/unsplash-photo?context=verse&id=${encodeURIComponent(String(resolvedVerseDay))}`,
             );
 
       if (!isMounted || !image?.url) {
         return;
       }
 
-      writeCachedVerseImage(verseOfTheDay.day, image);
+      writeCachedVerseImage(resolvedVerseDay, image);
       setImageLoadFailed(false);
-      setVerseOfTheDay((current) =>
-        current?.day === verseOfTheDay.day
-          ? {
-              ...current,
-              image: image.url,
-              imagePhotographerName: image.photographerName,
-              imagePhotographerUrl: image.photographerUrl,
-              imageUnsplashUrl: image.unsplashUrl,
-            }
-          : current,
-      );
+      setVerseOfTheDay((current) => {
+        if (!current || current.day !== resolvedVerseDay) {
+          return current;
+        }
+
+        return {
+          ...current,
+          image: image.url,
+          imagePhotographerName: image.photographerName,
+          imagePhotographerUrl: image.photographerUrl,
+          imageUnsplashUrl: image.unsplashUrl,
+        };
+      });
     }
 
     void loadImage();
