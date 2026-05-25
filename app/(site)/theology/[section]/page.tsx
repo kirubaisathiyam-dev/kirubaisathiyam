@@ -81,7 +81,7 @@ export default async function TheologySectionPage({
       <header className="space-y-3">
         {entry.image && (
           <div
-            className="relative aspect-square w-full overflow-hidden border"
+            className="relative h-[min(100vw,500px)] w-full overflow-hidden border sm:h-[480px]"
             style={{ borderColor: "var(--border-color)" }}
           >
             <Image
@@ -89,7 +89,7 @@ export default async function TheologySectionPage({
               alt={entry.label}
               fill
               priority
-              sizes="(min-width: 1024px) 56rem, 100vw"
+              sizes="100vw"
               className="object-cover"
             />
           </div>

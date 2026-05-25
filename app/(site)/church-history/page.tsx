@@ -49,7 +49,7 @@ export default function ChurchHistoryPage() {
       <header className="space-y-3">
         {CHURCH_HISTORY_SECTION.image ? (
           <div
-            className="relative aspect-square w-full overflow-hidden border"
+            className="relative h-[min(100vw,500px)] w-full overflow-hidden border sm:h-[480px]"
             style={{ borderColor: "var(--border-color)" }}
           >
             <Image
@@ -57,7 +57,7 @@ export default function ChurchHistoryPage() {
               alt={CHURCH_HISTORY_SECTION.label}
               fill
               priority
-              sizes="(min-width: 1024px) 56rem, 100vw"
+              sizes="100vw"
               className="object-cover"
             />
           </div>
