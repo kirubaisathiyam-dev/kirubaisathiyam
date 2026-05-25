@@ -11,6 +11,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) for the site and [http://localhost:3000/admin](http://localhost:3000/admin) for the admin dashboard. The content editor lives at `/admin/cms` and embeds Tina's local dev app from port `4001`.
 
+To use Unsplash for the daily devotion and verse artwork, set:
+
+```bash
+UNSPLASH_ACCESS_KEY=your_unsplash_access_key
+```
+
+If that key is missing, the app falls back to the existing seeded placeholder images.
+
 ## Scripts
 
 - `npm run dev` starts Next.js with Tina's local editing backend enabled.

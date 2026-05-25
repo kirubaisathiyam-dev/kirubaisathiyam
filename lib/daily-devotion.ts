@@ -1,3 +1,5 @@
+import { getCachedUnsplashImage, type UnsplashImage } from "@/lib/unsplash";
+
 export type DailyDevotionSlotKey = "am" | "pm";
 
 export type DailyDevotionSlot = {
@@ -53,8 +55,8 @@ export function formatDevotionLabel(
   return `${month.toUpperCase()} ${day} ${slot === "am" ? "MORNING" : "EVENING"}`;
 }
 
-export function buildDevotionImageUrl(slug: string) {
-  return `https://picsum.photos/seed/daily-devotion-${slug}/1600/1200.jpg`;
+export async function getDevotionImage(slug: string): Promise<UnsplashImage> {
+  return getCachedUnsplashImage("devotion", slug);
 }
 
 export function getDevotionRoute(slug: string) {

@@ -23,7 +23,17 @@ type VerseOfTheDay = {
   verse: string;
   explanation: string;
   image: string;
+  imagePhotographerName: string | null;
+  imagePhotographerUrl: string | null;
+  imageUnsplashUrl: string | null;
   readerHref: string;
+};
+
+type UnsplashImageResponse = {
+  url: string;
+  photographerName: string | null;
+  photographerUrl: string | null;
+  unsplashUrl: string | null;
 };
 
 const SITE_TIME_ZONE = "Asia/Colombo";
@@ -93,15 +103,14 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   }
 }
 
-function buildImageUrl(day: number) {
-  return `https://picsum.photos/seed/verse-${day}/1600/1200.jpg`;
-}
-
 async function buildVerseOfTheDay(
   entry: VerseOfTheDayEntry,
 ): Promise<VerseOfTheDay> {
   const rawReference = entry.verse_reference.replace(/[()]/g, "").trim();
   const parsedReference = parseBibleReference(rawReference);
+  const image = await fetchJson<UnsplashImageResponse>(
+    `/api/unsplash-photo?context=verse&id=${encodeURIComponent(String(entry.day))}`,
+  );
 
   if (!parsedReference) {
     return {
@@ -110,7 +119,10 @@ async function buildVerseOfTheDay(
       rawReference,
       verse: "",
       explanation: entry.explanation,
-      image: buildImageUrl(entry.day),
+      image: image?.url || "",
+      imagePhotographerName: image?.photographerName ?? null,
+      imagePhotographerUrl: image?.photographerUrl ?? null,
+      imageUnsplashUrl: image?.unsplashUrl ?? null,
       readerHref: "/bible/read",
     };
   }
@@ -151,7 +163,10 @@ async function buildVerseOfTheDay(
     rawReference,
     verse,
     explanation: entry.explanation,
-    image: buildImageUrl(entry.day),
+    image: image?.url || "",
+    imagePhotographerName: image?.photographerName ?? null,
+    imagePhotographerUrl: image?.photographerUrl ?? null,
+    imageUnsplashUrl: image?.unsplashUrl ?? null,
     readerHref,
   };
 }
@@ -288,6 +303,40 @@ export default function VerseOfTheDayOverlay() {
               <p className="sm:leading-8 text-white sm:text-xl">
                 {verseOfTheDay.explanation}
               </p>
+              {verseOfTheDay.imagePhotographerName ? (
+                <p
+                  className="text-xs"
+                  style={{ color: "rgba(255, 255, 255, 0.7)" }}
+                  data-share-exclude="true"
+                >
+                  Photo by{" "}
+                  {verseOfTheDay.imagePhotographerUrl ? (
+                    <a
+                      href={verseOfTheDay.imagePhotographerUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-2"
+                    >
+                      {verseOfTheDay.imagePhotographerName}
+                    </a>
+                  ) : (
+                    verseOfTheDay.imagePhotographerName
+                  )}{" "}
+                  on{" "}
+                  {verseOfTheDay.imageUnsplashUrl ? (
+                    <a
+                      href={verseOfTheDay.imageUnsplashUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-2"
+                    >
+                      Unsplash
+                    </a>
+                  ) : (
+                    "Unsplash"
+                  )}
+                </p>
+              ) : null}
             </div>
           </div>
 

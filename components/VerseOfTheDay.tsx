@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { getVerseOfTheDay } from "@/lib/verse-of-the-day";
 
-export default function VerseOfTheDay() {
-  const verseOfTheDay = getVerseOfTheDay();
+export default async function VerseOfTheDay() {
+  const verseOfTheDay = await getVerseOfTheDay();
 
   if (!verseOfTheDay) {
     return null;
@@ -51,6 +51,39 @@ export default function VerseOfTheDay() {
           <p className="text-lg sm:text-xl leading-8">
             {verseOfTheDay.explanation}
           </p>
+          {verseOfTheDay.photographerName ? (
+            <p
+              className="text-xs"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              Photo by{" "}
+              {verseOfTheDay.photographerUrl ? (
+                <a
+                  href={verseOfTheDay.photographerUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-2"
+                >
+                  {verseOfTheDay.photographerName}
+                </a>
+              ) : (
+                verseOfTheDay.photographerName
+              )}{" "}
+              on{" "}
+              {verseOfTheDay.unsplashUrl ? (
+                <a
+                  href={verseOfTheDay.unsplashUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline underline-offset-2"
+                >
+                  Unsplash
+                </a>
+              ) : (
+                "Unsplash"
+              )}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

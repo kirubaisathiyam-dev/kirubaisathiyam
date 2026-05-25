@@ -14,7 +14,6 @@ import logoDark from "@/app/logo-dark.svg";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import {
   DEVOTION_ATTRIBUTION,
-  buildDevotionImageUrl,
   formatDevotionLabel,
   getDevotionImageFileName,
   getCurrentDevotionSlot,
@@ -35,8 +34,18 @@ type DailyDevotion = {
   verse: string;
   devotion: string;
   image: string;
+  imagePhotographerName: string | null;
+  imagePhotographerUrl: string | null;
+  imageUnsplashUrl: string | null;
   slug: string;
   day: number;
+};
+
+type UnsplashImageResponse = {
+  url: string;
+  photographerName: string | null;
+  photographerUrl: string | null;
+  unsplashUrl: string | null;
 };
 
 function getShareVerseTypography(verse: string) {
@@ -153,6 +162,9 @@ async function getClientDailyDevotion() {
 
   const slug = getDevotionSlug(entry.date, slot);
   const verseDetails = await getVerseDetails(slotEntry.verse);
+  const image = await fetchJson<UnsplashImageResponse>(
+    `/api/unsplash-photo?context=devotion&id=${encodeURIComponent(slug)}`,
+  );
 
   return {
     date: entry.date,
@@ -161,7 +173,10 @@ async function getClientDailyDevotion() {
     reference: verseDetails.reference,
     verse: verseDetails.verse,
     devotion: slotEntry.devotion ?? "",
-    image: buildDevotionImageUrl(slug),
+    image: image?.url || "",
+    imagePhotographerName: image?.photographerName ?? null,
+    imagePhotographerUrl: image?.photographerUrl ?? null,
+    imageUnsplashUrl: image?.unsplashUrl ?? null,
     slug,
     day: Number(entry.date.split(" ")[0]) || 1,
   } satisfies DailyDevotion;
@@ -326,6 +341,40 @@ export default function DailyDevotionOverlay() {
                   >
                     {DEVOTION_ATTRIBUTION}
                   </p>
+                  {dailyDevotion.imagePhotographerName ? (
+                    <p
+                      data-share-exclude="true"
+                      className="text-xs"
+                      style={{ color: "rgba(255, 255, 255, 0.7)" }}
+                    >
+                      Photo by{" "}
+                      {dailyDevotion.imagePhotographerUrl ? (
+                        <a
+                          href={dailyDevotion.imagePhotographerUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline underline-offset-2"
+                        >
+                          {dailyDevotion.imagePhotographerName}
+                        </a>
+                      ) : (
+                        dailyDevotion.imagePhotographerName
+                      )}{" "}
+                      on{" "}
+                      {dailyDevotion.imageUnsplashUrl ? (
+                        <a
+                          href={dailyDevotion.imageUnsplashUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline underline-offset-2"
+                        >
+                          Unsplash
+                        </a>
+                      ) : (
+                        "Unsplash"
+                      )}
+                    </p>
+                  ) : null}
                 </div>
               ) : null}
 

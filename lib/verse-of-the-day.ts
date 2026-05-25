@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
+import { getCachedUnsplashImage } from "@/lib/unsplash";
 
 type VerseOfTheDayEntry = {
   day: number;
@@ -15,6 +16,9 @@ export type VerseOfTheDay = {
   verse: string;
   explanation: string;
   image: string;
+  photographerName: string | null;
+  photographerUrl: string | null;
+  unsplashUrl: string | null;
 };
 
 const VERSE_OF_THE_DAY_PATH = path.join(
@@ -150,7 +154,7 @@ function getFullTamilReference(reference: string) {
   return `${tamilBookName || book.name} ${chapterNumber}:${verseRange}`;
 }
 
-export function getVerseOfTheDay(): VerseOfTheDay | null {
+export async function getVerseOfTheDay(): Promise<VerseOfTheDay | null> {
   const entries = readVerseEntries();
   if (!entries.length) {
     return null;
@@ -165,11 +169,16 @@ export function getVerseOfTheDay(): VerseOfTheDay | null {
     return null;
   }
 
+  const image = await getCachedUnsplashImage("verse", String(todayEntry.day));
+
   return {
     day: todayEntry.day,
     reference: getFullTamilReference(todayEntry.verse_reference),
     verse: getVerseText(todayEntry.verse_reference),
     explanation: todayEntry.explanation,
-    image: `https://picsum.photos/seed/verse-${todayEntry.day}/1600/1200.jpg`,
+    image: image.url,
+    photographerName: image.photographerName,
+    photographerUrl: image.photographerUrl,
+    unsplashUrl: image.unsplashUrl,
   };
 }
