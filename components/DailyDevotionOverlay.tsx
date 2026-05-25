@@ -105,7 +105,7 @@ function readCachedDevotionImage(slug: string) {
 }
 
 function writeCachedDevotionImage(slug: string, image: UnsplashImageResponse) {
-  if (typeof window === "undefined" || !image.url || !image.unsplashUrl) {
+  if (typeof window === "undefined" || !image.url) {
     return;
   }
 

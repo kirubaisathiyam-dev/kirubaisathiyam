@@ -1,5 +1,3 @@
-import { unstable_cache } from "next/cache";
-
 export type UnsplashImage = {
   url: string;
   photographerName: string | null;
@@ -10,7 +8,6 @@ export type UnsplashImage = {
 type UnsplashContext = "devotion" | "verse";
 
 type UnsplashPhotoResponse = {
-  id?: string;
   links?: {
     html?: string;
   };
@@ -24,10 +21,6 @@ type UnsplashPhotoResponse = {
       html?: string;
     };
   };
-};
-
-type UnsplashSearchResponse = {
-  results?: UnsplashPhotoResponse[];
 };
 
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY?.trim() || "";
@@ -61,20 +54,7 @@ function buildUnsplashCdnUrl(rawUrl?: string, regularUrl?: string) {
   return regularUrl || "";
 }
 
-function getStableIndex(seed: string, length: number) {
-  if (length <= 0) {
-    return 0;
-  }
-
-  let hash = 0;
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
-  }
-
-  return hash % length;
-}
-
-async function fetchUnsplashImage(
+export async function getUnsplashImage(
   context: UnsplashContext,
   cacheKey: string,
 ): Promise<UnsplashImage> {
@@ -91,22 +71,17 @@ async function fetchUnsplashImage(
     query: getQueryForContext(context),
     orientation: "landscape",
     content_filter: "high",
-    per_page: "30",
-    page: "1",
-    order_by: "relevant",
   });
 
   try {
     const response = await fetch(
-      `https://api.unsplash.com/search/photos?${query.toString()}`,
+      `https://api.unsplash.com/photos/random?${query.toString()}`,
       {
         headers: {
           Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
           "Accept-Version": "v1",
         },
-        next: {
-          revalidate: 60 * 60 * 24 * 30,
-        },
+        cache: "no-store",
       },
     );
 
@@ -114,13 +89,7 @@ async function fetchUnsplashImage(
       throw new Error(`Unsplash returned ${response.status}`);
     }
 
-    const payload = (await response.json()) as UnsplashSearchResponse;
-    const photos = payload.results?.filter((photo) => Boolean(photo.urls?.raw || photo.urls?.regular)) ?? [];
-    const photo = photos[getStableIndex(`${context}:${cacheKey}`, photos.length)];
-
-    if (!photo) {
-      throw new Error("Unsplash search response did not include any usable photos.");
-    }
+    const photo = (await response.json()) as UnsplashPhotoResponse;
 
     const url = buildUnsplashCdnUrl(photo.urls?.raw, photo.urls?.regular);
 
@@ -142,19 +111,4 @@ async function fetchUnsplashImage(
       unsplashUrl: null,
     };
   }
-}
-
-export async function getCachedUnsplashImage(
-  context: UnsplashContext,
-  cacheKey: string,
-) {
-  const loadImage = unstable_cache(
-    () => fetchUnsplashImage(context, cacheKey),
-    ["unsplash-image", context, cacheKey],
-    {
-      revalidate: 60 * 60 * 24 * 30,
-    },
-  );
-
-  return loadImage();
 }

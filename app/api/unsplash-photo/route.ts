@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCachedUnsplashImage } from "@/lib/unsplash";
+import { getUnsplashImage } from "@/lib/unsplash";
 
 export const runtime = "edge";
 
@@ -15,10 +15,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const image = await getCachedUnsplashImage(context, id);
+  const image = await getUnsplashImage(context, id);
   return NextResponse.json(image, {
     headers: {
-      "Cache-Control": "public, s-maxage=2592000, stale-while-revalidate=86400",
+      "Cache-Control": "no-store",
     },
   });
 }

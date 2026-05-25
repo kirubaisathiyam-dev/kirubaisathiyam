@@ -113,7 +113,7 @@ function readCachedVerseImage(day: number) {
 }
 
 function writeCachedVerseImage(day: number, image: UnsplashImageResponse) {
-  if (typeof window === "undefined" || !image.url || !image.unsplashUrl) {
+  if (typeof window === "undefined" || !image.url) {
     return;
   }
 
