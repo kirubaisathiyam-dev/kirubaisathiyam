@@ -9,6 +9,7 @@ const FALLBACK_IMAGES = [
   "/images/history.jpg",
   "/images/reformed.jpg",
   "/images/systematic.jpg",
+  "/images/church-history.jpg",
   "/uploads/long.jpg",
   "/uploads/life.jpg",
   "/uploads/14089.jpg",

@@ -10,17 +10,25 @@ import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 export const dynamicParams = false;
 
+function buildChurchHistoryHref(
+  subsectionSlug: string,
+  slug: string,
+  groupSlug?: string | null,
+) {
+  return groupSlug
+    ? `/church-history/${subsectionSlug}/${groupSlug}/${slug}`
+    : `/church-history/${subsectionSlug}/${slug}`;
+}
+
 export function generateStaticParams() {
-  const params = getAllChurchHistoryTopics()
-    .filter((topic) => !topic.groupSlug)
-    .map((topic) => ({
-      subsection: topic.subsectionSlug,
-      slug: topic.slug,
-    }));
+  const params = getAllChurchHistoryTopics().map((topic) => ({
+    subsection: topic.subsectionSlug,
+    segments: topic.groupSlug ? [topic.groupSlug, topic.slug] : [topic.slug],
+  }));
 
   return params.length > 0
     ? params
-    : [{ subsection: "__placeholder__", slug: "__placeholder__" }];
+    : [{ subsection: "__placeholder__", segments: ["__placeholder__"] }];
 }
 
 const siteUrl = getSiteUrl();
@@ -29,18 +37,22 @@ const siteName = "Kirubai Sathiyam";
 type ChurchHistoryTopicPageProps = {
   params: Promise<{
     subsection: string;
-    slug: string;
+    segments: string[];
   }>;
 };
 
 export async function generateMetadata({
   params,
 }: ChurchHistoryTopicPageProps): Promise<Metadata> {
-  const { subsection, slug } = await params;
+  const { subsection, segments } = await params;
+  const [firstSegment = "", secondSegment = ""] = segments;
+  const groupSlug = secondSegment ? firstSegment : null;
+  const slug = secondSegment || firstSegment;
+
   const topic = getAllChurchHistoryTopics().find(
     (entry) =>
       entry.subsectionSlug === subsection &&
-      !entry.groupSlug &&
+      (entry.groupSlug || null) === groupSlug &&
       entry.slug === slug,
   );
 
@@ -57,9 +69,14 @@ export async function generateMetadata({
   const title = topic.title || "Church History Topic";
   const description =
     topic.excerpt ||
-    `${topic.subsectionLabel} topic inside ${CHURCH_HISTORY_SECTION.label}.`;
+    `${topic.groupLabel || topic.subsectionLabel} topic inside ${CHURCH_HISTORY_SECTION.label}.`;
   const shareImage = topic.image || CHURCH_HISTORY_SECTION.image;
   const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
+  const canonicalPath = buildChurchHistoryHref(
+    topic.subsectionSlug,
+    topic.slug,
+    topic.groupSlug,
+  );
 
   return {
     title,
@@ -67,11 +84,11 @@ export async function generateMetadata({
     keywords: topic.keywords.length ? topic.keywords : undefined,
     authors: topic.author ? [{ name: topic.author }] : undefined,
     alternates: {
-      canonical: `/church-history/${topic.subsectionSlug}/${topic.slug}`,
+      canonical: canonicalPath,
     },
     openGraph: {
       type: "article",
-      url: `/church-history/${topic.subsectionSlug}/${topic.slug}`,
+      url: canonicalPath,
       title,
       description,
       siteName,
@@ -92,10 +109,18 @@ export async function generateMetadata({
 export default async function ChurchHistoryTopicPage({
   params,
 }: ChurchHistoryTopicPageProps) {
-  const { subsection, slug } = await params;
-  const topic = await getChurchHistoryTopic(subsection, slug, null);
+  const { subsection, segments } = await params;
+  const [firstSegment = "", secondSegment = ""] = segments;
 
-  if (!topic || topic.groupSlug) {
+  if (!firstSegment || segments.length > 2) {
+    notFound();
+  }
+
+  const groupSlug = secondSegment ? firstSegment : null;
+  const slug = secondSegment || firstSegment;
+  const topic = await getChurchHistoryTopic(subsection, slug, groupSlug);
+
+  if (!topic || (topic.groupSlug || null) !== groupSlug) {
     notFound();
   }
 
@@ -103,7 +128,7 @@ export default async function ChurchHistoryTopicPage({
   const topicIndex = topics.findIndex(
     (entry) =>
       entry.subsectionSlug === topic.subsectionSlug &&
-      !entry.groupSlug &&
+      (entry.groupSlug || null) === (topic.groupSlug || null) &&
       entry.slug === topic.slug,
   );
   const previousTopic = topicIndex > 0 ? topics[topicIndex - 1] : undefined;
@@ -112,18 +137,22 @@ export default async function ChurchHistoryTopicPage({
       ? topics[topicIndex + 1]
       : undefined;
 
-  const topicUrl = toAbsoluteUrl(`/church-history/${topic.subsectionSlug}/${topic.slug}`);
+  const topicUrl = toAbsoluteUrl(
+    buildChurchHistoryHref(topic.subsectionSlug, topic.slug, topic.groupSlug),
+  );
   const shareImage = topic.image || CHURCH_HISTORY_SECTION.image;
   const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
   const shareText =
     topic.excerpt ||
-    `${topic.subsectionLabel} topic inside ${CHURCH_HISTORY_SECTION.label}.`;
+    `${topic.groupLabel || topic.subsectionLabel} topic inside ${CHURCH_HISTORY_SECTION.label}.`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: topic.title,
     description: topic.excerpt,
-    articleSection: `${CHURCH_HISTORY_SECTION.label} / ${topic.subsectionLabel}`,
+    articleSection: topic.groupLabel
+      ? `${CHURCH_HISTORY_SECTION.label} / ${topic.subsectionLabel} / ${topic.groupLabel}`
+      : `${CHURCH_HISTORY_SECTION.label} / ${topic.subsectionLabel}`,
     author: topic.author
       ? {
           "@type": "Person",
@@ -146,11 +175,19 @@ export default async function ChurchHistoryTopicPage({
 
   return (
     <ContentReader
-      itemId={`church-history:${topic.subsectionSlug}:${topic.slug}`}
+      itemId={
+        topic.groupSlug
+          ? `church-history:${topic.subsectionSlug}:${topic.groupSlug}:${topic.slug}`
+          : `church-history:${topic.subsectionSlug}:${topic.slug}`
+      }
       title={topic.title}
       author={topic.author}
       date={topic.date}
-      eyebrow={`${CHURCH_HISTORY_SECTION.label} · ${topic.subsectionLabel}`}
+      eyebrow={
+        topic.groupLabel
+          ? `${CHURCH_HISTORY_SECTION.label} · ${topic.subsectionLabel} · ${topic.groupLabel}`
+          : `${CHURCH_HISTORY_SECTION.label} · ${topic.subsectionLabel}`
+      }
       image={topic.image}
       contentHtml={topic.contentHtml}
       shareTitle={topic.title}
@@ -162,9 +199,11 @@ export default async function ChurchHistoryTopicPage({
       navigation={{
         previous: previousTopic
           ? {
-              href: previousTopic.groupSlug
-                ? `/church-history/${previousTopic.subsectionSlug}/${previousTopic.groupSlug}/${previousTopic.slug}`
-                : `/church-history/${previousTopic.subsectionSlug}/${previousTopic.slug}`,
+              href: buildChurchHistoryHref(
+                previousTopic.subsectionSlug,
+                previousTopic.slug,
+                previousTopic.groupSlug,
+              ),
               label: previousTopic.groupLabel
                 ? `${CHURCH_HISTORY_SECTION.label} · ${previousTopic.groupLabel}`
                 : `${CHURCH_HISTORY_SECTION.label} · ${previousTopic.subsectionLabel}`,
@@ -172,14 +211,18 @@ export default async function ChurchHistoryTopicPage({
             }
           : undefined,
         toc: {
-          href: `/church-history#${topic.subsectionSlug}`,
+          href: topic.groupSlug
+            ? `/church-history#${topic.subsectionSlug}-${topic.groupSlug}`
+            : `/church-history#${topic.subsectionSlug}`,
           label: "பொருளடக்கம்",
         },
         next: nextTopic
           ? {
-              href: nextTopic.groupSlug
-                ? `/church-history/${nextTopic.subsectionSlug}/${nextTopic.groupSlug}/${nextTopic.slug}`
-                : `/church-history/${nextTopic.subsectionSlug}/${nextTopic.slug}`,
+              href: buildChurchHistoryHref(
+                nextTopic.subsectionSlug,
+                nextTopic.slug,
+                nextTopic.groupSlug,
+              ),
               label: nextTopic.groupLabel
                 ? `${CHURCH_HISTORY_SECTION.label} · ${nextTopic.groupLabel}`
                 : `${CHURCH_HISTORY_SECTION.label} · ${nextTopic.subsectionLabel}`,

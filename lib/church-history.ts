@@ -15,7 +15,7 @@ const GENERAL_GROUP_SLUG = "general";
 
 export const CHURCH_HISTORY_SECTION = {
   slug: "church-history",
-  image: "/images/history.jpg",
+  image: "/images/church-history.jpg",
   label: "திருச்சபை வரலாறு",
   description:
     "ஆரம்ப திருச்சபை முதல் சீர்திருத்தக் காலம் மற்றும் அதன் பின்னைய காலங்கள் வரை, கிறிஸ்தவ சாட்சியின் வளர்ச்சி, போராட்டங்கள், முக்கிய தலைவர்கள், சபைக் கூட்டங்கள், இயக்கங்கள், மற்றும் இறையியல் வடிவமைப்புகளை ஆராயும் பகுதி.",
