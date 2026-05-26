@@ -1,4 +1,4 @@
-const VERSION = "v2";
+const VERSION = "v3";
 const PRECACHE = `precache-${VERSION}`;
 const RUNTIME = `runtime-${VERSION}`;
 const CONTENT = `content-${VERSION}`;
@@ -9,6 +9,7 @@ const CORE_ASSETS = [
   "/bible/read",
   "/bible/search",
   "/articles",
+  "/church-history",
   "/manifest.json",
   "/apple-icon.png",
   "/icon0.svg",
@@ -28,6 +29,7 @@ function getCacheName(pathname) {
     pathname === "/bible-notes.json" ||
     pathname.startsWith("/local-bible/") ||
     pathname.startsWith("/articles/") ||
+    pathname.startsWith("/church-history/") ||
     pathname.startsWith("/theology/") ||
     pathname.startsWith("/uploads/") ||
     pathname.startsWith("/images/")
@@ -241,6 +243,8 @@ self.addEventListener("fetch", (event) => {
   if (request.mode === "navigate") {
     const fallbackUrl = pathname.startsWith("/articles/")
       ? "/articles"
+      : pathname.startsWith("/church-history/")
+        ? "/church-history"
       : pathname.startsWith("/theology/")
         ? "/theology"
         : pathname.startsWith("/bible/read")
@@ -269,6 +273,11 @@ self.addEventListener("fetch", (event) => {
 
   if (pathname.startsWith("/articles/")) {
     event.respondWith(networkFirst(request, CONTENT, "/articles"));
+    return;
+  }
+
+  if (pathname.startsWith("/church-history/")) {
+    event.respondWith(networkFirst(request, CONTENT, "/church-history"));
     return;
   }
 

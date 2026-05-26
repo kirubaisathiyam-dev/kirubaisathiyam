@@ -3,6 +3,7 @@ import path from "node:path";
 
 const projectRoot = process.cwd();
 const articlesDir = path.join(projectRoot, "content", "articles");
+const churchHistoryDir = path.join(projectRoot, "content", "church-history");
 const theologyDir = path.join(projectRoot, "content", "theology");
 const booksDir = path.join(projectRoot, "public", "local-bible", "books");
 const uploadsDir = path.join(projectRoot, "public", "uploads");
@@ -68,6 +69,10 @@ const listPublicAssets = (dir, urlPrefix, baseDir = dir) => {
 };
 
 const articleFiles = listFiles(articlesDir, ".md");
+const churchHistoryFiles = listRecursiveFiles(churchHistoryDir, ".md").sort((a, b) =>
+  a.localeCompare(b),
+);
+const churchHistorySections = listDirectories(churchHistoryDir);
 const theologySections = listDirectories(theologyDir);
 const theologyFiles = listRecursiveFiles(theologyDir, ".md").sort((a, b) =>
   a.localeCompare(b),
@@ -77,6 +82,7 @@ const bookFiles = listFiles(booksDir, ".json");
 const routeSet = new Set([
   "/",
   "/articles",
+  "/church-history",
   "/theology",
   "/bible",
   "/bible/read",
@@ -86,6 +92,29 @@ const routeSet = new Set([
 
 for (const file of articleFiles) {
   routeSet.add(`/articles/${file.replace(/\.md$/i, "")}`);
+}
+
+for (const section of churchHistorySections) {
+  routeSet.add(`/church-history/${section}`);
+}
+
+for (const file of churchHistoryFiles) {
+  const normalized = file.replace(/\\/g, "/").replace(/\.md$/i, "");
+  const parts = normalized.split("/").filter(Boolean);
+
+  if (parts.length < 2) {
+    continue;
+  }
+
+  const [subsection, maybeGroup, maybeSlug] = parts;
+  routeSet.add(`/church-history/${subsection}`);
+
+  if (parts.length === 2) {
+    routeSet.add(`/church-history/${subsection}/${maybeGroup}`);
+    continue;
+  }
+
+  routeSet.add(`/church-history/${subsection}/${maybeGroup}/${maybeSlug}`);
 }
 
 for (const section of theologySections) {
@@ -125,6 +154,14 @@ const contentAssets = [
 const payload = {
   routes: Array.from(routeSet).sort((a, b) => a.localeCompare(b)),
   articles: articleFiles.map((file) => `/articles/${file.replace(/\.md$/i, "")}`),
+  churchHistoryTopics: churchHistoryFiles.map((file) => {
+    const normalized = file.replace(/\\/g, "/").replace(/\.md$/i, "");
+    const parts = normalized.split("/").filter(Boolean);
+    if (parts.length === 2) {
+      return `/church-history/${parts[0]}/${parts[1]}`;
+    }
+    return `/church-history/${parts[0]}/${parts[1]}/${parts[2]}`;
+  }),
   theologyTopics: theologyFiles.map((file) => {
     const normalized = file.replace(/\\/g, "/").replace(/\.md$/i, "");
     const parts = normalized.split("/").filter(Boolean);

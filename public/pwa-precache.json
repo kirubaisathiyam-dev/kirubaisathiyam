@@ -17,6 +17,13 @@
     "/bible",
     "/bible/read",
     "/bible/search",
+    "/church-history",
+    "/church-history/introduction",
+    "/church-history/introduction/2026-05-25-130320",
+    "/church-history/introduction/2026-05-25-131255",
+    "/church-history/introduction/2026-05-25-134155",
+    "/church-history/introduction/2026-05-25-141749",
+    "/church-history/introduction/2026-05-25-142025",
     "/privacy-terms",
     "/theology",
     "/theology/reformed-theology",
@@ -52,6 +59,13 @@
     "/articles/2026-03-11-055530",
     "/articles/2026-03-12-180758",
     "/articles/2026-05-19-170809"
+  ],
+  "churchHistoryTopics": [
+    "/church-history/introduction/2026-05-25-130320",
+    "/church-history/introduction/2026-05-25-131255",
+    "/church-history/introduction/2026-05-25-134155",
+    "/church-history/introduction/2026-05-25-141749",
+    "/church-history/introduction/2026-05-25-142025"
   ],
   "theologyTopics": [
     "/theology/systematic-theology/introduction/2026-03-21-013948",
@@ -171,5 +185,5 @@
     "/uploads/long.jpg",
     "/uploads/map3.png"
   ],
-  "generatedAt": "2026-05-25T15:26:30.601Z"
+  "generatedAt": "2026-05-26T15:05:21.421Z"
 }
