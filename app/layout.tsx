@@ -98,13 +98,13 @@ export default function RootLayout({
         <link rel="icon" href="/icon1.png" />
         <link rel="apple-touch-icon" href="/apple-icon.png" />
       </head>
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       <body className="antialiased" suppressHydrationWarning>
         {children}
         <CookieConsentBanner />
         <OverflowHyphenation />
         <PwaRegister />
       </body>
-      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
