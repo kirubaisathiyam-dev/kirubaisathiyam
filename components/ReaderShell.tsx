@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon } from "@/components/Icons";
+import PageTransition from "@/components/PageTransition";
 import {
   useApplyReaderFocusMode,
   useApplyReaderSettings,
@@ -70,7 +71,7 @@ export default function ReaderShell({ children }: ReaderShellProps) {
             : "mx-auto w-full max-w-5xl px-4 pb-8 sm:px-6 sm:pb-10"
         }
       >
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );

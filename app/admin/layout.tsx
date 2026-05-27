@@ -1,6 +1,7 @@
 "use client";
 
 import { AdminPageSkeleton } from "@/components/PageSkeletons";
+import PageTransition from "@/components/PageTransition";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
@@ -79,7 +80,7 @@ export default function AdminLayout({
         </div>
       </header>
       <main className="mx-auto w-full max-w-4xl px-4 py-8">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );
