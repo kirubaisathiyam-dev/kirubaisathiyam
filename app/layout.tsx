@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import localFont from "next/font/local";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import "./globals.css";
@@ -12,6 +13,7 @@ const siteName = "Kirubai Sathiyam";
 const siteDescription =
   "Tamil Christian articles and the Tamil Holy Bible reader with study notes.";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-EKHKEXTHL4";
 const notoSerifTamil = localFont({
   src: [
     {
@@ -102,6 +104,7 @@ export default function RootLayout({
         <OverflowHyphenation />
         <PwaRegister />
       </body>
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
