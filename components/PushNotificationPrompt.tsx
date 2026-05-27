@@ -13,6 +13,9 @@ type PushNotificationPromptProps = {
 
 const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY || "";
 const autoPromptStorageKey = "ks_push_auto_prompt_seen";
+const serviceWorkerPath = "/sw.js";
+
+let subscriptionSyncPromise: Promise<void> | null = null;
 
 function rememberAutoPromptSeen() {
   try {
@@ -20,6 +23,48 @@ function rememberAutoPromptSeen() {
   } catch {
     // Ignore storage failures; the in-memory state still hides this render.
   }
+}
+
+async function syncPushSubscription() {
+  if (subscriptionSyncPromise) {
+    return subscriptionSyncPromise;
+  }
+
+  subscriptionSyncPromise = (async () => {
+    const existingRegistration = await navigator.serviceWorker.getRegistration("/");
+    if (!existingRegistration) {
+      await navigator.serviceWorker.register(serviceWorkerPath, { scope: "/" });
+    }
+
+    const registration = await navigator.serviceWorker.ready;
+    const messaging = getMessaging(app);
+    const token = await getToken(messaging, {
+      vapidKey,
+      serviceWorkerRegistration: registration,
+    });
+
+    if (!token) {
+      throw new Error("Unable to create push token.");
+    }
+
+    const response = await fetch("/api/push/subscribe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token }),
+    });
+
+    const data = (await response.json().catch(() => null)) as
+      | { ok?: boolean; error?: string }
+      | null;
+
+    if (!response.ok || !data?.ok) {
+      throw new Error(data?.error || "Unable to save push subscription.");
+    }
+  })().finally(() => {
+    subscriptionSyncPromise = null;
+  });
+
+  return subscriptionSyncPromise;
 }
 
 export default function PushNotificationPrompt({
@@ -61,6 +106,32 @@ export default function PushNotificationPrompt({
       }
 
       if (Notification.permission === "granted") {
+        try {
+          await syncPushSubscription();
+        } catch (error) {
+          if (cancelled) {
+            return;
+          }
+
+          if (variant === "auto") {
+            rememberAutoPromptSeen();
+            setStatus("hidden");
+            return;
+          }
+
+          const messageText =
+            error instanceof Error
+              ? error.message
+              : "Unable to refresh push subscription.";
+          setStatus("error");
+          setMessage(messageText);
+          return;
+        }
+
+        if (cancelled) {
+          return;
+        }
+
         if (variant === "auto") {
           rememberAutoPromptSeen();
           setStatus("hidden");
@@ -116,30 +187,7 @@ export default function PushNotificationPrompt({
         return;
       }
 
-      const registration = await navigator.serviceWorker.ready;
-      const messaging = getMessaging(app);
-      const token = await getToken(messaging, {
-        vapidKey,
-        serviceWorkerRegistration: registration,
-      });
-
-      if (!token) {
-        throw new Error("Unable to create push token.");
-      }
-
-      const response = await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-
-      const data = (await response.json().catch(() => null)) as
-        | { ok?: boolean; error?: string }
-        | null;
-
-      if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || "Unable to save push subscription.");
-      }
+      await syncPushSubscription();
 
       rememberAutoPromptSeen();
       if (variant === "auto") {

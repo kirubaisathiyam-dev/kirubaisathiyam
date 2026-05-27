@@ -276,15 +276,26 @@ export async function sendPushToToken(token: string, message: PushMessage) {
             ...(message.image ? { image: message.image } : {}),
           },
           webpush: {
+            headers: {
+              TTL: "2419200",
+              Urgency: "high",
+            },
             fcm_options: { link },
             notification: {
+              title: message.title,
+              body: message.body || "",
               icon,
               badge,
               ...(message.image ? { image: message.image } : {}),
             },
           },
           data: {
+            title: message.title,
+            body: message.body || "",
+            image: message.image || "",
             url: link,
+            icon,
+            badge,
           },
         },
       }),
