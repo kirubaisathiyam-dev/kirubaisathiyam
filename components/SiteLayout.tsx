@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
+import PageTransition from "@/components/PageTransition";
 import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeForm from "@/components/SubscribeForm";
@@ -26,7 +27,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             : "mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:py-10"
         }
       >
-        {children}
+        <PageTransition>{children}</PageTransition>
         <BibleReferenceTooltip />
       </main>
 

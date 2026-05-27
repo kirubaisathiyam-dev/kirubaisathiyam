@@ -167,6 +167,7 @@ export default function ContentReader({
       )}
 
       <div
+        key={itemId}
         className="prose prose-neutral mx-auto max-w-3xl"
         style={{ fontSize: "calc(1em * var(--reader-font-scale, 1))" }}
         dangerouslySetInnerHTML={{ __html: contentHtml }}

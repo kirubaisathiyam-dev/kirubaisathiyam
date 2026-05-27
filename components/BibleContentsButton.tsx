@@ -6,7 +6,10 @@ import {
   ListIcon,
   LoadingIcon,
 } from "@/components/Icons";
-import LoadingIndicator from "@/components/LoadingIndicator";
+import {
+  BibleContentsModalSkeleton,
+  ChapterTileGridSkeleton,
+} from "@/components/PageSkeletons";
 import {
   BOOKS_CACHE_KEY,
   BOOK_CACHE_PREFIX,
@@ -303,7 +306,10 @@ export default function BibleContentsButton({
                 </div>
               )}
 
-              <div className="space-y-8">
+              {!books.length && !error ? (
+                <BibleContentsModalSkeleton />
+              ) : (
+                <div className="space-y-8">
                 {[
                   { title: "பழைய ஏற்பாடு", books: oldTestamentBooks },
                   { title: "புதிய ஏற்பாடு", books: newTestamentBooks },
@@ -367,7 +373,7 @@ export default function BibleContentsButton({
                                   style={{ borderColor: "var(--theme-border-color)" }}
                                 >
                                   {isLoadingBook ? (
-                                    <LoadingIndicator className="py-4" size={24} />
+                                    <ChapterTileGridSkeleton />
                                   ) : (
                                     <div
                                       className="grid overflow-hidden border border-b-0 border-r-0"
@@ -418,7 +424,8 @@ export default function BibleContentsButton({
                     </div>
                   </section>
                 ))}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

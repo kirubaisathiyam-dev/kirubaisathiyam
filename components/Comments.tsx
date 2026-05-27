@@ -1,7 +1,7 @@
 "use client";
 
-import LoadingIndicator from "@/components/LoadingIndicator";
 import { LoadingIcon } from "@/components/Icons";
+import { CommentsSkeleton } from "@/components/PageSkeletons";
 import { useEffect, useMemo, useState } from "react";
 import { auth, db, provider } from "@/lib/firebase";
 import {
@@ -328,7 +328,7 @@ export default function Comments({ articleId }: CommentsProps) {
 
       <div className="space-y-3">
         {loading ? (
-          <LoadingIndicator className="py-4" size={24} />
+          <CommentsSkeleton />
         ) : comments.length === 0 ? (
           <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
             No comments yet. Be the first to share.

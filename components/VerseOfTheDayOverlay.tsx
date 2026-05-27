@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { HeroOverlaySkeleton } from "@/components/PageSkeletons";
 import DailyVerseLikeButton from "@/components/DailyVerseLikeButton";
 import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
@@ -225,15 +226,7 @@ async function getClientVerseOfTheDay() {
 }
 
 function VerseOfTheDaySkeleton() {
-  return (
-    <section
-      className="relative -mt-8 overflow-hidden sm:-mt-10"
-      style={{ borderColor: "var(--border-color)" }}
-      aria-hidden="true"
-    >
-      <div className="relative min-h-[24rem] bg-[#111111] sm:min-h-[30rem] lg:min-h-[36rem]" />
-    </section>
-  );
+  return <HeroOverlaySkeleton />;
 }
 
 export default function VerseOfTheDayOverlay() {
