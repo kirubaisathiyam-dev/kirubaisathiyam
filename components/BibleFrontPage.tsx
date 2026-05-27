@@ -206,6 +206,10 @@ export default function BibleFrontPage() {
     [visibleBooks],
   );
 
+  const toggleBook = (book: string) => {
+    setExpandedBook((current) => (current === book ? "" : book));
+  };
+
   if (!books.length && !error) {
     return <BibleFrontPageSkeleton />;
   }
@@ -257,7 +261,7 @@ export default function BibleFrontPage() {
                   >
                     <button
                       type="button"
-                      onClick={() => setExpandedBook(book.english)}
+                      onClick={() => toggleBook(book.english)}
                       className="flex w-full items-center justify-between gap-4 p-3 text-left transition hover:opacity-80"
                       aria-expanded={isOpen}
                     >

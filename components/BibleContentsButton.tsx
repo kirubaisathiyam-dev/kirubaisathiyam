@@ -236,6 +236,10 @@ export default function BibleContentsButton({
   const oldTestamentBooks = useMemo(() => books.slice(0, 39), [books]);
   const newTestamentBooks = useMemo(() => books.slice(39), [books]);
 
+  const toggleBook = (book: string) => {
+    setExpandedBook((current) => (current === book ? "" : book));
+  };
+
   const handleChapterSelect = (book: string, chapter: string) => {
     setIsOpen(false);
     onSelect(book, chapter);
@@ -338,7 +342,7 @@ export default function BibleContentsButton({
                           >
                             <button
                               type="button"
-                              onClick={() => setExpandedBook(book.english)}
+                              onClick={() => toggleBook(book.english)}
                               className="flex w-full items-center justify-between gap-4 p-3 text-left transition hover:opacity-80"
                               aria-expanded={isOpen}
                             >

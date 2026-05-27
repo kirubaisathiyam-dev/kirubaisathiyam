@@ -14,7 +14,6 @@ function Surface({
     <div
       className={className}
       style={{
-        borderColor: "var(--border-color)",
         backgroundColor: "var(--muted-background)",
         ...style,
       }}
@@ -28,7 +27,6 @@ export function HeroOverlaySkeleton() {
   return (
     <section
       className="relative -mt-8 overflow-hidden sm:-mt-10"
-      style={{ borderColor: "var(--border-color)" }}
       aria-hidden="true"
     >
       <div className="relative min-h-[24rem] bg-[#111111] sm:min-h-[30rem] lg:min-h-[36rem]">
@@ -58,8 +56,8 @@ export function HeroOverlaySkeleton() {
 
 function FeatureSplitSkeleton() {
   return (
-    <Surface className="grid overflow-hidden border sm:grid-cols-[0.7fr_1.1fr] md:grid-cols-[0.4fr_1.1fr]">
-      <SkeletonBlock className="aspect-square border-b md:border-b-0 md:border-r" />
+    <Surface className="grid overflow-hidden sm:grid-cols-[0.7fr_1.1fr] md:grid-cols-[0.4fr_1.1fr]">
+      <SkeletonBlock className="aspect-square" />
       <div className="flex flex-col justify-center gap-5 p-6 sm:p-8">
         <div className="space-y-3">
           <SkeletonText className="h-4 w-full" />
@@ -78,7 +76,7 @@ export function ArticleCardSkeleton({
   compact?: boolean;
 }) {
   return (
-    <Surface className="flex h-full flex-col border">
+    <Surface className="flex h-full flex-col">
       <SkeletonBlock className={compact ? "aspect-[16/9]" : "aspect-[4/3]"} />
       <div className="space-y-3 p-4 sm:p-5">
         <SkeletonText className="h-3 w-24" />
@@ -100,8 +98,8 @@ export function ArticleCardSkeleton({
 
 export function TheologyCardSkeleton() {
   return (
-    <Surface className="flex h-full flex-col border">
-      <SkeletonBlock className="aspect-square border-b" />
+    <Surface className="flex h-full flex-col">
+      <SkeletonBlock className="aspect-square" />
       <div className="space-y-3 p-5">
         <SkeletonText className="h-7 w-2/3" />
         <div className="space-y-2">
@@ -170,9 +168,9 @@ export function ArticleIndexSkeleton() {
         <div className="space-y-3">
           <div className="space-y-2">
             <SkeletonText className="h-4 w-20" />
-            <SkeletonBlock className="h-11 w-full rounded-none border" />
+            <SkeletonBlock className="h-11 w-full rounded-none" />
           </div>
-          <div className="flex gap-3 border-b pb-2">
+          <div className="flex gap-3 pb-2">
             {Array.from({ length: 4 }, (_, index) => (
               <SkeletonText key={index} className="h-4 w-16" />
             ))}
@@ -181,7 +179,7 @@ export function ArticleIndexSkeleton() {
             {Array.from({ length: 5 }, (_, index) => (
               <SkeletonBlock
                 key={index}
-                className="h-8 w-20 border"
+                className="h-8 w-20"
               />
             ))}
           </div>
@@ -226,7 +224,7 @@ export function OutlinePageSkeleton() {
   return (
     <div className="mx-auto max-w-4xl space-y-10">
       <header className="space-y-3">
-        <SkeletonBlock className="h-[min(100vw,500px)] w-full border sm:h-[480px]" />
+        <SkeletonBlock className="h-[min(100vw,500px)] w-full sm:h-[480px]" />
         <div className="space-y-3">
           <SkeletonText className="h-9 w-56" />
           <div className="space-y-2">
@@ -288,7 +286,7 @@ export function ContentReaderSkeleton({
       ) : null}
 
       {showImage ? (
-        <SkeletonBlock className="aspect-[16/9] w-full border" />
+        <SkeletonBlock className="aspect-[16/9] w-full" />
       ) : null}
 
       <div className="mx-auto max-w-3xl space-y-4">
@@ -303,11 +301,11 @@ export function ContentReaderSkeleton({
         ))}
       </div>
 
-      <div className="mx-auto max-w-3xl border-t pt-6">
+      <div className="mx-auto max-w-3xl pt-6">
         <div className="flex items-center justify-between gap-3">
-          <SkeletonBlock className="h-10 w-24 border" />
+          <SkeletonBlock className="h-10 w-24" />
           <SkeletonText className="h-4 w-20" />
-          <SkeletonBlock className="h-10 w-24 border" />
+          <SkeletonBlock className="h-10 w-24" />
         </div>
       </div>
 
@@ -356,9 +354,9 @@ export function BibleFrontPageSkeleton() {
             <SkeletonText className="h-7 w-40" />
             <div className="space-y-3">
               {Array.from({ length: 4 }, (_, bookIndex) => (
-                <Surface
+              <Surface
                   key={bookIndex}
-                  className="overflow-hidden border"
+                  className="overflow-hidden"
                 >
                   <div className="flex items-center justify-between gap-4 p-3">
                     <SkeletonText className="h-5 w-40" />
@@ -381,17 +379,15 @@ export function ChapterTileGridSkeleton({
 }) {
   return (
     <div
-      className="grid overflow-hidden border border-b-0 border-r-0"
+      className="grid overflow-hidden"
       style={{
-        borderColor: "var(--border-color)",
         gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 5rem), 1fr))",
       }}
     >
       {Array.from({ length: tileCount }, (_, index) => (
         <SkeletonBlock
           key={index}
-          className="h-14 border-b border-r"
-          style={{ borderColor: "var(--border-color)" }}
+          className="h-14"
         />
       ))}
     </div>
@@ -406,7 +402,7 @@ export function BibleContentsModalSkeleton() {
           <SkeletonText className="h-7 w-40" />
           <div className="space-y-3">
             {Array.from({ length: 4 }, (_, bookIndex) => (
-              <Surface key={bookIndex} className="overflow-hidden border">
+              <Surface key={bookIndex} className="overflow-hidden">
                 <div className="flex items-center justify-between gap-4 p-3">
                   <SkeletonText className="h-5 w-40" />
                   <SkeletonBlock className="h-5 w-5" />
@@ -435,7 +431,7 @@ export function BibleSearchPageSkeleton() {
         </div>
         <div className="space-y-4">
           {Array.from({ length: 4 }, (_, index) => (
-            <Surface key={index} className="border px-5 py-5">
+            <Surface key={index} className="px-5 py-5">
               <div className="space-y-3">
                 <SkeletonText className="h-4 w-32" />
                 <div className="space-y-2">
@@ -481,10 +477,10 @@ export function BibleReaderSkeleton() {
         </div>
       </div>
 
-      <div className="flex justify-between gap-3 border-t pt-6">
-        <SkeletonBlock className="h-10 w-28 border" />
+      <div className="flex justify-between gap-3 pt-6">
+        <SkeletonBlock className="h-10 w-28" />
         <SkeletonText className="h-4 w-24" />
-        <SkeletonBlock className="h-10 w-28 border" />
+        <SkeletonBlock className="h-10 w-28" />
       </div>
     </div>
   );
@@ -503,7 +499,7 @@ export function CommentsSkeleton() {
 
       <div className="space-y-3">
         {Array.from({ length: 2 }, (_, index) => (
-          <Surface key={index} className="border px-4 py-3">
+          <Surface key={index} className="px-4 py-3">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <SkeletonCircle className="h-6 w-6" />
@@ -526,9 +522,8 @@ export function CommentsSkeleton() {
 export function RepliesSkeleton() {
   return (
     <div
-      className="mt-3 space-y-3 border-l p-4"
+      className="mt-3 space-y-3 p-4"
       style={{
-        borderColor: "var(--border-color)",
         backgroundColor: "var(--muted-background)",
       }}
     >
@@ -568,7 +563,7 @@ export function AdminPageSkeleton() {
   return (
     <div className="space-y-8">
       <Surface
-        className="border p-6"
+        className="p-6"
         style={{
           background:
             "linear-gradient(135deg, var(--muted-background), var(--background))",
@@ -580,13 +575,13 @@ export function AdminPageSkeleton() {
             <SkeletonText className="h-9 w-40" />
             <SkeletonText className="h-4 w-72 max-w-full" />
           </div>
-          <SkeletonBlock className="h-10 w-24 border self-start sm:self-auto" />
-        </div>
+          <SkeletonBlock className="h-10 w-24 self-start sm:self-auto" />
+      </div>
       </Surface>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 3 }, (_, index) => (
-          <Surface key={index} className="flex min-h-48 flex-col justify-between border p-5">
+          <Surface key={index} className="flex min-h-48 flex-col justify-between p-5">
             <div className="space-y-2">
               <SkeletonText className="h-7 w-28" />
               <SkeletonText className="h-4 w-full" />
