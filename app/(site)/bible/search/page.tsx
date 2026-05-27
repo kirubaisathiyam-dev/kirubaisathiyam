@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import BibleSearchPage from "@/components/BibleSearchPage";
-import LoadingIndicator from "@/components/LoadingIndicator";
+import { BibleSearchPageSkeleton } from "@/components/PageSkeletons";
 import { toAbsoluteUrl } from "@/lib/seo";
 
 const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
@@ -27,7 +27,7 @@ export default function BibleSearchRoute() {
   return (
     <Suspense
       fallback={
-        <LoadingIndicator className="mx-auto max-w-5xl px-4 py-12 sm:px-6" />
+        <BibleSearchPageSkeleton />
       }
     >
       <BibleSearchPage />

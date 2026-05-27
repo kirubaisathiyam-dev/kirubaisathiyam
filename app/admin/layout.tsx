@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminPageSkeleton } from "@/components/PageSkeletons";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
@@ -46,8 +47,8 @@ export default function AdminLayout({
   if (isAuthed === null) {
     return (
       <div className="min-h-screen">
-        <main className="mx-auto w-full max-w-4xl px-4 py-8 text-sm">
-          Checking access...
+        <main className="mx-auto w-full max-w-4xl px-4 py-8">
+          <AdminPageSkeleton />
         </main>
       </div>
     );

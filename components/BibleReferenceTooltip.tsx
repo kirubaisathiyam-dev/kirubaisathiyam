@@ -4,7 +4,7 @@ import { getOfflineData, setOfflineData } from "@/lib/offline";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { useEffect, useRef, useState } from "react";
 import { CloseIcon } from "@/components/Icons";
-import LoadingIndicator from "@/components/LoadingIndicator";
+import { BibleTooltipSkeleton } from "@/components/PageSkeletons";
 
 type TooltipState = {
   visible: boolean;
@@ -47,6 +47,7 @@ type LocalBibleBook = {
 
 const VERSE_CACHE_PREFIX = "verse:";
 const verseCache = new Map<string, VerseCacheEntry>();
+const enhancedRoots = new WeakSet<Element>();
 const localBibleBasePath = "/local-bible";
 let localBooksIndexPromise:
   | Promise<Map<string, { english?: string; tamil?: string }>>
@@ -92,18 +93,30 @@ export default function BibleReferenceTooltip() {
     const enhanceRoots = () => {
       const roots = Array.from(document.querySelectorAll(".prose"));
       for (const root of roots) {
-        if (root.getAttribute("data-bible-enhanced") === "true") {
+        if (enhancedRoots.has(root)) {
           continue;
         }
         enhanceBibleRefs(root);
-        root.setAttribute("data-bible-enhanced", "true");
+        enhancedRoots.add(root);
       }
     };
 
-    enhanceRoots();
+    let frameId = 0;
+    const scheduleEnhance = () => {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = 0;
+        enhanceRoots();
+      });
+    };
+
+    scheduleEnhance();
 
     const observer = new MutationObserver(() => {
-      enhanceRoots();
+      scheduleEnhance();
     });
 
     observer.observe(document.body, {
@@ -111,7 +124,12 @@ export default function BibleReferenceTooltip() {
       subtree: true,
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -367,7 +385,7 @@ export default function BibleReferenceTooltip() {
         </div>
         <div style={{ whiteSpace: "pre-wrap", lineHeight: 1.5 }}>
           {state.loading ? (
-            <LoadingIndicator className="py-2" size={20} />
+            <BibleTooltipSkeleton />
           ) : (
             state.content || "No verse found."
           )}

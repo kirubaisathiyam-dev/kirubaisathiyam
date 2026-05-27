@@ -1,7 +1,10 @@
 "use client";
 
 import { ArrowRightIcon, LoadingIcon } from "@/components/Icons";
-import LoadingIndicator from "@/components/LoadingIndicator";
+import {
+  BibleFrontPageSkeleton,
+  ChapterTileGridSkeleton,
+} from "@/components/PageSkeletons";
 import BibleSearchForm from "@/components/BibleSearchForm";
 import {
   BOOKS_CACHE_KEY,
@@ -203,6 +206,10 @@ export default function BibleFrontPage() {
     [visibleBooks],
   );
 
+  if (!books.length && !error) {
+    return <BibleFrontPageSkeleton />;
+  }
+
   return (
     <div className="mx-auto max-w-xl space-y-4">
       <header className="space-y-4">
@@ -285,7 +292,7 @@ export default function BibleFrontPage() {
                           style={{ borderColor: "var(--border-color)" }}
                         >
                           {isLoadingBook ? (
-                            <LoadingIndicator className="py-4" size={24} />
+                            <ChapterTileGridSkeleton />
                           ) : (
                             <div
                               className="grid overflow-hidden border border-b-0 border-r-0"

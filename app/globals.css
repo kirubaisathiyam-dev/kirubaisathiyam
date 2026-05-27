@@ -19,6 +19,8 @@
   --theme-muted-foreground: rgba(237, 237, 237, 0.7);
   --theme-border-color: rgba(237, 237, 237, 0.16);
   --theme-heighlight-bible: #644e1a;
+  --skeleton-base: rgba(237, 237, 237, 0.08);
+  --skeleton-highlight: rgba(237, 237, 237, 0.16);
   --site-font-sans: var(--font-tamil), serif;
   --site-font-mono: "SFMono-Regular", ui-monospace, "SFMono-Regular", SFMono-Regular,
     Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -42,6 +44,8 @@ body[data-theme="dark"] {
   --theme-muted-foreground: rgba(237, 237, 237, 0.7);
   --theme-border-color: rgba(237, 237, 237, 0.16);
   --theme-heighlight-bible: #644e1a;
+  --skeleton-base: rgba(237, 237, 237, 0.08);
+  --skeleton-highlight: rgba(237, 237, 237, 0.16);
 }
 
 html[data-theme="light"],
@@ -62,6 +66,8 @@ body[data-theme="light"] {
   --theme-muted-foreground: rgba(23, 23, 23, 0.6);
   --theme-border-color: rgba(23, 23, 23, 0.12);
   --theme-heighlight-bible: #ffe3a1;
+  --skeleton-base: rgba(23, 23, 23, 0.08);
+  --skeleton-highlight: rgba(23, 23, 23, 0.12);
 }
 
 @theme inline {
@@ -90,6 +96,8 @@ body[data-theme="light"] {
     --theme-foreground-bible: #e9c36a;
     --theme-border-color: rgba(237, 237, 237, 0.16);
     --theme-heighlight-bible: #644e1a;
+    --skeleton-base: rgba(237, 237, 237, 0.08);
+    --skeleton-highlight: rgba(237, 237, 237, 0.16);
   }
 }
 
@@ -111,6 +119,8 @@ body[data-theme="light"] {
     --theme-foreground-bible: #c48900;
     --theme-border-color: rgba(23, 23, 23, 0.12);
     --theme-heighlight-bible: #ffe3a1;
+    --skeleton-base: rgba(23, 23, 23, 0.08);
+    --skeleton-highlight: rgba(23, 23, 23, 0.12);
   }
 }
 
@@ -122,6 +132,8 @@ body[data-theme="light"] {
   --border-color: rgba(245, 230, 208, 0.16);
   --foreground-bible: #f0bf67;
   --heighlight-bible: #744f18;
+  --skeleton-base: rgba(245, 230, 208, 0.08);
+  --skeleton-highlight: rgba(245, 230, 208, 0.16);
   background-color: #181109;
   color: #f5e6d0;
 }
@@ -134,6 +146,8 @@ body[data-theme="light"] {
   --border-color: rgba(220, 236, 248, 0.16);
   --foreground-bible: #74baff;
   --heighlight-bible: #18486f;
+  --skeleton-base: rgba(220, 236, 248, 0.08);
+  --skeleton-highlight: rgba(220, 236, 248, 0.16);
   background-color: #09131b;
   color: #dcecf8;
 }
@@ -146,6 +160,8 @@ body[data-theme="light"] {
   --border-color: rgba(50, 37, 26, 0.16);
   --foreground-bible: #9a6400;
   --heighlight-bible: #e7c792;
+  --skeleton-base: rgba(50, 37, 26, 0.08);
+  --skeleton-highlight: rgba(50, 37, 26, 0.14);
   background-color: #f2e6d4;
   color: #32251a;
 }
@@ -158,8 +174,52 @@ body[data-theme="light"] {
   --border-color: rgba(28, 42, 53, 0.16);
   --foreground-bible: #0a6cb0;
   --heighlight-bible: #b8d7f2;
+  --skeleton-base: rgba(28, 42, 53, 0.08);
+  --skeleton-highlight: rgba(28, 42, 53, 0.14);
   background-color: #dfeef8;
   color: #1c2a35;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background: var(--skeleton-base);
+}
+
+.skeleton-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--skeleton-highlight) 50%,
+    transparent 100%
+  );
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-block-contrast {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.skeleton-block-contrast::after {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
 }
 
 html {

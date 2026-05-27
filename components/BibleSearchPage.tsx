@@ -3,6 +3,7 @@
 import BibleSearchForm from "@/components/BibleSearchForm";
 import { SearchIcon } from "@/components/Icons";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { BibleSearchPageSkeleton } from "@/components/PageSkeletons";
 import {
   createBibleSearchIndex,
   loadBibleSearchCorpus,
@@ -269,7 +270,7 @@ export default function BibleSearchPage() {
       </header>
 
       {isLoading ? (
-        <LoadingIndicator className="mx-auto max-w-3xl py-10" />
+        <BibleSearchPageSkeleton />
       ) : error ? (
         <section
           className="mx-auto max-w-3xl border px-6 py-10 text-center"

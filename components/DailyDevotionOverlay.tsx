@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@/components/Icons";
 import DailyVerseLikeButton from "@/components/DailyVerseLikeButton";
 import DevotionShareCard from "@/components/DevotionShareCard";
+import { HeroOverlaySkeleton } from "@/components/PageSkeletons";
 import ShareButton from "@/components/ShareButton";
 import {
   captureShareImage,
@@ -217,15 +218,7 @@ async function getClientDailyDevotion() {
 }
 
 function DailyDevotionSkeleton() {
-  return (
-    <section
-      className="relative -mt-8 overflow-hidden sm:-mt-10"
-      style={{ borderColor: "var(--border-color)" }}
-      aria-hidden="true"
-    >
-      <div className="relative min-h-[24rem] bg-[#111111] sm:min-h-[30rem] lg:min-h-[36rem]" />
-    </section>
-  );
+  return <HeroOverlaySkeleton />;
 }
 
 export default function DailyDevotionOverlay() {

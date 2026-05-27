@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { LoadingIcon } from "@/components/Icons";
+import { RepliesSkeleton } from "@/components/PageSkeletons";
 import { auth, db } from "@/lib/firebase";
 import {
   addDoc,
@@ -61,6 +62,7 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
   const [savingReplyId, setSavingReplyId] = useState<string | null>(null);
   const [deletingReplyId, setDeletingReplyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const repliesRef = useMemo(
     () =>
@@ -87,9 +89,11 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
             ...doc.data(),
           })) as ReplyItem[],
         );
+        setLoading(false);
       },
       () => {
         setError("Unable to load replies right now.");
+        setLoading(false);
       },
     );
 
@@ -248,7 +252,9 @@ export default function Replies({ articleId, commentId }: RepliesProps) {
         </p>
       )}
 
-      {replies.length > 0 && (
+      {loading ? (
+        <RepliesSkeleton />
+      ) : replies.length > 0 && (
         <ul className="space-y-3">
           {replies.map((reply) => {
             const avatarUrl = resolveAvatarUrl(

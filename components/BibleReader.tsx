@@ -3,7 +3,7 @@
 import BibleSelectionBar from "@/components/BibleSelectionBar";
 import BibleContentsButton from "@/components/BibleContentsButton";
 import { ArrowLeftIcon, ArrowRightIcon } from "@/components/Icons";
-import LoadingIndicator from "@/components/LoadingIndicator";
+import { BibleReaderSkeleton } from "@/components/PageSkeletons";
 import ReaderSettingsButton, {
   useReaderFontSize,
   useReaderTemperature,
@@ -776,7 +776,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
         </div>
       )}
 
-      {(loading || !hasActiveLocation) && <LoadingIndicator className="py-6" />}
+      {(loading || !hasActiveLocation) && <BibleReaderSkeleton />}
 
       {!loading && hasActiveLocation && currentChapter && (
         <section className="space-y-6">
