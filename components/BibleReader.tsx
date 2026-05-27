@@ -9,6 +9,7 @@ import ReaderSettingsButton, {
   useReaderTemperature,
 } from "@/components/ReaderSettingsButton";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import { getMeditationRoute } from "@/lib/meditation";
 import { parseBibleReference, replaceBibleRefsInHtml } from "@/lib/bible";
 import {
   BOOKS_CACHE_KEY,
@@ -23,7 +24,7 @@ import {
 } from "@/lib/local-bible";
 import { fetchWithOffline, getOfflineData } from "@/lib/offline";
 import Image from "next/image";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import rehypeStringify from "rehype-stringify";
@@ -222,6 +223,7 @@ async function copyToClipboard(text: string) {
 }
 
 export default function BibleReader({ siteUrl }: BibleReaderProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const initialBookParam = searchParams?.get("book")?.trim() || "";
@@ -693,6 +695,20 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     await handleCopy();
   };
 
+  const handleMeditate = () => {
+    if (selectedVerses.length !== 1 || !selectedBook || !selectedChapter) {
+      return;
+    }
+
+    router.push(
+      getMeditationRoute({
+        book: selectedBook,
+        chapter: selectedChapter,
+        verse: String(selectedVerses[0]),
+      }),
+    );
+  };
+
   useEffect(() => {
     if (!scrollToSelection || !selectedVerses.length || loading || !currentChapter) {
       return;
@@ -943,6 +959,9 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                   message={copyMessage}
                   onCopy={handleCopy}
                   onShare={handleShare}
+                  onMeditate={
+                    selectedVerses.length === 1 ? handleMeditate : undefined
+                  }
                   onClear={() => {
                     setSelectedVerses([]);
                     setLastClickedVerse(null);

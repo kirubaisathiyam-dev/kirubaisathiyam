@@ -1,12 +1,13 @@
 "use client";
 
-import { CloseIcon, CopyIcon, ShareIcon } from "@/components/Icons";
+import { CloseIcon, CopyIcon, HeartIcon, ShareIcon } from "@/components/Icons";
 
 type BibleSelectionBarProps = {
   reference: string;
   message: string;
   onCopy: () => void;
   onShare: () => void;
+  onMeditate?: () => void;
   onClear: () => void;
 };
 
@@ -15,6 +16,7 @@ export default function BibleSelectionBar({
   message,
   onCopy,
   onShare,
+  onMeditate,
   onClear,
 }: BibleSelectionBarProps) {
   return (
@@ -54,6 +56,18 @@ export default function BibleSelectionBar({
           >
             <ShareIcon style={{ width: 15, height: 15 }} />
           </button>
+          {onMeditate ? (
+            <button
+              type="button"
+              onClick={onMeditate}
+              className="rounded-full border p-3 text-xs font-semibold shadow-sm transition hover:opacity-80"
+              style={{ borderColor: "var(--border-color)" }}
+              aria-label="Open meditation mode"
+              title="Meditate"
+            >
+              <HeartIcon style={{ width: 15, height: 15 }} />
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={onClear}

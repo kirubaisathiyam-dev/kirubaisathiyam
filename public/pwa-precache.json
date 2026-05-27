@@ -24,6 +24,7 @@
     "/church-history/introduction/2026-05-25-134155",
     "/church-history/introduction/2026-05-25-141749",
     "/church-history/introduction/2026-05-25-142025",
+    "/meditate",
     "/privacy-terms",
     "/theology",
     "/theology/reformed-theology",
@@ -166,6 +167,10 @@
     "/images/systematic-x.jpg",
     "/images/systematic.jpg",
     "/local-bible/Books.json",
+    "/meditation/forest/sfx.wav",
+    "/meditation/forest/vfx.gif",
+    "/meditation/sea-shore/sfx.wav",
+    "/meditation/sea-shore/vfx.gif",
     "/uploads/078bb49dee95eea73e02b316d59ebf7a.jpg",
     "/uploads/14089.jpg",
     "/uploads/215.jpg",
@@ -186,5 +191,5 @@
     "/uploads/long.jpg",
     "/uploads/map3.png"
   ],
-  "generatedAt": "2026-05-27T06:43:30.475Z"
+  "generatedAt": "2026-05-27T18:58:19.041Z"
 }

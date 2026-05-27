@@ -4,9 +4,9 @@ import { useEffect } from "react";
 
 const SW_PATH = "/sw.js";
 const CACHE_NAMES = {
-  precache: "precache-v3",
-  runtime: "runtime-v3",
-  content: "content-v3",
+  precache: "precache-v4",
+  runtime: "runtime-v4",
+  content: "content-v4",
 } as const;
 const OFFLINE_MANIFEST_VERSION_KEY = "kirubai-offline:manifest-version";
 const OFFLINE_LAST_SYNC_KEY = "kirubai-offline:last-sync";
@@ -14,6 +14,7 @@ const CORE_SYNC_URLS = [
   "/",
   "/articles",
   "/church-history",
+  "/meditate",
   "/theology",
   "/bible",
   "/bible/read",
@@ -30,6 +31,7 @@ const CORE_ROUTE_ASSET_URLS = [
   "/",
   "/articles",
   "/church-history",
+  "/meditate",
   "/theology",
   "/bible",
   "/bible/read",
@@ -55,6 +57,7 @@ function getCacheName(pathname: string) {
     pathname.startsWith("/local-bible/") ||
     pathname.startsWith("/articles/") ||
     pathname.startsWith("/church-history/") ||
+    pathname.startsWith("/meditation/") ||
     pathname.startsWith("/theology/") ||
     pathname.startsWith("/uploads/") ||
     pathname.startsWith("/images/")

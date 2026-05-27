@@ -8,6 +8,7 @@ const theologyDir = path.join(projectRoot, "content", "theology");
 const booksDir = path.join(projectRoot, "public", "local-bible", "books");
 const uploadsDir = path.join(projectRoot, "public", "uploads");
 const imagesDir = path.join(projectRoot, "public", "images");
+const meditationDir = path.join(projectRoot, "public", "meditation");
 const outputPath = path.join(projectRoot, "public", "pwa-precache.json");
 
 const listFiles = (dir, ext) => {
@@ -83,6 +84,7 @@ const routeSet = new Set([
   "/",
   "/articles",
   "/church-history",
+  "/meditate",
   "/theology",
   "/bible",
   "/bible/read",
@@ -147,6 +149,7 @@ const contentAssets = [
   "/daily-devotion.json",
   "/bible-notes.json",
   "/local-bible/Books.json",
+  ...listPublicAssets(meditationDir, "/meditation"),
   ...listPublicAssets(uploadsDir, "/uploads"),
   ...listPublicAssets(imagesDir, "/images"),
 ].sort((a, b) => a.localeCompare(b));

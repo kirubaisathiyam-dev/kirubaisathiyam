@@ -20,11 +20,29 @@ export default function ReaderShell({ children }: ReaderShellProps) {
   useApplyReaderSettings(shellRef);
   useApplyReaderFocusMode();
   const isDevotionPage = pathname?.startsWith("/devotions/") ?? false;
+  const isMeditationPage = pathname === "/meditate";
 
   const getBackHref = () => {
     if (!pathname) return "/";
     if (pathname.startsWith("/articles/")) return "/articles";
     if (pathname.startsWith("/bible/read")) return "/bible";
+    if (pathname === "/meditate") {
+      const params =
+        typeof window === "undefined"
+          ? new URLSearchParams()
+          : new URLSearchParams(window.location.search);
+      const book = params.get("book")?.trim() || "";
+      const chapter = params.get("chapter")?.trim() || "";
+      const verse = params.get("verse")?.trim() || "";
+      if (book && chapter && verse) {
+        const targetParams = new URLSearchParams();
+        targetParams.set("book", book);
+        targetParams.set("chapter", chapter);
+        targetParams.set("verses", verse);
+        return `/bible/read?${targetParams.toString()}`;
+      }
+      return "/bible/read";
+    }
     if (pathname.startsWith("/church-history/")) {
       const parts = pathname.split("/").filter(Boolean);
       if (parts.length >= 4) {
@@ -50,7 +68,7 @@ export default function ReaderShell({ children }: ReaderShellProps) {
 
   return (
     <div ref={shellRef} className="min-h-screen">
-      {isDevotionPage ? null : (
+      {isDevotionPage || isMeditationPage ? null : (
         <div className="mx-auto w-full max-w-5xl px-4 py-4 sm:px-6">
           <button
             type="button"
@@ -66,7 +84,7 @@ export default function ReaderShell({ children }: ReaderShellProps) {
 
       <main
         className={
-          isDevotionPage
+          isDevotionPage || isMeditationPage
             ? "w-full pb-8 sm:pb-10"
             : "mx-auto w-full max-w-5xl px-4 pb-8 sm:px-6 sm:pb-10"
         }

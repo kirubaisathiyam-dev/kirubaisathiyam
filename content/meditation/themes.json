@@ -1,0 +1,26 @@
+[
+  {
+    "id": "forest",
+    "label": "Forest",
+    "description": "Green canopy, soft depth, and a quiet woodland mood.",
+    "visualSrc": "/meditation/forest/vfx.gif",
+    "audioSrc": "/meditation/forest/sfx.wav",
+    "overlay": "linear-gradient(180deg, rgba(5, 16, 9, 0.3) 0%, rgba(6, 20, 12, 0.72) 100%)",
+    "panelBackground": "rgba(11, 24, 15, 0.42)",
+    "panelBorder": "rgba(214, 239, 219, 0.24)",
+    "accent": "#d6efdb",
+    "mutedAccent": "rgba(214, 239, 219, 0.8)"
+  },
+  {
+    "id": "sea-shore",
+    "label": "Sea Shore",
+    "description": "Open horizon, tide motion, and a calm shore atmosphere.",
+    "visualSrc": "/meditation/sea-shore/vfx.gif",
+    "audioSrc": "/meditation/sea-shore/sfx.wav",
+    "overlay": "linear-gradient(180deg, rgba(7, 20, 28, 0.22) 0%, rgba(6, 23, 34, 0.74) 100%)",
+    "panelBackground": "rgba(9, 24, 34, 0.4)",
+    "panelBorder": "rgba(220, 240, 250, 0.26)",
+    "accent": "#dcf0fa",
+    "mutedAccent": "rgba(220, 240, 250, 0.8)"
+  }
+]

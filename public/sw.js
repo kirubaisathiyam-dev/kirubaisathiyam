@@ -1,4 +1,4 @@
-const VERSION = "v3";
+const VERSION = "v4";
 const PRECACHE = `precache-${VERSION}`;
 const RUNTIME = `runtime-${VERSION}`;
 const CONTENT = `content-${VERSION}`;
@@ -10,6 +10,7 @@ const CORE_ASSETS = [
   "/bible/search",
   "/articles",
   "/church-history",
+  "/meditate",
   "/manifest.json",
   "/apple-icon.png",
   "/icon0.svg",
@@ -30,6 +31,7 @@ function getCacheName(pathname) {
     pathname.startsWith("/local-bible/") ||
     pathname.startsWith("/articles/") ||
     pathname.startsWith("/church-history/") ||
+    pathname.startsWith("/meditation/") ||
     pathname.startsWith("/theology/") ||
     pathname.startsWith("/uploads/") ||
     pathname.startsWith("/images/")
@@ -252,7 +254,9 @@ self.addEventListener("fetch", (event) => {
           : pathname.startsWith("/bible/search")
             ? "/bible/search"
             : pathname === "/bible"
-              ? "/bible"
+          ? "/bible"
+        : pathname === "/meditate"
+          ? "/meditate"
           : pathname === "/privacy-terms"
             ? "/privacy-terms"
             : "/";
