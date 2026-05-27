@@ -1,12 +1,14 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { SkeletonBlock, SkeletonCircle, SkeletonText } from "@/components/Skeleton";
 
 function Surface({
   children,
   className = "",
+  style,
 }: {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }) {
   return (
     <div
@@ -14,6 +16,7 @@ function Surface({
       style={{
         borderColor: "var(--border-color)",
         backgroundColor: "var(--muted-background)",
+        ...style,
       }}
     >
       {children}
