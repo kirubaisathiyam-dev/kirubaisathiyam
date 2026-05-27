@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -19,6 +20,8 @@ type DevotionHeroProps = {
   verseReference: string;
   verseText: string;
   initialImage: UnsplashImageResponse;
+  targetId?: string;
+  shareOnlyContent?: ReactNode;
 };
 
 function getDevotionImageStorageKey(slug: string) {
@@ -76,6 +79,8 @@ export default function DevotionHero({
   verseReference,
   verseText,
   initialImage,
+  targetId,
+  shareOnlyContent,
 }: DevotionHeroProps) {
   const [image, setImage] = useState(initialImage);
   const [imageLoadFailed, setImageLoadFailed] = useState(false);
@@ -113,6 +118,7 @@ export default function DevotionHero({
   return (
     <section className="relative -mt-4 overflow-hidden sm:-mt-10">
       <div
+        id={targetId}
         className="relative min-h-[24rem] sm:min-h-[30rem] lg:min-h-[36rem]"
         style={{ backgroundColor: "#111111" }}
       >
@@ -167,6 +173,8 @@ export default function DevotionHero({
             ) : null}
           </div>
         </div>
+
+        {shareOnlyContent}
       </div>
     </section>
   );

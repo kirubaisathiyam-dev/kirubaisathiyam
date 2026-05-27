@@ -1,11 +1,10 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import DevotionHero from "@/components/DevotionHero";
+import DevotionShareCard from "@/components/DevotionShareCard";
 import DevotionShareActions from "@/components/DevotionShareActions";
-import logoDark from "@/app/logo-dark.svg";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import {
   DEVOTION_ATTRIBUTION,
@@ -292,61 +291,27 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section
-        id={shareTargetId}
-        className="relative"
-      >
-        <DevotionHero
-          slug={devotion.slug}
-          label={devotion.label}
-          verseReference={devotion.verseReference}
-          verseText={devotion.verseText}
-          initialImage={{
-            url: "",
-            photographerName: null,
-            photographerUrl: null,
-            unsplashUrl: null,
-            source: "picsum",
-          }}
-        />
-        <div
-          data-share-only="true"
-          className="absolute inset-0 z-10 hidden items-center justify-center px-5 sm:px-8 lg:px-10"
-        >
-            <div className="relative mx-auto flex h-full w-full max-w-[420px] items-center justify-center">
-              <div className="flex flex-col items-center justify-center gap-6 text-center">
-                <h2
-                  className="text-2xl leading-tight text-white"
-                  style={{ textWrap: "balance" }}
-                >
-                  {devotion.verseReference}
-                </h2>
-                {devotion.verseText ? (
-                  <blockquote
-                    className={shareVerseTypography.blockquoteClassName}
-                    style={{ color: "#ffffff" }}
-                  >
-                    {devotion.verseText}
-                  </blockquote>
-                ) : null}
-              </div>
-              <div
-                className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center justify-center gap-3 text-sm font-semibold tracking-tight"
-                style={{ color: "#ededed" }}
-              >
-                <Image
-                  src={logoDark}
-                  alt="Kirubai Sathiyam logo"
-                  width={20}
-                  height={20}
-                />
-                <div>
-                  கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
-                </div>
-              </div>
-            </div>
-        </div>
-      </section>
+      <DevotionHero
+        slug={devotion.slug}
+        label={devotion.label}
+        verseReference={devotion.verseReference}
+        verseText={devotion.verseText}
+        initialImage={{
+          url: "",
+          photographerName: null,
+          photographerUrl: null,
+          unsplashUrl: null,
+          source: "picsum",
+        }}
+        targetId={shareTargetId}
+        shareOnlyContent={
+          <DevotionShareCard
+            reference={devotion.verseReference}
+            verseText={devotion.verseText}
+            verseClassName={shareVerseTypography.blockquoteClassName}
+          />
+        }
+      />
 
       {devotion.devotion ? (
         <div className="mx-auto mt-8 flex w-full max-w-4xl flex-col gap-8 px-4 sm:px-6 sm:mt-10">

@@ -5,12 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/Icons";
 import DailyVerseLikeButton from "@/components/DailyVerseLikeButton";
+import DevotionShareCard from "@/components/DevotionShareCard";
 import ShareButton from "@/components/ShareButton";
 import {
   captureShareImage,
   default as VerseOfTheDayShareButton,
 } from "@/components/VerseOfTheDayShareButton";
-import logoDark from "@/app/logo-dark.svg";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import {
   DEVOTION_ATTRIBUTION,
@@ -460,45 +460,11 @@ export default function DailyDevotionOverlay() {
             </div>
           </div>
 
-          <div
-            data-share-only="true"
-            className="absolute inset-0 z-10 hidden items-center justify-center px-5 sm:px-8 lg:px-10"
-          >
-            <div className="relative mx-auto flex h-full w-full max-w-[420px] items-center justify-center">
-              <div className="flex flex-col items-center justify-center gap-6 text-center">
-                <h2
-                  className="text-2xl leading-tight text-white"
-                  style={{ textWrap: "balance" }}
-                >
-                  {dailyDevotion.reference}
-                </h2>
-                {dailyDevotion.verse ? (
-                  <div className="space-y-3">
-                    <blockquote
-                      className={shareVerseTypography.blockquoteClassName}
-                      style={{ color: "#ffffff" }}
-                    >
-                      {dailyDevotion.verse}
-                    </blockquote>
-                  </div>
-                ) : null}
-              </div>
-              <div
-                className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center justify-center gap-3 font-semibold tracking-tight text-sm"
-                style={{ color: "#ededed" }}
-              >
-                <Image
-                  src={logoDark}
-                  alt="Kirubai Sathiyam logo"
-                  width={20}
-                  height={20}
-                />
-                <div>
-                  கிருபை <span style={{ color: "#e9c36a" }}>சத்தியம்</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <DevotionShareCard
+            reference={dailyDevotion.reference}
+            verseText={dailyDevotion.verse}
+            verseClassName={shareVerseTypography.blockquoteClassName}
+          />
         </div>
 
         <div
