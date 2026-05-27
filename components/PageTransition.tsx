@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 type PageTransitionProps = {
   children: React.ReactNode;
@@ -12,8 +12,7 @@ export default function PageTransition({
   className,
 }: PageTransitionProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const routeKey = `${pathname || ""}?${searchParams?.toString() || ""}`;
+  const routeKey = pathname || "";
 
   return (
     <div key={routeKey} className={`page-transition-shell ${className || ""}`}>
