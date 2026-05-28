@@ -696,7 +696,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
   };
 
   const handleMeditate = () => {
-    if (selectedVerses.length !== 1 || !selectedBook || !selectedChapter) {
+    if (!selectedVerses.length || !selectedBook || !selectedChapter) {
       return;
     }
 
@@ -959,9 +959,7 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
                   message={copyMessage}
                   onCopy={handleCopy}
                   onShare={handleShare}
-                  onMeditate={
-                    selectedVerses.length === 1 ? handleMeditate : undefined
-                  }
+                  onMeditate={selectedVerses.length ? handleMeditate : undefined}
                   onClear={() => {
                     setSelectedVerses([]);
                     setLastClickedVerse(null);

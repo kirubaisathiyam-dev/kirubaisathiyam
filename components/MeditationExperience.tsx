@@ -2,6 +2,8 @@
 
 import {
   ArrowLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   CloseIcon,
   HeartIcon,
   SettingsIcon,
@@ -33,24 +35,38 @@ type LoadedVerse = {
   shareUrl: string;
 };
 
-const DEFAULT_AUDIO_VOLUME = 0.48;
+type VerseNavigationTarget = {
+  book: string;
+  chapter: string;
+  verse: string;
+};
+
+const DEFAULT_AUDIO_VOLUME = 0.5;
+
+// function getMeditationTextSize(text: string) {
+//   const length = text.trim().length;
+
+//   if (length <= 60) {
+//     return "clamp(2rem, 1.1rem + 3.8vw, 4.6rem)";
+//   }
+
+//   if (length <= 110) {
+//     return "clamp(1.7rem, 1rem + 3vw, 3.8rem)";
+//   }
+
+//   if (length <= 170) {
+//     return "clamp(1.45rem, 0.95rem + 2.2vw, 3rem)";
+//   }
+
+//   return "clamp(1.2rem, 0.9rem + 1.6vw, 2.35rem)";
+// }
 
 function getMeditationTextSize(text: string) {
   const length = text.trim().length;
 
-  if (length <= 60) {
-    return "clamp(2rem, 1.1rem + 3.8vw, 4.6rem)";
-  }
+  const vw = Math.max(0.8, 2.2 - length / 200);
 
-  if (length <= 110) {
-    return "clamp(1.7rem, 1rem + 3vw, 3.8rem)";
-  }
-
-  if (length <= 170) {
-    return "clamp(1.45rem, 0.95rem + 2.2vw, 3rem)";
-  }
-
-  return "clamp(1.2rem, 0.9rem + 1.6vw, 2.35rem)";
+  return `clamp(0.5rem, 0.7rem + ${vw}vw, 2rem)`;
 }
 
 async function copyToClipboard(text: string) {
@@ -93,6 +109,7 @@ export default function MeditationExperience() {
 
   const [themeId, setThemeId] = useState(themeParam);
   const [loadedVerse, setLoadedVerse] = useState<LoadedVerse | null>(null);
+  const [bookData, setBookData] = useState<LocalBibleBook | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
@@ -101,6 +118,64 @@ export default function MeditationExperience() {
   const feedbackTimeoutRef = useRef<number | null>(null);
 
   const activeTheme = useMemo(() => getMeditationTheme(themeId), [themeId]);
+  const verseNavigation = useMemo(() => {
+    if (!bookData?.chapters?.length || !chapter || !verse) {
+      return { previous: null as VerseNavigationTarget | null, next: null as VerseNavigationTarget | null };
+    }
+
+    const chapterIndex = bookData.chapters.findIndex((entry) => entry.chapter === chapter);
+    if (chapterIndex < 0) {
+      return { previous: null as VerseNavigationTarget | null, next: null as VerseNavigationTarget | null };
+    }
+
+    const chapterEntry = bookData.chapters[chapterIndex];
+    const verses = chapterEntry.verses || [];
+    const verseIndex = verses.findIndex((entry) => entry.verse === verse);
+    if (verseIndex < 0) {
+      return { previous: null as VerseNavigationTarget | null, next: null as VerseNavigationTarget | null };
+    }
+
+    let previous: VerseNavigationTarget | null = null;
+    let next: VerseNavigationTarget | null = null;
+
+    if (verseIndex > 0) {
+      previous = { book, chapter, verse: verses[verseIndex - 1]?.verse || "" };
+    } else {
+      for (let idx = chapterIndex - 1; idx >= 0; idx -= 1) {
+        const previousChapter = bookData.chapters[idx];
+        const previousVerses = previousChapter?.verses || [];
+        const lastVerse = previousVerses[previousVerses.length - 1];
+        if (lastVerse?.verse) {
+          previous = {
+            book,
+            chapter: previousChapter.chapter,
+            verse: lastVerse.verse,
+          };
+          break;
+        }
+      }
+    }
+
+    if (verseIndex < verses.length - 1) {
+      next = { book, chapter, verse: verses[verseIndex + 1]?.verse || "" };
+    } else {
+      for (let idx = chapterIndex + 1; idx < bookData.chapters.length; idx += 1) {
+        const nextChapter = bookData.chapters[idx];
+        const nextVerses = nextChapter?.verses || [];
+        const firstVerse = nextVerses[0];
+        if (firstVerse?.verse) {
+          next = {
+            book,
+            chapter: nextChapter.chapter,
+            verse: firstVerse.verse,
+          };
+          break;
+        }
+      }
+    }
+
+    return { previous, next };
+  }, [book, bookData, chapter, verse]);
   const verseFontSize = useMemo(
     () => getMeditationTextSize(loadedVerse?.text || ""),
     [loadedVerse?.text],
@@ -209,6 +284,7 @@ export default function MeditationExperience() {
         };
 
         if (cachedBook && active) {
+          setBookData(cachedBook);
           const cachedVerse = resolveLoadedVerse(cachedBook);
           if (cachedVerse) {
             setLoadedVerse(cachedVerse);
@@ -233,6 +309,7 @@ export default function MeditationExperience() {
           return;
         }
 
+        setBookData(bookData);
         const resolvedVerse = resolveLoadedVerse(bookData);
         if (!resolvedVerse) {
           setLoadedVerse(null);
@@ -429,6 +506,21 @@ export default function MeditationExperience() {
     feedbackTimeoutRef.current = window.setTimeout(() => setFeedback(""), 2200);
   };
 
+  const handleNavigateVerse = (target: VerseNavigationTarget | null) => {
+    if (!target) {
+      return;
+    }
+
+    router.push(
+      getMeditationRoute({
+        book: target.book,
+        chapter: target.chapter,
+        verse: target.verse,
+        theme: activeTheme?.id,
+      }),
+    );
+  };
+
   return (
     <div className="fixed inset-0 z-40 overflow-hidden bg-black text-white">
       {activeTheme ? (
@@ -515,7 +607,7 @@ export default function MeditationExperience() {
                   className="mx-auto max-w-5xl font-semibold"
                   style={{
                     fontSize: verseFontSize,
-                    lineHeight: 1.3,
+                    lineHeight: 1.8,
                     textShadow: "0 14px 36px rgba(0, 0, 0, 0.28)",
                   }}
                 >
@@ -533,6 +625,17 @@ export default function MeditationExperience() {
               color: activeTheme?.accent,
             }}
           >
+            <button
+              type="button"
+              onClick={() => handleNavigateVerse(verseNavigation.previous)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border disabled:opacity-40"
+              style={{ borderColor: activeTheme?.panelBorder }}
+              aria-label="Previous verse"
+              title="Previous verse"
+              disabled={!verseNavigation.previous}
+            >
+              <ChevronLeftIcon style={{ width: 20, height: 20 }} />
+            </button>
             <button
               type="button"
               onClick={() => void handlePlayPause()}
@@ -556,6 +659,17 @@ export default function MeditationExperience() {
               title="Share"
             >
               <ShareIcon style={{ width: 16, height: 16 }} />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleNavigateVerse(verseNavigation.next)}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border disabled:opacity-40"
+              style={{ borderColor: activeTheme?.panelBorder }}
+              aria-label="Next verse"
+              title="Next verse"
+              disabled={!verseNavigation.next}
+            >
+              <ChevronRightIcon style={{ width: 20, height: 20 }} />
             </button>
             {feedback ? (
               <p className="w-full text-center text-xs" style={{ color: activeTheme?.mutedAccent }}>

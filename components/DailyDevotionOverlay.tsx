@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRightIcon } from "@/components/Icons";
+import { ArrowRightIcon, PlayIcon } from "@/components/Icons";
 import DailyVerseLikeButton from "@/components/DailyVerseLikeButton";
 import DevotionShareCard from "@/components/DevotionShareCard";
 import { HeroOverlaySkeleton } from "@/components/PageSkeletons";
@@ -26,6 +26,7 @@ import {
   type DailyDevotionRecord,
 } from "@/lib/daily-devotion";
 import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
+import { getMeditationRoute } from "@/lib/meditation";
 
 type DailyDevotion = {
   date: string;
@@ -348,6 +349,24 @@ export default function DailyDevotionOverlay() {
     .join("\n\n");
   const shareVerseTypography = getShareVerseTypography(dailyDevotion.verse);
   const imageFileName = getDevotionImageFileName(dailyDevotion.date);
+  const meditateHref = (() => {
+    const parsed = parseBibleReference(dailyDevotion.rawReference);
+    if (!parsed) {
+      return null;
+    }
+
+    const [bookCode = "", chapter = "", verse = ""] = parsed.passageId.split(".");
+    const book = getBookByCode(bookCode);
+    if (!book || !chapter || !verse) {
+      return null;
+    }
+
+    return getMeditationRoute({
+      book: book.name,
+      chapter,
+      verse: verse.split("-")[0] || verse,
+    });
+  })();
 
   return (
     <section
@@ -375,7 +394,7 @@ export default function DailyDevotionOverlay() {
           <div className="absolute inset-0 bg-black/60" />
 
           <div className="relative z-10 flex items-center justify-center px-5 py-10 pb-24 text-left sm:px-8 sm:pb-28 md:pt-20 lg:px-10">
-            <div className="mx-auto flex max-w-4xl flex-col items-start justify-center gap-5">
+            <div className="mx-auto flex max-w-4xl w-full flex-col items-start justify-center gap-5">
               <div className="space-y-2">
                 <p
                   className="text-xs uppercase tracking-[0.3em]"
@@ -465,6 +484,17 @@ export default function DailyDevotionOverlay() {
           className="absolute inset-x-0 bottom-0 z-20 flex justify-center px-5 py-6 sm:px-8 lg:px-10"
         >
           <div className="mx-auto flex w-full max-w-4xl items-center justify-start gap-3">
+            {meditateHref ? (
+              <Link
+                href={meditateHref}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition hover:opacity-80"
+                style={heroButtonStyle}
+                aria-label="Meditate on this verse"
+                title="Meditate"
+              >
+                <PlayIcon style={{ width: 18, height: 18 }} />
+              </Link>
+            ) : null}
             <VerseOfTheDayShareButton
               title={shareTitle}
               text={shareText}
