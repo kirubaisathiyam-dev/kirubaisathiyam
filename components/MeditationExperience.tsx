@@ -454,10 +454,8 @@ export default function MeditationExperience() {
               await exitFullscreen();
               router.push(backHref);
             }}
-            className="inline-flex h-11 w-11 items-center justify-center border backdrop-blur-md"
+            className="inline-flex h-11 w-11 items-center justify-center"
             style={{
-              background: activeTheme?.panelBackground,
-              borderColor: activeTheme?.panelBorder,
               color: activeTheme?.accent,
             }}
             aria-label="Go back"
@@ -470,10 +468,8 @@ export default function MeditationExperience() {
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
-            className="inline-flex h-11 w-11 items-center justify-center border backdrop-blur-md"
+            className="inline-flex h-11 w-11 items-center justify-center"
             style={{
-              background: activeTheme?.panelBackground,
-              borderColor: activeTheme?.panelBorder,
               color: activeTheme?.accent,
             }}
             aria-label="Open meditation settings"
@@ -484,10 +480,8 @@ export default function MeditationExperience() {
 
         <main className="flex min-h-0 flex-1 items-center justify-center px-5 py-8 sm:px-10">
           <div
-            className="w-full max-w-4xl border p-6 text-center shadow-2xl backdrop-blur-xl sm:p-10"
+            className="w-full max-w-6xl p-6 text-center sm:p-10"
             style={{
-              background: activeTheme?.panelBackground,
-              borderColor: activeTheme?.panelBorder,
               color: activeTheme?.accent,
             }}
           >
@@ -513,10 +507,10 @@ export default function MeditationExperience() {
                   {loadedVerse.reference}
                 </p>
                 <blockquote
-                  className="mx-auto max-w-3xl font-semibold"
+                  className="mx-auto max-w-5xl font-semibold"
                   style={{
                     fontSize: verseFontSize,
-                    lineHeight: 1.22,
+                    lineHeight: 1.3,
                     textShadow: "0 14px 36px rgba(0, 0, 0, 0.28)",
                   }}
                 >
@@ -529,10 +523,8 @@ export default function MeditationExperience() {
 
         <footer className="p-4 sm:p-6">
           <div
-            className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-3 border px-3 py-3 backdrop-blur-xl"
+            className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-center gap-3 px-3 py-3"
             style={{
-              background: activeTheme?.panelBackground,
-              borderColor: activeTheme?.panelBorder,
               color: activeTheme?.accent,
             }}
           >
