@@ -686,7 +686,7 @@ export default function MeditationExperience() {
           onClick={() => setSettingsOpen(false)}
         >
           <div
-            className="w-full max-w-md border p-5 shadow-2xl backdrop-blur-xl"
+            className="flex max-h-[min(88vh,48rem)] w-full max-w-md flex-col border p-5 shadow-2xl backdrop-blur-xl"
             style={{
               background: activeTheme?.panelBackground,
               borderColor: activeTheme?.panelBorder,
@@ -712,7 +712,7 @@ export default function MeditationExperience() {
               </button>
             </div>
 
-            <div className="mt-5 space-y-3">
+            <div className="mt-5 space-y-3 overflow-y-auto pr-1">
               {MEDITATION_THEMES.map((theme) => {
                 const isActive = activeTheme?.id === theme.id;
 
