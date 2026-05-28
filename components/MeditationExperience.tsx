@@ -3,12 +3,11 @@
 import {
   ArrowLeftIcon,
   CloseIcon,
-  FocusModeOffIcon,
-  FocusModeOnIcon,
   HeartIcon,
   SettingsIcon,
   ShareIcon,
   VolumeIcon,
+  VolumeOffIcon,
 } from "@/components/Icons";
 import {
   BOOK_CACHE_PREFIX,
@@ -97,7 +96,6 @@ export default function MeditationExperience() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
   const feedbackTimeoutRef = useRef<number | null>(null);
@@ -124,8 +122,26 @@ export default function MeditationExperience() {
   }, [themeParam]);
 
   useEffect(() => {
+    async function releaseWakeLock() {
+      try {
+        await wakeLockRef.current?.release();
+      } catch {
+        // Ignore wake lock release failures.
+      }
+      wakeLockRef.current = null;
+    }
+
     const handleFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
+      const fullscreenActive = Boolean(document.fullscreenElement);
+
+      if (!fullscreenActive) {
+        const audio = audioRef.current;
+        if (audio) {
+          audio.pause();
+        }
+        setIsPlaying(false);
+        void releaseWakeLock();
+      }
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
@@ -310,7 +326,7 @@ export default function MeditationExperience() {
     };
   }, []);
 
-  const enterFullscreen = async () => {
+  async function enterFullscreen() {
     if (document.fullscreenElement || !document.documentElement.requestFullscreen) {
       return;
     }
@@ -320,9 +336,9 @@ export default function MeditationExperience() {
     } catch {
       // Ignore fullscreen request failures.
     }
-  };
+  }
 
-  const exitFullscreen = async () => {
+  async function exitFullscreen() {
     if (!document.fullscreenElement) {
       return;
     }
@@ -332,9 +348,9 @@ export default function MeditationExperience() {
     } catch {
       // Ignore fullscreen exit failures.
     }
-  };
+  }
 
-  const requestWakeLock = async () => {
+  async function requestWakeLock() {
     if (
       typeof navigator === "undefined" ||
       !("wakeLock" in navigator) ||
@@ -356,16 +372,7 @@ export default function MeditationExperience() {
     } catch {
       // Ignore wake lock failures.
     }
-  };
-
-  const releaseWakeLock = async () => {
-    try {
-      await wakeLockRef.current?.release();
-    } catch {
-      // Ignore wake lock release failures.
-    }
-    wakeLockRef.current = null;
-  };
+  }
 
   const handlePlayPause = async () => {
     const audio = audioRef.current;
@@ -374,9 +381,7 @@ export default function MeditationExperience() {
     }
 
     if (isPlaying) {
-      audio.pause();
-      setIsPlaying(false);
-      await releaseWakeLock();
+      await exitFullscreen();
       return;
     }
 
@@ -531,32 +536,26 @@ export default function MeditationExperience() {
             <button
               type="button"
               onClick={() => void handlePlayPause()}
-              className="border px-4 py-2 text-sm font-semibold"
+              className="flex h-11 w-11 items-center justify-center rounded-full border"
               style={{ borderColor: activeTheme?.panelBorder }}
+              aria-label={isPlaying ? "Turn sound off" : "Start meditation audio"}
+              title={isPlaying ? "Sound on" : "Play meditation"}
             >
-              {isPlaying ? "Pause audio" : "Play audio"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void (isFullscreen ? exitFullscreen() : enterFullscreen())}
-              className="inline-flex items-center gap-2 border px-4 py-2 text-sm font-semibold"
-              style={{ borderColor: activeTheme?.panelBorder }}
-            >
-              {isFullscreen ? (
-                <FocusModeOnIcon style={{ width: 18, height: 18 }} />
+              {isPlaying ? (
+                <VolumeIcon style={{ width: 20, height: 20 }} />
               ) : (
-                <FocusModeOffIcon style={{ width: 18, height: 18 }} />
+                <VolumeOffIcon style={{ width: 20, height: 20 }} />
               )}
-              <span>{isFullscreen ? "Exit full screen" : "Full screen"}</span>
             </button>
             <button
               type="button"
               onClick={() => void handleShare()}
-              className="inline-flex items-center gap-2 border px-4 py-2 text-sm font-semibold"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border"
               style={{ borderColor: activeTheme?.panelBorder }}
+              aria-label="Share meditation verse"
+              title="Share"
             >
               <ShareIcon style={{ width: 16, height: 16 }} />
-              <span>Share</span>
             </button>
             {feedback ? (
               <p className="w-full text-center text-xs" style={{ color: activeTheme?.mutedAccent }}>
@@ -585,13 +584,13 @@ export default function MeditationExperience() {
               <div className="space-y-1">
                 <h2 className="text-xl font-semibold">Meditation Settings</h2>
                 <p className="text-sm" style={{ color: activeTheme?.mutedAccent }}>
-                  Choose the atmosphere from the files in `public/meditation`.
+                  Choose the atmosphere for your meditation.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setSettingsOpen(false)}
-                className="flex h-11 w-11 items-center justify-center border"
+                className="flex items-center justify-center"
                 style={{ borderColor: activeTheme?.panelBorder }}
                 aria-label="Close meditation settings"
               >

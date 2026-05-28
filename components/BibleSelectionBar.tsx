@@ -1,6 +1,6 @@
 "use client";
 
-import { CloseIcon, CopyIcon, HeartIcon, ShareIcon } from "@/components/Icons";
+import { CloseIcon, CopyIcon, PlayIcon, ShareIcon } from "@/components/Icons";
 
 type BibleSelectionBarProps = {
   reference: string;
@@ -65,7 +65,7 @@ export default function BibleSelectionBar({
               aria-label="Open meditation mode"
               title="Meditate"
             >
-              <HeartIcon style={{ width: 15, height: 15 }} />
+              <PlayIcon style={{ width: 15, height: 15 }} />
             </button>
           ) : null}
           <button
