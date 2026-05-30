@@ -5,7 +5,11 @@ import { notFound } from "next/navigation";
 import DevotionHero from "@/components/DevotionHero";
 import DevotionShareCard from "@/components/DevotionShareCard";
 import DevotionShareActions from "@/components/DevotionShareActions";
-import { getBookByCode, parseBibleReference } from "@/lib/bible";
+import {
+  getBookByCode,
+  parseBibleReference,
+  replaceBibleRefsInHtml,
+} from "@/lib/bible";
 import {
   DEVOTION_ATTRIBUTION,
   formatDevotionLabel,
@@ -42,6 +46,25 @@ type DevotionPageData = {
   devotion: string;
   canonicalPath: string;
 };
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function renderDevotionHtml(content: string) {
+  const paragraphs = content
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean)
+    .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+    .join("");
+
+  return replaceBibleRefsInHtml(paragraphs);
+}
 
 function getShareVerseTypography(verse: string) {
   const characterCount = verse.replace(/\s+/g, " ").trim().length;
@@ -248,6 +271,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
   const shareTargetId = "devotion-reader-share-card";
   const imageFileName = getDevotionImageFileName(devotion.date);
   const shareVerseTypography = getShareVerseTypography(devotion.verseText);
+  const devotionHtml = renderDevotionHtml(devotion.devotion);
   const shareText = [
     devotion.label,
     DEVOTION_ATTRIBUTION,
@@ -316,16 +340,10 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
       {devotion.devotion ? (
         <div className="mx-auto mt-8 flex w-full max-w-4xl flex-col gap-8 px-4 sm:px-6 sm:mt-10">
           <div
-            className="space-y-5 text-base leading-8 sm:text-lg"
+            className="prose prose-neutral max-w-none text-base leading-8 sm:text-lg"
             style={{ color: "var(--foreground)" }}
-          >
-            {devotion.devotion
-              .split(/\n\s*\n/)
-              .filter(Boolean)
-              .map((paragraph, index) => (
-                <p key={`${devotion.slug}-${index}`}>{paragraph.trim()}</p>
-              ))}
-          </div>
+            dangerouslySetInnerHTML={{ __html: devotionHtml }}
+          />
           <p
             className="text-sm sm:text-base"
             style={{ color: "rgba(255, 255, 255, 0.5)" }}
