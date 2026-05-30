@@ -11,7 +11,7 @@ import { formatTamilDate } from "@/lib/date";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getTheologySectionsWithTopics } from "@/lib/theology";
 
-const shareImage = toAbsoluteUrl("/logo-light.svg");
+const shareImage = toAbsoluteUrl("/logo.png");
 
 export const metadata: Metadata = {
   title:

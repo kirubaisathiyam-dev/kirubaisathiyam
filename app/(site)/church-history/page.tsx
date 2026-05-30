@@ -8,7 +8,7 @@ import {
 } from "@/lib/church-history";
 
 const shareImage = toAbsoluteUrl(
-  CHURCH_HISTORY_SECTION.image || "/logo-light.svg",
+  CHURCH_HISTORY_SECTION.image || "/logo.png",
 );
 
 export const metadata: Metadata = {

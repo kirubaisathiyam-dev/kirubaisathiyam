@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { toAbsoluteUrl } from "@/lib/seo";
 import {
   CHURCH_HISTORY_SECTION,
   getChurchHistorySubsection,
@@ -7,6 +8,9 @@ import {
 } from "@/lib/church-history";
 
 export const dynamicParams = false;
+
+const siteName = "Kirubai Sathiyam";
+const shareImage = toAbsoluteUrl(CHURCH_HISTORY_SECTION.image || "/logo.png");
 
 type ChurchHistorySubsectionPageProps = {
   params: Promise<{
@@ -38,11 +42,29 @@ export async function generateMetadata({
     };
   }
 
+  const title = `${subsectionEntry.label} | Church History in Tamil`;
+  const description = `${CHURCH_HISTORY_SECTION.label} பகுதியில் ${subsectionEntry.label} தொடர்பான தலைப்புகளை தமிழில் வாசிக்கவும்.`;
+  const canonical = `/church-history#${subsectionEntry.slug}`;
+
   return {
-    title: `${subsectionEntry.label} | Church History in Tamil`,
-    description: `${CHURCH_HISTORY_SECTION.label} பகுதியில் ${subsectionEntry.label} தொடர்பான தலைப்புகளை தமிழில் வாசிக்கவும்.`,
+    title,
+    description,
     alternates: {
-      canonical: `/church-history#${subsectionEntry.slug}`,
+      canonical,
+    },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      title,
+      description,
+      siteName,
+      images: [{ url: shareImage }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [shareImage],
     },
   };
 }

@@ -15,6 +15,7 @@ export function generateStaticParams() {
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
+const fallbackImage = toAbsoluteUrl("/logo.png");
 
 type ArticlePageProps = {
   params: Promise<{
@@ -48,7 +49,7 @@ export async function generateMetadata({
     ...(article.keywords || []),
     article.type,
   ].filter(Boolean);
-  const imageUrl = article.image ? toAbsoluteUrl(article.image) : undefined;
+  const imageUrl = article.image ? toAbsoluteUrl(article.image) : fallbackImage;
 
   return {
     title,
@@ -68,13 +69,13 @@ export async function generateMetadata({
       publishedTime: article.date,
       authors: article.author ? [article.author] : undefined,
       tags: article.tags?.length ? article.tags : undefined,
-      images: imageUrl ? [{ url: imageUrl }] : undefined,
+      images: [{ url: imageUrl }],
     },
     twitter: {
-      card: imageUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: imageUrl ? [imageUrl] : undefined,
+      images: [imageUrl],
     },
   };
 }

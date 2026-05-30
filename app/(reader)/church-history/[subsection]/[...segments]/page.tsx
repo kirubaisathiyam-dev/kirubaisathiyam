@@ -33,6 +33,7 @@ export function generateStaticParams() {
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
+const fallbackImage = toAbsoluteUrl("/logo.png");
 
 type ChurchHistoryTopicPageProps = {
   params: Promise<{
@@ -72,7 +73,7 @@ export async function generateMetadata({
     topic.excerpt ||
     `${CHURCH_HISTORY_SECTION.label} பகுதியில் ${topic.groupLabel || topic.subsectionLabel} குறித்த விளக்கம் தமிழில்.`;
   const shareImage = topic.image || CHURCH_HISTORY_SECTION.image;
-  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
+  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : fallbackImage;
   const canonicalPath = buildChurchHistoryHref(
     topic.subsectionSlug,
     topic.slug,
@@ -96,13 +97,13 @@ export async function generateMetadata({
       locale: "ta-IN",
       publishedTime: topic.date,
       authors: topic.author ? [topic.author] : undefined,
-      images: imageUrl ? [{ url: imageUrl }] : undefined,
+      images: [{ url: imageUrl }],
     },
     twitter: {
-      card: imageUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: imageUrl ? [imageUrl] : undefined,
+      images: [imageUrl],
     },
   };
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { toAbsoluteUrl } from "@/lib/seo";
 import {
   getTheologySection,
   getTheologySubsection,
@@ -8,6 +9,9 @@ import {
 } from "@/lib/theology";
 
 export const dynamicParams = false;
+
+const siteName = "Kirubai Sathiyam";
+const fallbackShareImage = toAbsoluteUrl("/logo.png");
 
 type TheologySubsectionPageProps = {
   params: Promise<{
@@ -53,9 +57,14 @@ export async function generateMetadata({
     };
   }
 
+  const title = `${subsectionEntry.label} | ${sectionEntry.label} Theology`;
+  const description = `${sectionEntry.label} பகுதியில் ${subsectionEntry.label} தொடர்பான தலைப்புகளை தமிழில் வாசிக்கவும்.`;
+  const canonical = `/theology/${sectionEntry.slug}#${subsectionEntry.slug}`;
+  const shareImage = toAbsoluteUrl(sectionEntry.image || fallbackShareImage);
+
   return {
-    title: `${subsectionEntry.label} | ${sectionEntry.label} Theology`,
-    description: `${sectionEntry.label} பகுதியில் ${subsectionEntry.label} தொடர்பான தலைப்புகளை தமிழில் வாசிக்கவும்.`,
+    title,
+    description,
     keywords: [
       subsectionEntry.label,
       `${subsectionEntry.label} in Tamil`,
@@ -65,7 +74,21 @@ export async function generateMetadata({
       "Kirubai Sathiyam",
     ],
     alternates: {
-      canonical: `/theology/${sectionEntry.slug}#${subsectionEntry.slug}`,
+      canonical,
+    },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      title,
+      description,
+      siteName,
+      images: [{ url: shareImage }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [shareImage],
     },
   };
 }

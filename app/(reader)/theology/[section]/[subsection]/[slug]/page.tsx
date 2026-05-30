@@ -21,6 +21,7 @@ export function generateStaticParams() {
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
+const fallbackImage = toAbsoluteUrl("/logo.png");
 
 type TheologyTopicPageProps = {
   params: Promise<{
@@ -68,7 +69,7 @@ export async function generateMetadata({
     topic.excerpt ||
     `${topic.sectionLabel} பகுதியில் ${topic.subsectionLabel} குறித்த இறையியல் விளக்கம் தமிழில்.`;
   const shareImage = topic.image || topic.sectionImage;
-  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
+  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : fallbackImage;
 
   return {
     title,
@@ -97,13 +98,13 @@ export async function generateMetadata({
       locale: "ta-IN",
       publishedTime: topic.date,
       authors: topic.author ? [topic.author] : undefined,
-      images: imageUrl ? [{ url: imageUrl }] : undefined,
+      images: [{ url: imageUrl }],
     },
     twitter: {
-      card: imageUrl ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description,
-      images: imageUrl ? [imageUrl] : undefined,
+      images: [imageUrl],
     },
   };
 }

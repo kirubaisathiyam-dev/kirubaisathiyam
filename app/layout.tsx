@@ -12,7 +12,7 @@ const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
 const siteDescription =
   "தமிழ் கிறிஸ்தவ கட்டுரைகள், திருச்சபை வரலாறு, இறையியல், தினசரி தியானங்கள், மற்றும் ஆய்வு குறிப்புகளுடன் தமிழ் வேதாகம வாசிப்பு.";
-const shareImage = toAbsoluteUrl("/logo-light.svg");
+const shareImage = toAbsoluteUrl("/logo.png");
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-EKHKEXTHL4";
 const notoSerifTamil = localFont({
   src: [

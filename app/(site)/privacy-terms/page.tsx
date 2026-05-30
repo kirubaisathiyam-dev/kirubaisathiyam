@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { toAbsoluteUrl } from "@/lib/seo";
 
-const shareImage = toAbsoluteUrl("/logo-light.svg");
+const shareImage = toAbsoluteUrl("/logo.png");
 
 export const metadata: Metadata = {
   title: "தனியுரிமை & விதிமுறைகள் | Privacy Policy & Terms",

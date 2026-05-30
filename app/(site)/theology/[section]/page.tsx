@@ -39,7 +39,7 @@ export async function generateMetadata({
     };
   }
 
-  const shareImage = toAbsoluteUrl(entry.image || "/logo-light.svg");
+  const shareImage = toAbsoluteUrl(entry.image || "/logo.png");
 
   return {
     title: `${entry.label} | Theology in Tamil`,
