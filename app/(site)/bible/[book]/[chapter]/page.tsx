@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import BibleReader from "@/components/BibleReader";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
-import { getBibleBookDataBySlug, getBibleBooksIndex } from "@/lib/server-bible";
+import { getBibleBookDataBySlug } from "@/lib/server-bible";
 
-export const dynamicParams = false;
 export const runtime = "edge";
 
 const siteUrl = getSiteUrl().toString();
@@ -85,24 +84,6 @@ function formatVerseNumbers(values: number[]) {
 
 function formatVerseNumbersForPath(values: number[]) {
   return formatVerseNumbers(values).replace(/,/g, "_");
-}
-
-export async function generateStaticParams() {
-  const books = await getBibleBooksIndex();
-  const entries = await Promise.all(
-    books.map((book) => getBibleBookDataBySlug(book.slug)),
-  );
-
-  return entries.flatMap((entry) => {
-    if (!entry?.data.chapters?.length) {
-      return [];
-    }
-
-    return entry.data.chapters.map((chapter) => ({
-      book: entry.meta.slug,
-      chapter: chapter.chapter,
-    }));
-  });
 }
 
 export async function generateMetadata({
