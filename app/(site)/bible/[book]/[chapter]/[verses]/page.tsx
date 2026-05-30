@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import BibleReader from "@/components/BibleReader";
+import { getEdgeBibleBookDataBySlug } from "@/lib/edge-bible";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
-import { getBibleBookDataBySlug } from "@/lib/server-bible";
 
 const siteUrl = getSiteUrl().toString();
 const siteName = "Kirubai Sathiyam";
@@ -84,7 +84,7 @@ function buildBibleVersePath(book: string, chapter: string, verses: string) {
 }
 
 async function getVersePageData(book: string, chapter: string, verses: string) {
-  const entry = await getBibleBookDataBySlug(book);
+  const entry = await getEdgeBibleBookDataBySlug(book);
   const chapterData = entry?.data.chapters?.find((item) => item.chapter === chapter);
 
   if (!entry || !chapterData) {

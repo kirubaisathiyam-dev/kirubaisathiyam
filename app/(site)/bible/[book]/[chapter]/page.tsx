@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import BibleReader from "@/components/BibleReader";
+import { getEdgeBibleBookDataBySlug } from "@/lib/edge-bible";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
-import { getBibleBookDataBySlug } from "@/lib/server-bible";
 
 export const runtime = "edge";
 
@@ -90,7 +90,7 @@ export async function generateMetadata({
   params,
 }: BibleChapterPageProps): Promise<Metadata> {
   const { book, chapter } = await params;
-  const entry = await getBibleBookDataBySlug(book);
+  const entry = await getEdgeBibleBookDataBySlug(book);
   const chapterData = entry?.data.chapters?.find((item) => item.chapter === chapter);
 
   if (!entry || !chapterData) {
@@ -152,7 +152,7 @@ export default async function BibleChapterPage({
 }: BibleChapterPageProps) {
   const { book, chapter } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const entry = await getBibleBookDataBySlug(book);
+  const entry = await getEdgeBibleBookDataBySlug(book);
   const chapterData = entry?.data.chapters?.find((item) => item.chapter === chapter);
 
   if (!entry || !chapterData) {
