@@ -11,7 +11,7 @@ import {
 export const dynamicParams = false;
 
 const siteName = "Kirubai Sathiyam";
-const fallbackShareImage = toAbsoluteUrl("/logo.png");
+const fallbackShareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 type TheologySubsectionPageProps = {
   params: Promise<{

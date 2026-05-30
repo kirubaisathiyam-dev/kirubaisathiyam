@@ -10,7 +10,7 @@ import {
 export const dynamicParams = false;
 
 const siteName = "Kirubai Sathiyam";
-const shareImage = toAbsoluteUrl(CHURCH_HISTORY_SECTION.image || "/logo.png");
+const shareImage = toAbsoluteUrl(CHURCH_HISTORY_SECTION.image || "/web-app-manifest-512x512.png");
 
 type ChurchHistorySubsectionPageProps = {
   params: Promise<{

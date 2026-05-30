@@ -8,7 +8,7 @@ import {
 } from "@/lib/church-history";
 
 const shareImage = toAbsoluteUrl(
-  CHURCH_HISTORY_SECTION.image || "/logo.png",
+  CHURCH_HISTORY_SECTION.image || "/web-app-manifest-512x512.png",
 );
 
 export const metadata: Metadata = {

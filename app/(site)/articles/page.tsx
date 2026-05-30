@@ -3,7 +3,7 @@ import ArticlesBrowser from "@/components/ArticlesBrowser";
 import { getAllArticles } from "@/lib/articles";
 import { toAbsoluteUrl } from "@/lib/seo";
 
-const shareImage = toAbsoluteUrl("/logo.png");
+const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 export const metadata: Metadata = {
   title: "கிறிஸ்தவ கட்டுரைகள் | Tamil Christian Articles",

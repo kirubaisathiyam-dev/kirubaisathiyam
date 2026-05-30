@@ -15,7 +15,7 @@ export function generateStaticParams() {
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
-const fallbackImage = toAbsoluteUrl("/logo.png");
+const fallbackImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 type ArticlePageProps = {
   params: Promise<{

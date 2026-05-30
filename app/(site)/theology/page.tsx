@@ -4,7 +4,7 @@ import Link from "next/link";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getTheologySectionsWithTopics } from "@/lib/theology";
 
-const shareImage = toAbsoluteUrl("/logo.png");
+const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 const theologyDescription =
   "இறையியல் என்பது தேவன், அவர் வெளிப்படுத்திய சத்தியம், மனிதன், பாவம், இரட்சிப்பு, சபை, மற்றும் விசுவாச வாழ்க்கை குறித்து வேதாகம அடிப்படையில் சிந்திக்கும் ஆய்வு. முறைமையியல் இறையியல் இந்த போதனைகளை ஒழுங்குபடுத்துகிறது; சீர்திருத்த இறையியல் அவற்றை கிருபை, உடன்படிக்கை, மற்றும் இறையாட்சியின் கோணத்தில் வலியுறுத்துகிறது.";
 

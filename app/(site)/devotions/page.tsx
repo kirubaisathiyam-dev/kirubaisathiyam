@@ -4,7 +4,7 @@ import { type DailyDevotionRecord } from "@/lib/daily-devotion";
 import { toAbsoluteUrl } from "@/lib/seo";
 import dailyDevotionRecords from "@/public/daily-devotion.json";
 
-const shareImage = toAbsoluteUrl("/logo.png");
+const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 export const metadata: Metadata = {
   title: "தினசரி தியானங்கள் | Daily Devotions in Tamil",
