@@ -21,7 +21,7 @@ export function generateStaticParams() {
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
-const fallbackImage = toAbsoluteUrl("/logo.png");
+const fallbackImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 type TheologyTopicPageProps = {
   params: Promise<{
@@ -30,6 +30,32 @@ type TheologyTopicPageProps = {
     slug: string;
   }>;
 };
+
+function getSharePreview(contentHtml: string, fallback: string, maxWords = 20) {
+  const text = contentHtml
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!text) {
+    return fallback;
+  }
+
+  const words = text.split(" ").filter(Boolean);
+  if (words.length <= maxWords) {
+    return text;
+  }
+
+  return `${words.slice(0, maxWords).join(" ")}...`;
+}
 
 export async function generateMetadata({
   params,
@@ -68,7 +94,7 @@ export async function generateMetadata({
   const description =
     topic.excerpt ||
     `${topic.sectionLabel} பகுதியில் ${topic.subsectionLabel} குறித்த இறையியல் விளக்கம் தமிழில்.`;
-  const shareImage = topic.image || topic.sectionImage;
+  const shareImage = topic.sectionImage || topic.image;
   const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : fallbackImage;
 
   return {
@@ -141,10 +167,20 @@ export default async function TheologyTopicPage({
   const topicUrl = toAbsoluteUrl(
     `/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,
   );
-  const shareImage = topic.image || topic.sectionImage;
-  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
-  const shareText =
-    topic.excerpt || `${topic.subsectionLabel} topic inside ${topic.sectionLabel}.`;
+  const shareImage = topic.sectionImage || topic.image;
+  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : fallbackImage;
+  const sharePreview = getSharePreview(
+    topic.contentHtml,
+    `${topic.subsectionLabel} topic inside ${topic.sectionLabel}.`,
+  );
+  const shareText = [
+    topic.title,
+    `${topic.sectionLabel} · ${topic.subsectionLabel}`,
+    sharePreview,
+    "Read more",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -159,7 +195,7 @@ export default async function TheologyTopicPage({
       : undefined,
     datePublished: topic.date,
     dateModified: topic.date,
-    image: imageUrl ? [imageUrl] : undefined,
+    image: [imageUrl],
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": topicUrl,
@@ -170,6 +206,7 @@ export default async function TheologyTopicPage({
       url: siteUrl.toString(),
     },
   };
+
   const systematicTheologyFooterNote =
     topic.sectionSlug === "systematic-theology" ? (
       <p>

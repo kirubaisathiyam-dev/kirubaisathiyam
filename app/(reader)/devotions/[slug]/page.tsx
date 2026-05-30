@@ -28,7 +28,7 @@ export const dynamicParams = false;
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
-const fallbackImage = toAbsoluteUrl("/logo.png");
+const fallbackImage = toAbsoluteUrl("/images/spergon.jpg");
 
 type DevotionPageProps = {
   params: Promise<{

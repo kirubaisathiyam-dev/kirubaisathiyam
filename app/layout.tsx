@@ -12,7 +12,7 @@ const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
 const siteDescription =
   "தமிழ் கிறிஸ்தவ கட்டுரைகள், திருச்சபை வரலாறு, இறையியல், தினசரி தியானங்கள், மற்றும் ஆய்வு குறிப்புகளுடன் தமிழ் வேதாகம வாசிப்பு.";
-const shareImage = toAbsoluteUrl("/logo.png");
+const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-EKHKEXTHL4";
 const notoSerifTamil = localFont({
   src: [
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     images: [{ url: shareImage }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "கிருபை சத்தியம் | Tamil Christian Articles, Bible, Theology & Devotions",
     description: siteDescription,
     images: [shareImage],

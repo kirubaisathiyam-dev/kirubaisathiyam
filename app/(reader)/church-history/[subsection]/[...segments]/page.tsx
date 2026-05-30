@@ -33,7 +33,7 @@ export function generateStaticParams() {
 
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
-const fallbackImage = toAbsoluteUrl("/logo.png");
+const fallbackImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 type ChurchHistoryTopicPageProps = {
   params: Promise<{
@@ -41,6 +41,32 @@ type ChurchHistoryTopicPageProps = {
     segments: string[];
   }>;
 };
+
+function getSharePreview(contentHtml: string, fallback: string, maxWords = 20) {
+  const text = contentHtml
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!text) {
+    return fallback;
+  }
+
+  const words = text.split(" ").filter(Boolean);
+  if (words.length <= maxWords) {
+    return text;
+  }
+
+  return `${words.slice(0, maxWords).join(" ")}...`;
+}
 
 export async function generateMetadata({
   params,
@@ -72,7 +98,7 @@ export async function generateMetadata({
   const description =
     topic.excerpt ||
     `${CHURCH_HISTORY_SECTION.label} பகுதியில் ${topic.groupLabel || topic.subsectionLabel} குறித்த விளக்கம் தமிழில்.`;
-  const shareImage = topic.image || CHURCH_HISTORY_SECTION.image;
+  const shareImage = CHURCH_HISTORY_SECTION.image || topic.image;
   const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : fallbackImage;
   const canonicalPath = buildChurchHistoryHref(
     topic.subsectionSlug,
@@ -142,11 +168,22 @@ export default async function ChurchHistoryTopicPage({
   const topicUrl = toAbsoluteUrl(
     buildChurchHistoryHref(topic.subsectionSlug, topic.slug, topic.groupSlug),
   );
-  const shareImage = topic.image || CHURCH_HISTORY_SECTION.image;
-  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
-  const shareText =
-    topic.excerpt ||
-    `${topic.groupLabel || topic.subsectionLabel} topic inside ${CHURCH_HISTORY_SECTION.label}.`;
+  const shareImage = CHURCH_HISTORY_SECTION.image || topic.image;
+  const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : fallbackImage;
+  const sharePreview = getSharePreview(
+    topic.contentHtml,
+    `${topic.groupLabel || topic.subsectionLabel} topic inside ${CHURCH_HISTORY_SECTION.label}.`,
+  );
+  const shareText = [
+    topic.title,
+    topic.groupLabel
+      ? `${CHURCH_HISTORY_SECTION.label} · ${topic.subsectionLabel} · ${topic.groupLabel}`
+      : `${CHURCH_HISTORY_SECTION.label} · ${topic.subsectionLabel}`,
+    sharePreview,
+    "Read more",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -163,7 +200,7 @@ export default async function ChurchHistoryTopicPage({
       : undefined,
     datePublished: topic.date,
     dateModified: topic.date,
-    image: imageUrl ? [imageUrl] : undefined,
+    image: [imageUrl],
     mainEntityOfPage: {
       "@type": "WebPage",
       "@id": topicUrl,

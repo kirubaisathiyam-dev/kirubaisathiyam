@@ -11,7 +11,7 @@ import { formatTamilDate } from "@/lib/date";
 import { toAbsoluteUrl } from "@/lib/seo";
 import { getTheologySectionsWithTopics } from "@/lib/theology";
 
-const shareImage = toAbsoluteUrl("/logo.png");
+const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 export const metadata: Metadata = {
   title:
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     images: [{ url: shareImage }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title:
       "கிறிஸ்தவ கட்டுரைகள், வேதாகமம், இறையியல் | Tamil Christian Articles, Bible & Theology",
     description:
