@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import BibleReader from "@/components/BibleReader";
-import { getEdgeBibleBookDataBySlug } from "@/lib/edge-bible";
+import { getBibleBookIndexEntryBySlug } from "@/lib/bible-book-index";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 export const runtime = "edge";
@@ -33,21 +33,24 @@ function parseVerseNumbers(value: string) {
 
   for (const entry of entries) {
     if (!entry) continue;
+
     if (entry.includes("-")) {
       const [startRaw, endRaw] = entry.split("-");
       const start = Number.parseInt(startRaw, 10);
       const end = Number.parseInt(endRaw, 10);
       if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
+
       const low = Math.min(start, end);
       const high = Math.max(start, end);
       for (let idx = low; idx <= high; idx += 1) {
         numbers.push(idx);
       }
-    } else {
-      const num = Number.parseInt(entry, 10);
-      if (Number.isFinite(num)) {
-        numbers.push(num);
-      }
+      continue;
+    }
+
+    const num = Number.parseInt(entry, 10);
+    if (Number.isFinite(num)) {
+      numbers.push(num);
     }
   }
 
@@ -56,9 +59,9 @@ function parseVerseNumbers(value: string) {
 
 function formatVerseNumbers(values: number[]) {
   if (!values.length) return "";
+
   const sorted = Array.from(new Set(values)).sort((a, b) => a - b);
   const ranges: string[] = [];
-
   let rangeStart = sorted[0];
   let previous = sorted[0];
 
@@ -68,6 +71,7 @@ function formatVerseNumbers(values: number[]) {
       previous = current;
       continue;
     }
+
     ranges.push(
       rangeStart === previous ? `${rangeStart}` : `${rangeStart}-${previous}`,
     );
@@ -90,10 +94,9 @@ export async function generateMetadata({
   params,
 }: BibleChapterPageProps): Promise<Metadata> {
   const { book, chapter } = await params;
-  const entry = await getEdgeBibleBookDataBySlug(book);
-  const chapterData = entry?.data.chapters?.find((item) => item.chapter === chapter);
+  const entry = getBibleBookIndexEntryBySlug(book);
 
-  if (!entry || !chapterData) {
+  if (!entry) {
     return {
       title: "அதிகாரம் கிடைக்கவில்லை | Bible Chapter Not Found",
       robots: {
@@ -103,10 +106,9 @@ export async function generateMetadata({
     };
   }
 
-  const bookTamil =
-    entry.data.book?.tamil?.trim() || entry.meta.tamil || entry.meta.english;
-  const bookEnglish = entry.meta.english;
-  const bookShort = entry.data.book?.short?.trim() || entry.meta.short || bookTamil;
+  const bookTamil = entry.tamil?.trim() || entry.english;
+  const bookEnglish = entry.english;
+  const bookShort = entry.short?.trim() || bookTamil;
   const title = `${bookTamil} ${chapter} | ${bookEnglish} Chapter ${chapter} Tamil Bible`;
   const description = `${bookTamil} ${chapter} ஆம் அதிகாரத்தை தமிழில் வசனம் வாரியாகவும் ஆய்வு வாசிப்பு வசதியுடனும் படிக்கவும்.`;
   const canonicalPath = buildBibleChapterPath(book, chapter);
@@ -152,15 +154,9 @@ export default async function BibleChapterPage({
 }: BibleChapterPageProps) {
   const { book, chapter } = await params;
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const entry = await getEdgeBibleBookDataBySlug(book);
-  const chapterData = entry?.data.chapters?.find((item) => item.chapter === chapter);
-
-  if (!entry || !chapterData) {
-    notFound();
-  }
-
+  const entry = getBibleBookIndexEntryBySlug(book);
   const rawVerses = Array.isArray(resolvedSearchParams?.verses)
-    ? resolvedSearchParams?.verses[0] || ""
+    ? resolvedSearchParams.verses[0] || ""
     : resolvedSearchParams?.verses || "";
   const verseNumbers = parseVerseNumbers(rawVerses);
 
@@ -175,7 +171,7 @@ export default async function BibleChapterPage({
   return (
     <BibleReader
       siteUrl={siteUrl}
-      initialBook={entry.meta.english}
+      initialBook={entry?.english || ""}
       initialChapter={chapter}
       urlMode="path"
     />

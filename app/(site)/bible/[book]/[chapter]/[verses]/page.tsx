@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import BibleReader from "@/components/BibleReader";
-import { getEdgeBibleBookDataBySlug } from "@/lib/edge-bible";
+import { getBibleBookIndexEntryBySlug } from "@/lib/bible-book-index";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
+
+export const runtime = "edge";
 
 const siteUrl = getSiteUrl().toString();
 const siteName = "Kirubai Sathiyam";
 const shareImage = toAbsoluteUrl("/images/bible.jpg");
-export const runtime = "edge";
 
 type BibleVersePageProps = {
   params: Promise<{
@@ -26,21 +27,24 @@ function parseVerseNumbers(value: string) {
 
   for (const entry of entries) {
     if (!entry) continue;
+
     if (entry.includes("-")) {
       const [startRaw, endRaw] = entry.split("-");
       const start = Number.parseInt(startRaw, 10);
       const end = Number.parseInt(endRaw, 10);
       if (!Number.isFinite(start) || !Number.isFinite(end)) continue;
+
       const low = Math.min(start, end);
       const high = Math.max(start, end);
       for (let idx = low; idx <= high; idx += 1) {
         numbers.push(idx);
       }
-    } else {
-      const num = Number.parseInt(entry, 10);
-      if (Number.isFinite(num)) {
-        numbers.push(num);
-      }
+      continue;
+    }
+
+    const num = Number.parseInt(entry, 10);
+    if (Number.isFinite(num)) {
+      numbers.push(num);
     }
   }
 
@@ -49,9 +53,9 @@ function parseVerseNumbers(value: string) {
 
 function formatVerseNumbers(values: number[]) {
   if (!values.length) return "";
+
   const sorted = Array.from(new Set(values)).sort((a, b) => a - b);
   const ranges: string[] = [];
-
   let rangeStart = sorted[0];
   let previous = sorted[0];
 
@@ -61,6 +65,7 @@ function formatVerseNumbers(values: number[]) {
       previous = current;
       continue;
     }
+
     ranges.push(
       rangeStart === previous ? `${rangeStart}` : `${rangeStart}-${previous}`,
     );
@@ -83,46 +88,18 @@ function buildBibleVersePath(book: string, chapter: string, verses: string) {
   return `/bible/${book}/${chapter}/${verses}`;
 }
 
-async function getVersePageData(book: string, chapter: string, verses: string) {
-  const entry = await getEdgeBibleBookDataBySlug(book);
-  const chapterData = entry?.data.chapters?.find((item) => item.chapter === chapter);
-
-  if (!entry || !chapterData) {
-    return null;
-  }
+async function getVersePageData(book: string, verses: string) {
+  const entry = getBibleBookIndexEntryBySlug(book);
+  if (!entry) return null;
 
   const requestedVerses = parseVerseNumbers(verses);
   const canonicalVerses = formatVerseNumbers(requestedVerses);
-  if (!canonicalVerses) {
-    return null;
-  }
-
-  const chapterVerseNumbers = new Set(
-    (chapterData.verses ?? [])
-      .map((verse) => Number.parseInt(verse.verse, 10))
-      .filter(Number.isFinite),
-  );
-  const filteredVerses = requestedVerses.filter((verse) =>
-    chapterVerseNumbers.has(verse),
-  );
-  const normalizedVerses = formatVerseNumbers(filteredVerses);
-  const normalizedVersesPath = formatVerseNumbersForPath(filteredVerses);
-
-  if (!normalizedVerses) {
-    return null;
-  }
-
-  const verseTexts = (chapterData.verses ?? [])
-    .filter((verse) => filteredVerses.includes(Number.parseInt(verse.verse, 10)))
-    .map((verse) => verse.text.trim())
-    .filter(Boolean);
+  if (!canonicalVerses) return null;
 
   return {
     entry,
-    chapterData,
-    normalizedVerses,
-    normalizedVersesPath,
-    verseTexts,
+    normalizedVerses: canonicalVerses,
+    normalizedVersesPath: formatVerseNumbersForPath(requestedVerses),
   };
 }
 
@@ -130,7 +107,7 @@ export async function generateMetadata({
   params,
 }: BibleVersePageProps): Promise<Metadata> {
   const { book, chapter, verses } = await params;
-  const data = await getVersePageData(book, chapter, verses);
+  const data = await getVersePageData(book, verses);
 
   if (!data) {
     return {
@@ -142,21 +119,15 @@ export async function generateMetadata({
     };
   }
 
-  const bookTamil =
-    data.entry.data.book?.tamil?.trim() ||
-    data.entry.meta.tamil ||
-    data.entry.meta.english;
-  const bookEnglish = data.entry.meta.english;
+  const bookTamil = data.entry.tamil?.trim() || data.entry.english;
+  const bookEnglish = data.entry.english;
   const canonicalPath = buildBibleVersePath(
     book,
     chapter,
     data.normalizedVersesPath,
   );
   const title = `${bookTamil} ${chapter}:${data.normalizedVerses} | ${bookEnglish} ${chapter}:${data.normalizedVerses} Tamil Bible`;
-  const snippet = data.verseTexts.join(" ").slice(0, 260);
-  const description = snippet
-    ? `${snippet}${snippet.length >= 260 ? "..." : ""} ${bookTamil} ${chapter}:${data.normalizedVerses} தமிழ் வேதாகமம்.`
-    : `${bookTamil} ${chapter}:${data.normalizedVerses} வசனங்களை தமிழில் வாசிக்கவும்.`;
+  const description = `${bookTamil} ${chapter}:${data.normalizedVerses} வசனங்களை தமிழில் வாசிக்கவும்.`;
 
   return {
     title,
@@ -192,10 +163,10 @@ export async function generateMetadata({
 
 export default async function BibleVersePage({ params }: BibleVersePageProps) {
   const { book, chapter, verses } = await params;
-  const data = await getVersePageData(book, chapter, verses);
+  const data = await getVersePageData(book, verses);
 
   if (!data) {
-    notFound();
+    redirect(`/bible/${book}/${chapter}`);
   }
 
   if (data.normalizedVersesPath !== verses) {
@@ -205,7 +176,7 @@ export default async function BibleVersePage({ params }: BibleVersePageProps) {
   return (
     <BibleReader
       siteUrl={siteUrl}
-      initialBook={data.entry.meta.english}
+      initialBook={data.entry.english}
       initialChapter={chapter}
       initialVerses={data.normalizedVerses}
       urlMode="path"
