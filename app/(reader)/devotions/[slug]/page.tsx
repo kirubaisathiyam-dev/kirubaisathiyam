@@ -224,8 +224,9 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${devotion.label} | ${devotion.verseReference}`;
+  const title = `${devotion.label} | Charles Spurgeon Daily Devotion | ${devotion.verseReference}`;
   const description = [
+    "Daily devotion in Tamil from Charles Spurgeon.",
     DEVOTION_ATTRIBUTION,
     devotion.verseText
       ? `${devotion.verseText} (${devotion.verseReference})`
@@ -238,6 +239,16 @@ export async function generateMetadata({
   return {
     title,
     description,
+    keywords: [
+      "Daily devotion",
+      "Daily devotion in Tamil",
+      "Tamil daily devotion",
+      "Charles Spurgeon daily devotion",
+      "Spurgeon morning and evening",
+      devotion.label,
+      devotion.verseReference,
+      "Kirubai Sathiyam",
+    ],
     alternates: {
       canonical: devotion.canonicalPath,
     },

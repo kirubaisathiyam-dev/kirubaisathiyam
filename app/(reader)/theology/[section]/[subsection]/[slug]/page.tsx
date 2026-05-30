@@ -71,7 +71,17 @@ export async function generateMetadata({
   return {
     title,
     description,
-    keywords: topic.keywords.length ? topic.keywords : undefined,
+    keywords: [
+      ...topic.keywords,
+      topic.sectionLabel,
+      topic.subsectionLabel,
+      "Theology in Tamil",
+      "Tamil theology",
+      topic.sectionSlug === "systematic-theology"
+        ? "Systematic theology in Tamil"
+        : "Reformed theology in Tamil",
+      "Kirubai Sathiyam",
+    ],
     authors: topic.author ? [{ name: topic.author }] : undefined,
     alternates: {
       canonical: `/theology/${topic.sectionSlug}/${topic.subsectionSlug}/${topic.slug}`,

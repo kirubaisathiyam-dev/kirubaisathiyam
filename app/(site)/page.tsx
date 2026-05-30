@@ -16,11 +16,17 @@ const shareImage = toAbsoluteUrl("/logo-light.svg");
 export const metadata: Metadata = {
   title: "Tamil Christian Articles & Bible",
   description:
-    "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+    "Read Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
   keywords: [
     "Tamil Christian articles",
     "Tamil Holy Bible",
     "Tamil Bible",
+    "Daily devotion in Tamil",
+    "Tamil daily devotion",
+    "Charles Spurgeon daily devotion",
+    "Spurgeon morning and evening",
+    "Church History in Tamil",
+    "Tamil church history",
     "Study Bible Tamil",
     "Illustrated Bible",
     "Tamil Old Version",
@@ -37,7 +43,7 @@ export const metadata: Metadata = {
     url: "/",
     title: "Tamil Christian Articles & Bible",
     description:
-      "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+      "Read Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
@@ -45,7 +51,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Tamil Christian Articles & Bible",
     description:
-      "Read Tamil Christian articles and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+      "Read Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
     images: [shareImage],
   },
 };
@@ -58,6 +64,47 @@ export default function Home() {
   return (
     <div className="space-y-16">
       <DailyDevotionOverlay />
+
+      {/* <section className="mx-auto w-full max-w-5xl px-4">
+        <Link
+          href="/devotions"
+          className="group grid overflow-hidden border sm:grid-cols-[0.7fr_1.1fr] md:grid-cols-[0.4fr_1.1fr]"
+          style={{
+            borderColor: "var(--border-color)",
+            backgroundColor: "var(--muted-background)",
+          }}
+        >
+          <div
+            className="relative aspect-square border-b md:border-b-0 md:border-r"
+            style={{ borderColor: "var(--border-color)" }}
+          >
+            <Image
+              src="/images/spergon.jpg"
+              alt="Daily devotion archive"
+              fill
+              sizes="(min-width: 768px) 32rem, 100vw"
+              className="object-cover transition duration-300"
+            />
+          </div>
+
+          <div className="flex flex-col justify-center gap-5 p-6 sm:p-8">
+            <p
+              className="text-sm leading-7 sm:text-base"
+              style={{ color: "var(--muted-foreground)" }}
+            >
+              சார்ல்ஸ் ஸ்பர்ஜனின் காலை மற்றும் மாலை தியான களஞ்சியத்தை
+              தினந்தோறும் தனிப்பட்ட பக்கங்களுடன் வாசிக்கலாம்.
+            </p>
+
+            <div className="flex items-center gap-2 text-md font-semibold sm:text-lg">
+              <span className="group-hover:underline">
+                தியான களஞ்சியத்தை திறக்கவும்
+              </span>
+              <ArrowRightIcon style={{ width: 15, height: 15 }} />
+            </div>
+          </div>
+        </Link>
+      </section> */}
 
       <section className="mx-auto w-full max-w-5xl px-4">
         <Link

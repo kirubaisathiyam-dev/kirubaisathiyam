@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
 import PageTransition from "@/components/PageTransition";
 import PushNotificationPrompt from "@/components/PushNotificationPrompt";
+import ReaderShell from "@/components/ReaderShell";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeForm from "@/components/SubscribeForm";
 
@@ -15,6 +16,20 @@ type SiteLayoutProps = {
 export default function SiteLayout({ children }: SiteLayoutProps) {
   const pathname = usePathname();
   const isHomePage = pathname === "/";
+  const isBibleChapterReader = /^\/bible\/[^/]+\/[^/]+(?:\/[^/]+)?$/.test(
+    pathname || "",
+  );
+
+  if (isBibleChapterReader) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <ReaderShell>
+          {children}
+          <BibleReferenceTooltip />
+        </ReaderShell>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen flex-col">

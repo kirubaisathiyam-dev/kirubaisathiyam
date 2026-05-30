@@ -10,18 +10,23 @@ import {
   type DailyDevotionRecord,
 } from "@/lib/daily-devotion";
 import { getSiteUrl } from "@/lib/seo";
+import { getBibleBooksIndex, getBibleBookDataBySlug } from "@/lib/server-bible";
 import {
   getAllTheologyTopics,
   getTheologySubsectionsBySection,
   THEOLOGY_SECTIONS,
 } from "@/lib/theology";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl().toString().replace(/\/$/, "");
   const articles = getAllArticles();
   const churchHistoryTopics = getAllChurchHistoryTopics();
   const theologyTopics = getAllTheologyTopics();
   const devotionRecords = dailyDevotionRecords as DailyDevotionRecord[];
+  const bibleBooks = await getBibleBooksIndex();
+  const bibleBookData = await Promise.all(
+    bibleBooks.map((book) => getBibleBookDataBySlug(book.slug)),
+  );
   const latestArticleDate = articles[0]?.date
     ? new Date(articles[0].date)
     : new Date();
@@ -75,6 +80,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${siteUrl}/devotions`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.85,
     },
     {
       url: `${siteUrl}/privacy-terms`,
@@ -171,6 +182,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   );
 
+  const bibleChapterEntries: MetadataRoute.Sitemap = bibleBookData.flatMap(
+    (entry) => {
+      if (!entry?.data.chapters?.length) {
+        return [];
+      }
+
+      return entry.data.chapters.map((chapter) => ({
+        url: `${siteUrl}/bible/${entry.meta.slug}/${chapter.chapter}`,
+        lastModified: new Date(),
+        changeFrequency: "yearly" as const,
+        priority: 0.78,
+      }));
+    },
+  );
+
   return [
     ...staticEntries,
     ...articleEntries,
@@ -180,5 +206,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...churchHistorySubsectionEntries,
     ...churchHistoryTopicEntries,
     ...devotionEntries,
+    ...bibleChapterEntries,
   ];
 }

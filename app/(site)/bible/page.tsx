@@ -7,10 +7,13 @@ const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 export const metadata: Metadata = {
   title: "Tamil Holy Bible",
   description:
-    "Choose a book and chapter from the Tamil Holy Bible and open the dedicated reader with study notes.",
+    "Choose a book and chapter from the Tamil Holy Bible and open dedicated chapter pages and a reader with study notes.",
   keywords: [
     "Tamil Holy Bible",
     "Tamil Bible",
+    "Bible chapter in Tamil",
+    "Tamil Bible verse by verse",
+    "Matthew chapter in Tamil",
     "Bible chapters",
     "Study Bible Tamil",
     "Kirubai Sathiyam",
@@ -23,7 +26,7 @@ export const metadata: Metadata = {
     url: "/bible",
     title: "Tamil Holy Bible",
     description:
-      "Choose a book and chapter from the Tamil Holy Bible and open the dedicated reader with study notes.",
+      "Choose a book and chapter from the Tamil Holy Bible and open dedicated chapter pages and a reader with study notes.",
     siteName: "Kirubai Sathiyam",
     images: [
       {
@@ -38,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tamil Holy Bible",
     description:
-      "Choose a book and chapter from the Tamil Holy Bible and open the dedicated reader with study notes.",
+      "Choose a book and chapter from the Tamil Holy Bible and open dedicated chapter pages and a reader with study notes.",
     images: [shareImage],
   },
 };

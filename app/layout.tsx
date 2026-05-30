@@ -11,7 +11,7 @@ import PwaRegister from "@/components/PwaRegister";
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
 const siteDescription =
-  "Tamil Christian articles and the Tamil Holy Bible reader with study notes.";
+  "Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible reader with study notes.";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-EKHKEXTHL4";
 const notoSerifTamil = localFont({
@@ -42,6 +42,15 @@ export const metadata: Metadata = {
     "Tamil Christian articles",
     "Tamil Holy Bible",
     "Tamil Bible",
+    "Daily devotion in Tamil",
+    "Tamil daily devotion",
+    "Charles Spurgeon daily devotion",
+    "Church History in Tamil",
+    "Tamil church history",
+    "Theology in Tamil",
+    "Tamil theology",
+    "Systematic theology in Tamil",
+    "Reformed theology in Tamil",
     "Study Bible Tamil",
     "Illustrated Bible",
     "Tamil Old Version",

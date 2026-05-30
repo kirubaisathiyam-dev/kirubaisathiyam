@@ -8,6 +8,7 @@ import DailyVerseLikeButton from "@/components/DailyVerseLikeButton";
 import ShareButton from "@/components/ShareButton";
 import VerseOfTheDayShareButton from "@/components/VerseOfTheDayShareButton";
 import logoDark from "@/app/logo-dark.svg";
+import { buildBiblePath } from "@/lib/bible-routes";
 import { getBookByCode, parseBibleReference } from "@/lib/bible";
 import { getBookFileSlug, type LocalBibleBook } from "@/lib/local-bible";
 
@@ -158,7 +159,7 @@ async function buildVerseOfTheDay(
       imagePhotographerName: null,
       imagePhotographerUrl: null,
       imageUnsplashUrl: null,
-      readerHref: "/bible/read",
+      readerHref: "/bible",
     };
   }
 
@@ -182,12 +183,12 @@ async function buildVerseOfTheDay(
     .join(" ");
   const readerHref =
     bookName && chapter && verseRange
-      ? `/bible/read?book=${encodeURIComponent(
-          bookName,
-        )}&chapter=${encodeURIComponent(chapter)}&verses=${encodeURIComponent(
-          verseRange,
-        )}`
-      : "/bible/read";
+      ? buildBiblePath({
+          book: bookName,
+          chapter,
+          verses: verseRange,
+        })
+      : "/bible";
 
   return {
     day: entry.day,

@@ -16,6 +16,11 @@ export const metadata: Metadata = {
     "முறையியல் இறையியல்",
     "சீர்திருத்த இறையியல்",
     "தமிழ் கிறிஸ்தவ இறையியல்",
+    "Theology",
+    "Theology in Tamil",
+    "Tamil theology",
+    "Systematic theology in Tamil",
+    "Reformed theology in Tamil",
     "Kirubai Sathiyam",
   ],
   alternates: {

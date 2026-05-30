@@ -17,7 +17,9 @@ export const metadata: Metadata = {
   keywords: [
     "திருச்சபை வரலாறு",
     "Church History",
+    "Church History in Tamil",
     "Tamil Christian history",
+    "Tamil church history",
     "சீர்திருத்த வரலாறு",
     "ஆரம்ப சபை",
     "Kirubai Sathiyam",

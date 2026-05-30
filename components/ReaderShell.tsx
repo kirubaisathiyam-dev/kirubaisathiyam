@@ -6,6 +6,7 @@ import {
   useApplyReaderFocusMode,
   useApplyReaderSettings,
 } from "@/components/ReaderSettingsButton";
+import { buildBiblePath } from "@/lib/bible-routes";
 import { usePathname, useRouter } from "next/navigation";
 import { useRef } from "react";
 
@@ -26,6 +27,7 @@ export default function ReaderShell({ children }: ReaderShellProps) {
     if (!pathname) return "/";
     if (pathname.startsWith("/articles/")) return "/articles";
     if (pathname.startsWith("/bible/read")) return "/bible";
+    if (/^\/bible\/[^/]+\/[^/]+(?:\/[^/]+)?$/.test(pathname)) return "/bible";
     if (pathname === "/meditate") {
       const params =
         typeof window === "undefined"
@@ -35,13 +37,13 @@ export default function ReaderShell({ children }: ReaderShellProps) {
       const chapter = params.get("chapter")?.trim() || "";
       const verse = params.get("verse")?.trim() || "";
       if (book && chapter && verse) {
-        const targetParams = new URLSearchParams();
-        targetParams.set("book", book);
-        targetParams.set("chapter", chapter);
-        targetParams.set("verses", verse);
-        return `/bible/read?${targetParams.toString()}`;
+        return buildBiblePath({
+          book,
+          chapter,
+          verses: verse,
+        });
       }
-      return "/bible/read";
+      return "/bible";
     }
     if (pathname.startsWith("/church-history/")) {
       const parts = pathname.split("/").filter(Boolean);

@@ -309,9 +309,9 @@ export default function BibleFrontPage() {
                               {chapters.map((chapter) => (
                                 <Link
                                   key={chapter}
-                                  href={`/bible/read?book=${encodeURIComponent(
-                                    book.english,
-                                  )}&chapter=${encodeURIComponent(chapter)}`}
+                                  href={`/bible/${encodeURIComponent(
+                                    getBookFileSlug(book.english),
+                                  )}/${encodeURIComponent(chapter)}`}
                                   onClick={() => setExpandedBook(book.english)}
                                   className="inline-flex h-14 items-center justify-center border-b border-r px-3 py-3 text-sm font-semibold transition hover:opacity-80"
                                   style={{

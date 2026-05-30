@@ -44,6 +44,16 @@ export async function generateMetadata({
   return {
     title: `${entry.label} | இறையியல்`,
     description: entry.description,
+    keywords: [
+      entry.label,
+      `${entry.label} in Tamil`,
+      "Theology in Tamil",
+      "Tamil theology",
+      entry.slug === "systematic-theology"
+        ? "Systematic theology in Tamil"
+        : "Reformed theology in Tamil",
+      "Kirubai Sathiyam",
+    ],
     alternates: {
       canonical: `/theology/${entry.slug}`,
     },

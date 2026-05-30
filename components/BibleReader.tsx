@@ -11,6 +11,7 @@ import ReaderSettingsButton, {
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { getMeditationRoute } from "@/lib/meditation";
 import { parseBibleReference, replaceBibleRefsInHtml } from "@/lib/bible";
+import { buildBiblePath } from "@/lib/bible-routes";
 import {
   BOOKS_CACHE_KEY,
   BOOK_CACHE_PREFIX,
@@ -47,6 +48,10 @@ type ParsedNote = BibleNote & {
 
 type BibleReaderProps = {
   siteUrl?: string;
+  initialBook?: string;
+  initialChapter?: string;
+  initialVerses?: string;
+  urlMode?: "query" | "path";
 };
 
 const COPY_RESET_MS = 1800;
@@ -139,7 +144,7 @@ function renderBibleRefs(text: string) {
 
 function parseVerseNumbers(value: string | null) {
   if (!value) return [];
-  const cleaned = value.replace(/\s+/g, "");
+  const cleaned = value.replace(/\s+/g, "").replace(/_/g, ",");
   if (!cleaned) return [];
 
   const entries = cleaned.split(",");
@@ -195,6 +200,10 @@ function formatVerseNumbers(values: number[]) {
   return ranges.join(",");
 }
 
+function formatVerseNumbersForPath(values: number[]) {
+  return formatVerseNumbers(values).replace(/,/g, "_");
+}
+
 async function copyToClipboard(text: string) {
   if (!text) return false;
   try {
@@ -222,12 +231,20 @@ async function copyToClipboard(text: string) {
   }
 }
 
-export default function BibleReader({ siteUrl }: BibleReaderProps) {
+export default function BibleReader({
+  siteUrl,
+  initialBook = "",
+  initialChapter = "",
+  initialVerses = "",
+  urlMode = "query",
+}: BibleReaderProps) {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() || "/bible/read";
   const searchParams = useSearchParams();
-  const initialBookParam = searchParams?.get("book")?.trim() || "";
-  const initialChapterParamRaw = searchParams?.get("chapter")?.trim() || "";
+  const initialBookParam =
+    searchParams?.get("book")?.trim() || initialBook.trim();
+  const initialChapterParamRaw =
+    searchParams?.get("chapter")?.trim() || initialChapter.trim();
   const initialChapterParam = initialChapterParamRaw.replace(/^0+(?=\d)/, "");
   const [books, setBooks] = useState<BookMeta[]>([]);
   const [notes, setNotes] = useState<BibleNote[]>([]);
@@ -413,9 +430,12 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     lastSearchKey.current = searchKey;
 
     const params = new URLSearchParams(searchKey);
-    const bookParamRaw = params.get("book");
-    const chapterParamRaw = params.get("chapter");
-    const versesParamRaw = params.get("verses");
+    const bookParamRaw =
+      params.get("book") || (urlMode === "path" ? initialBook : "");
+    const chapterParamRaw =
+      params.get("chapter") || (urlMode === "path" ? initialChapter : "");
+    const versesParamRaw =
+      params.get("verses") || (urlMode === "path" ? initialVerses : "");
 
     let nextBook = selectedBook;
     if (bookParamRaw) {
@@ -487,31 +507,57 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     const currentVerses = params.get("verses") || "";
     const nextVerses = formatVerseNumbers(selectedVerses);
 
-    if (
-      currentBook?.toLowerCase() === selectedBook.toLowerCase() &&
-      currentChapter === selectedChapter &&
-      currentVerses === nextVerses
-    ) {
-      return;
+    if (urlMode === "query") {
+      if (
+        currentBook?.toLowerCase() === selectedBook.toLowerCase() &&
+        currentChapter === selectedChapter &&
+        currentVerses === nextVerses
+      ) {
+        return;
+      }
+
+      params.set("book", selectedBook);
+      params.set("chapter", selectedChapter);
+    } else {
+      if (currentVerses === nextVerses) {
+        const expectedPath = nextVerses
+          ? `/bible/${getBookFileSlug(selectedBook)}/${selectedChapter}/${formatVerseNumbersForPath(selectedVerses)}`
+          : `/bible/${getBookFileSlug(selectedBook)}/${selectedChapter}`;
+        if (pathname === expectedPath) {
+          return;
+        }
+      }
+
+      params.delete("book");
+      params.delete("chapter");
     }
 
-    params.set("book", selectedBook);
-    params.set("chapter", selectedChapter);
     if (nextVerses) {
       params.set("verses", nextVerses);
     } else {
       params.delete("verses");
     }
 
-    const nextUrl = `${pathname}?${params.toString()}`;
+    const nextPath =
+      urlMode === "path"
+        ? nextVerses
+          ? `/bible/${getBookFileSlug(selectedBook)}/${selectedChapter}/${formatVerseNumbersForPath(selectedVerses)}`
+          : `/bible/${getBookFileSlug(selectedBook)}/${selectedChapter}`
+        : pathname;
+    const nextQuery = params.toString();
+    const nextUrl = nextQuery ? `${nextPath}?${nextQuery}` : nextPath;
     window.history.replaceState(window.history.state, "", nextUrl);
   }, [
     hasSyncedFromUrl,
+    initialBook,
+    initialChapter,
+    initialVerses,
     pathname,
     searchKey,
     selectedBook,
     selectedChapter,
     selectedVerses,
+    urlMode,
   ]);
 
   const chapterOptions = useMemo(() => {
@@ -629,15 +675,13 @@ export default function BibleReader({ siteUrl }: BibleReaderProps) {
     const baseUrl =
       siteUrl || (typeof window !== "undefined" ? window.location.origin : "");
     const normalizedBase = baseUrl ? baseUrl.replace(/\/+$/, "") : "";
-    const params = new URLSearchParams();
-    params.set("book", selectedBook);
-    params.set("chapter", selectedChapter);
-    if (verseLabel) {
-      params.set("verses", verseLabel);
-    }
-    const path = `/bible/read?${params.toString()}`;
+    const path = buildBiblePath({
+      book: selectedBook,
+      chapter: selectedChapter,
+      verses: verseLabel || undefined,
+    });
     return normalizedBase ? `${normalizedBase}${path}` : path;
-  }, [selectedBook, selectedChapter, siteUrl, verseLabel]);
+  }, [selectedBook, selectedChapter, selectedVerses, siteUrl, verseLabel]);
 
   const shareReference = useMemo(() => {
     if (!selectedVerses.length) return "";

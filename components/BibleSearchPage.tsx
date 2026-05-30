@@ -3,6 +3,7 @@
 import BibleSearchForm from "@/components/BibleSearchForm";
 import { SearchIcon } from "@/components/Icons";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { buildBiblePath } from "@/lib/bible-routes";
 import { BibleSearchPageSkeleton } from "@/components/PageSkeletons";
 import {
   createBibleSearchIndex,
@@ -352,11 +353,11 @@ export default function BibleSearchPage() {
               {paginatedResults.map((result) => (
                 <Link
                   key={result.id}
-                  href={`/bible/read?book=${encodeURIComponent(
-                    result.bookEnglish,
-                  )}&chapter=${encodeURIComponent(
-                    result.chapter,
-                  )}&verses=${encodeURIComponent(result.verse)}`}
+                  href={buildBiblePath({
+                    book: result.bookEnglish,
+                    chapter: result.chapter,
+                    verses: result.verse,
+                  })}
                   className="block border px-5 py-5 transition hover:opacity-85"
                   style={{
                     borderColor: "var(--border-color)",

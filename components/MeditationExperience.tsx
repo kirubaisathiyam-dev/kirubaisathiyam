@@ -16,6 +16,7 @@ import {
   getBookFileSlug,
   type LocalBibleBook,
 } from "@/lib/local-bible";
+import { buildBiblePath } from "@/lib/bible-routes";
 import {
   getMeditationRoute,
   getMeditationTheme,
@@ -182,14 +183,13 @@ export default function MeditationExperience() {
   );
   const backHref = useMemo(() => {
     if (!book || !chapter || !verse) {
-      return "/bible/read";
+      return "/bible";
     }
-
-    const params = new URLSearchParams();
-    params.set("book", book);
-    params.set("chapter", chapter);
-    params.set("verses", verse);
-    return `/bible/read?${params.toString()}`;
+    return buildBiblePath({
+      book,
+      chapter,
+      verses: verse,
+    });
   }, [book, chapter, verse]);
 
   useEffect(() => {

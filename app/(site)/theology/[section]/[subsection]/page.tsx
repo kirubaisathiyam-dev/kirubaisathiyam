@@ -56,6 +56,14 @@ export async function generateMetadata({
   return {
     title: `${subsectionEntry.label} | ${sectionEntry.label}`,
     description: `${subsectionEntry.label} topics inside ${sectionEntry.label}.`,
+    keywords: [
+      subsectionEntry.label,
+      `${subsectionEntry.label} in Tamil`,
+      `${sectionEntry.label} ${subsectionEntry.label}`,
+      "Theology in Tamil",
+      "Tamil theology",
+      "Kirubai Sathiyam",
+    ],
     alternates: {
       canonical: `/theology/${sectionEntry.slug}#${subsectionEntry.slug}`,
     },
