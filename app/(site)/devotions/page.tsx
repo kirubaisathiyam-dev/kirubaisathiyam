@@ -7,10 +7,13 @@ import dailyDevotionRecords from "@/public/daily-devotion.json";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
-  title: "Daily Devotions in Tamil",
+  title: "தினசரி தியானங்கள் | Daily Devotions in Tamil",
   description:
-    "Read daily morning and evening devotions in Tamil from Charles Spurgeon at Kirubai Sathiyam.",
+    "சார்ல்ஸ் ஸ்பர்ஜனின் காலை மற்றும் மாலை தினசரி தியானங்களை தமிழில் தேதி வாரியாக வாசிக்கவும்.",
   keywords: [
+    "தினசரி தியானங்கள்",
+    "தமிழ் தியானம்",
+    "சார்ல்ஸ் ஸ்பர்ஜன் தியானம்",
     "Daily devotion",
     "Daily devotion in Tamil",
     "Tamil daily devotion",
@@ -26,17 +29,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/devotions",
-    title: "Daily Devotions in Tamil",
+    title: "தினசரி தியானங்கள் | Daily Devotions in Tamil",
     description:
-      "Read daily morning and evening devotions in Tamil from Charles Spurgeon at Kirubai Sathiyam.",
+      "சார்ல்ஸ் ஸ்பர்ஜனின் காலை மற்றும் மாலை தினசரி தியானங்களை தமிழில் தேதி வாரியாக வாசிக்கவும்.",
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
-    title: "Daily Devotions in Tamil",
+    title: "தினசரி தியானங்கள் | Daily Devotions in Tamil",
     description:
-      "Read daily morning and evening devotions in Tamil from Charles Spurgeon at Kirubai Sathiyam.",
+      "சார்ல்ஸ் ஸ்பர்ஜனின் காலை மற்றும் மாலை தினசரி தியானங்களை தமிழில் தேதி வாரியாக வாசிக்கவும்.",
     images: [shareImage],
   },
 };

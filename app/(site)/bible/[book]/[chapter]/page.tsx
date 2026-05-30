@@ -5,6 +5,7 @@ import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import { getBibleBookDataBySlug, getBibleBooksIndex } from "@/lib/server-bible";
 
 export const dynamicParams = false;
+export const runtime = "edge";
 
 const siteUrl = getSiteUrl().toString();
 const siteName = "Kirubai Sathiyam";
@@ -113,7 +114,7 @@ export async function generateMetadata({
 
   if (!entry || !chapterData) {
     return {
-      title: "Bible Chapter Not Found",
+      title: "அதிகாரம் கிடைக்கவில்லை | Bible Chapter Not Found",
       robots: {
         index: false,
         follow: false,
@@ -125,8 +126,8 @@ export async function generateMetadata({
     entry.data.book?.tamil?.trim() || entry.meta.tamil || entry.meta.english;
   const bookEnglish = entry.meta.english;
   const bookShort = entry.data.book?.short?.trim() || entry.meta.short || bookTamil;
-  const title = `${bookTamil} ${chapter} - Tamil Bible Chapter`;
-  const description = `Read ${bookTamil} chapter ${chapter} (${bookEnglish} Chapter ${chapter}) in Tamil online with verse-by-verse reading at Kirubai Sathiyam.`;
+  const title = `${bookTamil} ${chapter} | ${bookEnglish} Chapter ${chapter} Tamil Bible`;
+  const description = `${bookTamil} ${chapter} ஆம் அதிகாரத்தை தமிழில் வசனம் வாரியாகவும் ஆய்வு வாசிப்பு வசதியுடனும் படிக்கவும்.`;
   const canonicalPath = buildBibleChapterPath(book, chapter);
 
   return {

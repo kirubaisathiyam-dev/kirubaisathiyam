@@ -58,7 +58,7 @@ export async function generateMetadata({
 
   if (!topic) {
     return {
-      title: "Topic Not Found",
+      title: "தலைப்பு கிடைக்கவில்லை | Church History Topic Not Found",
       robots: {
         index: false,
         follow: false,
@@ -66,10 +66,11 @@ export async function generateMetadata({
     };
   }
 
-  const title = topic.title || "Church History Topic";
+  const title =
+    topic.title || `${topic.subsectionLabel} | Church History Topic in Tamil`;
   const description =
     topic.excerpt ||
-    `${topic.groupLabel || topic.subsectionLabel} topic inside ${CHURCH_HISTORY_SECTION.label}.`;
+    `${CHURCH_HISTORY_SECTION.label} பகுதியில் ${topic.groupLabel || topic.subsectionLabel} குறித்த விளக்கம் தமிழில்.`;
   const shareImage = topic.image || CHURCH_HISTORY_SECTION.image;
   const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
   const canonicalPath = buildChurchHistoryHref(

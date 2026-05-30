@@ -11,7 +11,7 @@ import PwaRegister from "@/components/PwaRegister";
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
 const siteDescription =
-  "Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible reader with study notes.";
+  "தமிழ் கிறிஸ்தவ கட்டுரைகள், திருச்சபை வரலாறு, இறையியல், தினசரி தியானங்கள், மற்றும் ஆய்வு குறிப்புகளுடன் தமிழ் வேதாகம வாசிப்பு.";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-EKHKEXTHL4";
 const notoSerifTamil = localFont({
@@ -39,6 +39,11 @@ export const metadata: Metadata = {
   },
   description: siteDescription,
   keywords: [
+    "தமிழ் கிறிஸ்தவம்",
+    "தமிழ் வேதாகமம்",
+    "தமிழ் தினசரி தியானம்",
+    "திருச்சபை வரலாறு",
+    "இறையியல்",
     "Tamil Christian articles",
     "Tamil Holy Bible",
     "Tamil Bible",
@@ -64,14 +69,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ta-IN",
     url: "/",
-    title: siteName,
+    title: "கிருபை சத்தியம் | Tamil Christian Articles, Bible, Theology & Devotions",
     description: siteDescription,
     siteName,
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
-    title: siteName,
+    title: "கிருபை சத்தியம் | Tamil Christian Articles, Bible, Theology & Devotions",
     description: siteDescription,
     images: [shareImage],
   },

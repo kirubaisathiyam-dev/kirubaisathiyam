@@ -31,7 +31,7 @@ export async function generateMetadata({
 
   if (!article) {
     return {
-      title: "Article Not Found",
+      title: "கட்டுரை கிடைக்கவில்லை | Article Not Found",
       robots: {
         index: false,
         follow: false,
@@ -39,9 +39,10 @@ export async function generateMetadata({
     };
   }
 
-  const title = article.title || "Tamil Article";
+  const title = article.title || "தமிழ் கட்டுரை | Tamil Christian Article";
   const description =
-    article.excerpt || "Tamil Christian article from Kirubai Sathiyam.";
+    article.excerpt ||
+    "தமிழில் எழுதப்பட்ட கிறிஸ்தவ கட்டுரை, வேதாகம சிந்தனை, மற்றும் விசுவாச வாழ்க்கை விளக்கம்.";
   const keywords = [
     ...(article.tags || []),
     ...(article.keywords || []),

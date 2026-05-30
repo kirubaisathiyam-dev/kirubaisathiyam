@@ -3,9 +3,9 @@ import { Suspense } from "react";
 import MeditationExperience from "@/components/MeditationExperience";
 
 export const metadata: Metadata = {
-  title: "Meditate on Scripture",
+  title: "வேத தியானம் | Scripture Meditation",
   description:
-    "Open a single Bible verse in a full-screen meditation view with themed background visuals and ambient audio.",
+    "ஒரு வேதாகம வசனத்தை முழுத்திரை தியான அனுபவமாக அமைதியான பின்னணி மற்றும் ஒலியுடன் திறக்கவும்.",
   alternates: {
     canonical: "/meditate",
   },

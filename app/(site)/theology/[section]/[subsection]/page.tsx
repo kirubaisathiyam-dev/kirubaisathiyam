@@ -33,7 +33,7 @@ export async function generateMetadata({
 
   if (!sectionEntry) {
     return {
-      title: "Section Not Found",
+      title: "பிரிவு கிடைக்கவில்லை | Theology Section Not Found",
       robots: {
         index: false,
         follow: false,
@@ -45,7 +45,7 @@ export async function generateMetadata({
 
   if (!subsectionEntry) {
     return {
-      title: "Subsection Not Found",
+      title: "உட்பிரிவு கிடைக்கவில்லை | Theology Subsection Not Found",
       robots: {
         index: false,
         follow: false,
@@ -54,8 +54,8 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${subsectionEntry.label} | ${sectionEntry.label}`,
-    description: `${subsectionEntry.label} topics inside ${sectionEntry.label}.`,
+    title: `${subsectionEntry.label} | ${sectionEntry.label} Theology`,
+    description: `${sectionEntry.label} பகுதியில் ${subsectionEntry.label} தொடர்பான தலைப்புகளை தமிழில் வாசிக்கவும்.`,
     keywords: [
       subsectionEntry.label,
       `${subsectionEntry.label} in Tamil`,

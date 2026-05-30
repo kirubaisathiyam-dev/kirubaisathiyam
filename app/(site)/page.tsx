@@ -14,10 +14,16 @@ import { getTheologySectionsWithTopics } from "@/lib/theology";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
-  title: "Tamil Christian Articles & Bible",
+  title:
+    "கிறிஸ்தவ கட்டுரைகள், வேதாகமம், இறையியல் | Tamil Christian Articles, Bible & Theology",
   description:
-    "Read Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+    "தமிழில் கிறிஸ்தவ கட்டுரைகள், திருச்சபை வரலாறு, இறையியல், தினசரி தியானங்கள், மற்றும் ஆய்வு குறிப்புகளுடன் தமிழ் வேதாகமத்தை வாசிக்கவும்.",
   keywords: [
+    "தமிழ் கிறிஸ்தவ கட்டுரைகள்",
+    "தமிழ் வேதாகமம்",
+    "தமிழ் தினசரி தியானம்",
+    "திருச்சபை வரலாறு",
+    "தமிழ் இறையியல்",
     "Tamil Christian articles",
     "Tamil Holy Bible",
     "Tamil Bible",
@@ -32,8 +38,6 @@ export const metadata: Metadata = {
     "Tamil Old Version",
     "Bible study notes",
     "Kirubai Sathiyam",
-    "தமிழ் பரிசுத்த வேதாகமம்",
-    "தமிழ் ஆய்வு வேதாகமம்",
   ],
   alternates: {
     canonical: "/",
@@ -41,17 +45,19 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/",
-    title: "Tamil Christian Articles & Bible",
+    title:
+      "கிறிஸ்தவ கட்டுரைகள், வேதாகமம், இறையியல் | Tamil Christian Articles, Bible & Theology",
     description:
-      "Read Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+      "தமிழில் கிறிஸ்தவ கட்டுரைகள், திருச்சபை வரலாறு, இறையியல், தினசரி தியானங்கள், மற்றும் ஆய்வு குறிப்புகளுடன் தமிழ் வேதாகமத்தை வாசிக்கவும்.",
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
-    title: "Tamil Christian Articles & Bible",
+    title:
+      "கிறிஸ்தவ கட்டுரைகள், வேதாகமம், இறையியல் | Tamil Christian Articles, Bible & Theology",
     description:
-      "Read Tamil Christian articles, church history, daily devotions, and the Tamil Holy Bible with study notes at Kirubai Sathiyam.",
+      "தமிழில் கிறிஸ்தவ கட்டுரைகள், திருச்சபை வரலாறு, இறையியல், தினசரி தியானங்கள், மற்றும் ஆய்வு குறிப்புகளுடன் தமிழ் வேதாகமத்தை வாசிக்கவும்.",
     images: [shareImage],
   },
 };

@@ -31,7 +31,7 @@ export async function generateMetadata({
 
   if (!entry) {
     return {
-      title: "பிரிவு கிடைக்கவில்லை",
+      title: "பிரிவு கிடைக்கவில்லை | Theology Section Not Found",
       robots: {
         index: false,
         follow: false,
@@ -42,7 +42,7 @@ export async function generateMetadata({
   const shareImage = toAbsoluteUrl(entry.image || "/logo-light.svg");
 
   return {
-    title: `${entry.label} | இறையியல்`,
+    title: `${entry.label} | Theology in Tamil`,
     description: entry.description,
     keywords: [
       entry.label,
@@ -60,14 +60,14 @@ export async function generateMetadata({
     openGraph: {
       type: "website",
       url: `/theology/${entry.slug}`,
-      title: `${entry.label} | இறையியல்`,
+      title: `${entry.label} | Theology in Tamil`,
       description: entry.description,
       siteName: "Kirubai Sathiyam",
       images: [{ url: shareImage }],
     },
     twitter: {
       card: "summary",
-      title: `${entry.label} | இறையியல்`,
+      title: `${entry.label} | Theology in Tamil`,
       description: entry.description,
       images: [shareImage],
     },

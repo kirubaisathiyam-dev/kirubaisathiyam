@@ -37,7 +37,7 @@ export async function generateMetadata({
 
   if (!isTheologySection(section)) {
     return {
-      title: "Topic Not Found",
+      title: "தலைப்பு கிடைக்கவில்லை | Theology Topic Not Found",
       robots: {
         index: false,
         follow: false,
@@ -54,7 +54,7 @@ export async function generateMetadata({
 
   if (!topic) {
     return {
-      title: "Topic Not Found",
+      title: "தலைப்பு கிடைக்கவில்லை | Theology Topic Not Found",
       robots: {
         index: false,
         follow: false,
@@ -62,9 +62,11 @@ export async function generateMetadata({
     };
   }
 
-  const title = topic.title || "Theology Topic";
+  const title =
+    topic.title || `${topic.subsectionLabel} | Theology Topic in Tamil`;
   const description =
-    topic.excerpt || `${topic.subsectionLabel} topic inside ${topic.sectionLabel}.`;
+    topic.excerpt ||
+    `${topic.sectionLabel} பகுதியில் ${topic.subsectionLabel} குறித்த இறையியல் விளக்கம் தமிழில்.`;
   const shareImage = topic.image || topic.sectionImage;
   const imageUrl = shareImage ? toAbsoluteUrl(shareImage) : undefined;
 

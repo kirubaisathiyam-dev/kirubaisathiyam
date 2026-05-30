@@ -6,10 +6,12 @@ import { toAbsoluteUrl } from "@/lib/seo";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
-  title: "Tamil Christian Articles & Bible",
+  title: "கிறிஸ்தவ கட்டுரைகள் | Tamil Christian Articles",
   description:
-    "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
+    "வேதாகமம், விசுவாச வாழ்க்கை, மற்றும் கிறிஸ்தவ சிந்தனை குறித்து தமிழில் எழுதப்பட்ட கட்டுரைகளை வாசிக்கவும்.",
   keywords: [
+    "கிறிஸ்தவ கட்டுரைகள்",
+    "தமிழ் கட்டுரைகள்",
     "Tamil articles",
     "Tamil Christian articles",
     "Tamil Holy Bible",
@@ -22,17 +24,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/articles",
-    title: "Tamil Christian Articles & Bible",
+    title: "கிறிஸ்தவ கட்டுரைகள் | Tamil Christian Articles",
     description:
-      "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
+      "வேதாகமம், விசுவாச வாழ்க்கை, மற்றும் கிறிஸ்தவ சிந்தனை குறித்து தமிழில் எழுதப்பட்ட கட்டுரைகளை வாசிக்கவும்.",
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
-    title: "Tamil Christian Articles & Bible",
+    title: "கிறிஸ்தவ கட்டுரைகள் | Tamil Christian Articles",
     description:
-      "Browse Tamil Christian articles and access the Tamil Holy Bible with study notes.",
+      "வேதாகமம், விசுவாச வாழ்க்கை, மற்றும் கிறிஸ்தவ சிந்தனை குறித்து தமிழில் எழுதப்பட்ட கட்டுரைகளை வாசிக்கவும்.",
     images: [shareImage],
   },
 };
@@ -55,5 +57,4 @@ export default function ArticlesPage() {
     </div>
   );
 }
-
 

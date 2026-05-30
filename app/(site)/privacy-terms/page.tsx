@@ -4,26 +4,26 @@ import { toAbsoluteUrl } from "@/lib/seo";
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 
 export const metadata: Metadata = {
-  title: "Privacy Policy & Terms",
+  title: "தனியுரிமை & விதிமுறைகள் | Privacy Policy & Terms",
   description:
-    "Read the privacy policy and terms for Kirubai Sathiyam, including details about comments and Firebase login.",
+    "கிருபை சத்தியத்தின் தனியுரிமைக் கொள்கை, பயன்பாட்டு விதிமுறைகள், கருத்துகள், மற்றும் Firebase உள்நுழைவு விவரங்களை வாசிக்கவும்.",
   alternates: {
     canonical: "/privacy-terms",
   },
   openGraph: {
     type: "website",
     url: "/privacy-terms",
-    title: "Privacy Policy & Terms",
+    title: "தனியுரிமை & விதிமுறைகள் | Privacy Policy & Terms",
     description:
-      "Read the privacy policy and terms for Kirubai Sathiyam, including details about comments and Firebase login.",
+      "கிருபை சத்தியத்தின் தனியுரிமைக் கொள்கை, பயன்பாட்டு விதிமுறைகள், கருத்துகள், மற்றும் Firebase உள்நுழைவு விவரங்களை வாசிக்கவும்.",
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
-    title: "Privacy Policy & Terms",
+    title: "தனியுரிமை & விதிமுறைகள் | Privacy Policy & Terms",
     description:
-      "Read the privacy policy and terms for Kirubai Sathiyam, including details about comments and Firebase login.",
+      "கிருபை சத்தியத்தின் தனியுரிமைக் கொள்கை, பயன்பாட்டு விதிமுறைகள், கருத்துகள், மற்றும் Firebase உள்நுழைவு விவரங்களை வாசிக்கவும்.",
     images: [shareImage],
   },
 };

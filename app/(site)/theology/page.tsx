@@ -6,14 +6,14 @@ import { getTheologySectionsWithTopics } from "@/lib/theology";
 
 const shareImage = toAbsoluteUrl("/logo-light.svg");
 const theologyDescription =
-  "இறையியல் என்பது இறைவன், அவர் வெளிப்படுத்திய சத்தியம், மனிதன், பாவம், இரட்சிப்பு, சபை, மற்றும் விசுவாச வாழ்வு பற்றிய வேதாகம அடிப்படையிலான சிந்தனை. முறையியல் இறையியல் இவ்வுபதேசங்களை ஒழுங்குபடுத்துகிறது; சீர்திருத்த இறையியல் அவற்றை கிருபை, உடன்படிக்கை, மற்றும் இறையாட்சி என்ற கோணங்களில் வலியுறுத்துகிறது.";
+  "இறையியல் என்பது தேவன், அவர் வெளிப்படுத்திய சத்தியம், மனிதன், பாவம், இரட்சிப்பு, சபை, மற்றும் விசுவாச வாழ்க்கை குறித்து வேதாகம அடிப்படையில் சிந்திக்கும் ஆய்வு. முறைமையியல் இறையியல் இந்த போதனைகளை ஒழுங்குபடுத்துகிறது; சீர்திருத்த இறையியல் அவற்றை கிருபை, உடன்படிக்கை, மற்றும் இறையாட்சியின் கோணத்தில் வலியுறுத்துகிறது.";
 
 export const metadata: Metadata = {
-  title: "இறையியல்",
+  title: "இறையியல் | Theology in Tamil",
   description: theologyDescription,
   keywords: [
     "இறையியல்",
-    "முறையியல் இறையியல்",
+    "முறைமையியல் இறையியல்",
     "சீர்திருத்த இறையியல்",
     "தமிழ் கிறிஸ்தவ இறையியல்",
     "Theology",
@@ -29,14 +29,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/theology",
-    title: "இறையியல்",
+    title: "இறையியல் | Theology in Tamil",
     description: theologyDescription,
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
-    title: "இறையியல்",
+    title: "இறையியல் | Theology in Tamil",
     description: theologyDescription,
     images: [shareImage],
   },

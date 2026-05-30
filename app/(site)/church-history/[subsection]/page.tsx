@@ -30,7 +30,7 @@ export async function generateMetadata({
 
   if (!subsectionEntry) {
     return {
-      title: "Subsection Not Found",
+      title: "உட்பிரிவு கிடைக்கவில்லை | Church History Subsection Not Found",
       robots: {
         index: false,
         follow: false,
@@ -39,8 +39,8 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${subsectionEntry.label} | ${CHURCH_HISTORY_SECTION.label}`,
-    description: `${subsectionEntry.label} topics inside ${CHURCH_HISTORY_SECTION.label}.`,
+    title: `${subsectionEntry.label} | Church History in Tamil`,
+    description: `${CHURCH_HISTORY_SECTION.label} பகுதியில் ${subsectionEntry.label} தொடர்பான தலைப்புகளை தமிழில் வாசிக்கவும்.`,
     alternates: {
       canonical: `/church-history#${subsectionEntry.slug}`,
     },

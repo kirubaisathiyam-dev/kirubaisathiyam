@@ -8,10 +8,12 @@ const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 const siteUrl = getSiteUrl().toString();
 
 export const metadata: Metadata = {
-  title: "Tamil Holy Bible Reader",
+  title: "தமிழ் வேதாகம வாசிப்பு | Tamil Bible Reader",
   description:
-    "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
+    "ஆய்வு குறிப்புகள், விளக்கங்கள், மற்றும் பழைய தமிழ் பதிப்புகளுடன் தமிழ் வேதாகமத்தை ஆன்லைனில் வாசிக்கவும்.",
   keywords: [
+    "தமிழ் வேதாகம வாசிப்பு",
+    "வேதாகம ஆய்வு",
     "Tamil Holy Bible",
     "Tamil Bible",
     "Study Bible Tamil",
@@ -26,9 +28,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/bible/read",
-    title: "Tamil Holy Bible Reader",
+    title: "தமிழ் வேதாகம வாசிப்பு | Tamil Bible Reader",
     description:
-      "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
+      "ஆய்வு குறிப்புகள், விளக்கங்கள், மற்றும் பழைய தமிழ் பதிப்புகளுடன் தமிழ் வேதாகமத்தை ஆன்லைனில் வாசிக்கவும்.",
     siteName: "Kirubai Sathiyam",
     images: [
       {
@@ -41,9 +43,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tamil Holy Bible Reader",
+    title: "தமிழ் வேதாகம வாசிப்பு | Tamil Bible Reader",
     description:
-      "Read the Tamil Holy Bible online with study notes, illustrated Bible references, and old Tamil Bible versions.",
+      "ஆய்வு குறிப்புகள், விளக்கங்கள், மற்றும் பழைய தமிழ் பதிப்புகளுடன் தமிழ் வேதாகமத்தை ஆன்லைனில் வாசிக்கவும்.",
     images: [shareImage],
   },
 };

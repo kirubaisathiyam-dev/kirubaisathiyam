@@ -12,10 +12,12 @@ const shareImage = toAbsoluteUrl(
 );
 
 export const metadata: Metadata = {
-  title: CHURCH_HISTORY_SECTION.label,
-  description: CHURCH_HISTORY_SECTION.description,
+  title: "திருச்சபை வரலாறு | Church History in Tamil",
+  description:
+    "ஆரம்ப சபை முதல் சீர்திருத்த காலம் வரை திருச்சபையின் வரலாற்றை தமிழில் தொகுத்து வாசிக்கவும்.",
   keywords: [
     "திருச்சபை வரலாறு",
+    "கிறிஸ்தவ வரலாறு",
     "Church History",
     "Church History in Tamil",
     "Tamil Christian history",
@@ -30,15 +32,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/church-history",
-    title: CHURCH_HISTORY_SECTION.label,
-    description: CHURCH_HISTORY_SECTION.description,
+    title: "திருச்சபை வரலாறு | Church History in Tamil",
+    description:
+      "ஆரம்ப சபை முதல் சீர்திருத்த காலம் வரை திருச்சபையின் வரலாற்றை தமிழில் தொகுத்து வாசிக்கவும்.",
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary",
-    title: CHURCH_HISTORY_SECTION.label,
-    description: CHURCH_HISTORY_SECTION.description,
+    title: "திருச்சபை வரலாறு | Church History in Tamil",
+    description:
+      "ஆரம்ப சபை முதல் சீர்திருத்த காலம் வரை திருச்சபையின் வரலாற்றை தமிழில் தொகுத்து வாசிக்கவும்.",
     images: [shareImage],
   },
 };

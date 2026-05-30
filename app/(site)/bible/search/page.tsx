@@ -7,18 +7,18 @@ import { toAbsoluteUrl } from "@/lib/seo";
 const shareImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
 
 export const metadata: Metadata = {
-  title: "Bible Search",
+  title: "வேதாகம தேடல் | Bible Search in Tamil",
   description:
-    "Search the Tamil Holy Bible offline by word, phrase, book, or verse reference.",
+    "தமிழ் வேதாகமத்தில் சொல், சொற்றொடர், புத்தகம், அதிகாரம், அல்லது வசனக் குறிப்பின்படி தேடுங்கள்.",
   alternates: {
     canonical: "/bible/search",
   },
   openGraph: {
     type: "website",
     url: "/bible/search",
-    title: "Bible Search",
+    title: "வேதாகம தேடல் | Bible Search in Tamil",
     description:
-      "Search the Tamil Holy Bible offline by word, phrase, book, or verse reference.",
+      "தமிழ் வேதாகமத்தில் சொல், சொற்றொடர், புத்தகம், அதிகாரம், அல்லது வசனக் குறிப்பின்படி தேடுங்கள்.",
     images: [{ url: shareImage, width: 512, height: 512, type: "image/png" }],
   },
 };

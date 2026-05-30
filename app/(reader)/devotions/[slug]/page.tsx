@@ -216,7 +216,7 @@ export async function generateMetadata({
 
   if (!devotion) {
     return {
-      title: "Devotion Not Found",
+      title: "தியானம் கிடைக்கவில்லை | Devotion Not Found",
       robots: {
         index: false,
         follow: false,
@@ -224,9 +224,9 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${devotion.label} | Charles Spurgeon Daily Devotion | ${devotion.verseReference}`;
+  const title = `${devotion.label} | தமிழ் தினசரி தியானம் | Charles Spurgeon Devotion`;
   const description = [
-    "Daily devotion in Tamil from Charles Spurgeon.",
+    "சார்ல்ஸ் ஸ்பர்ஜனின் தமிழ் தினசரி தியானம்.",
     DEVOTION_ATTRIBUTION,
     devotion.verseText
       ? `${devotion.verseText} (${devotion.verseReference})`

@@ -7,6 +7,7 @@ import { getBibleBookDataBySlug } from "@/lib/server-bible";
 const siteUrl = getSiteUrl().toString();
 const siteName = "Kirubai Sathiyam";
 const shareImage = toAbsoluteUrl("/images/bible.jpg");
+export const runtime = "edge";
 
 type BibleVersePageProps = {
   params: Promise<{
@@ -133,7 +134,7 @@ export async function generateMetadata({
 
   if (!data) {
     return {
-      title: "Bible Verse Not Found",
+      title: "வசனம் கிடைக்கவில்லை | Bible Verse Not Found",
       robots: {
         index: false,
         follow: false,
@@ -151,11 +152,11 @@ export async function generateMetadata({
     chapter,
     data.normalizedVersesPath,
   );
-  const title = `${bookTamil} ${chapter}:${data.normalizedVerses} - Tamil Bible Verse`;
+  const title = `${bookTamil} ${chapter}:${data.normalizedVerses} | ${bookEnglish} ${chapter}:${data.normalizedVerses} Tamil Bible`;
   const snippet = data.verseTexts.join(" ").slice(0, 260);
   const description = snippet
-    ? `${snippet}${snippet.length >= 260 ? "..." : ""} (${bookEnglish} ${chapter}:${data.normalizedVerses})`
-    : `Read ${bookTamil} ${chapter}:${data.normalizedVerses} in Tamil online at Kirubai Sathiyam.`;
+    ? `${snippet}${snippet.length >= 260 ? "..." : ""} ${bookTamil} ${chapter}:${data.normalizedVerses} தமிழ் வேதாகமம்.`
+    : `${bookTamil} ${chapter}:${data.normalizedVerses} வசனங்களை தமிழில் வாசிக்கவும்.`;
 
   return {
     title,
