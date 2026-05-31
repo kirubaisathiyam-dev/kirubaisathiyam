@@ -51,27 +51,30 @@ export default function SubscribeForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-3 flex flex-wrap items-center gap-3"
+      className="mt-4 flex flex-wrap items-center gap-2 md:gap-3"
     >
       <input
         type="email"
         name="email"
-        placeholder="you@example.com"
+        placeholder="your@email.com"
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         required
-        className="min-w-[220px] flex-1 border px-3 py-2 text-sm"
-        style={{ borderColor: "var(--border-color)" }}
+        className="min-w-[220px] flex-1 border px-4 py-3 text-sm transition-colors"
+        style={{
+          borderColor: "var(--border-color)",
+          background: "var(--background)",
+        }}
       />
       <button
         type="submit"
         disabled={status === "loading"}
-        className="inline-flex items-center justify-center gap-2 border px-4 py-2 text-sm font-semibold"
+        className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold hover:opacity-90 transition-all"
         style={{
-          borderColor: "var(--foreground)",
-          background: "var(--foreground)",
-          color: "var(--background)",
+          background: "#FBbF24",
+          color: "#1f2937",
           cursor: status === "loading" ? "not-allowed" : "pointer",
+          opacity: status === "loading" ? 0.7 : 1,
         }}
       >
         {status === "loading" && <LoadingIcon style={{ width: 16, height: 16 }} />}
@@ -79,10 +82,10 @@ export default function SubscribeForm() {
       </button>
 
       {status === "success" && (
-        <span style={{ color: "#0a7a2f" }}>{successText}</span>
+        <span className="w-full text-sm" style={{ color: "#0a7a2f" }}>{successText}</span>
       )}
       {status === "error" && (
-        <span style={{ color: "#b00020" }}>{errorText}</span>
+        <span className="w-full text-sm" style={{ color: "#b00020" }}>{errorText}</span>
       )}
     </form>
   );
