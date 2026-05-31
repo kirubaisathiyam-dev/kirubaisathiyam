@@ -52,7 +52,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       >
         <div
           style={{
-            background: "linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, rgba(251, 191, 36, 0.03) 100%)",
+            background: "linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, rgba(128, 105, 48, 0.03) 100%)",
             borderColor: "var(--border-color)",
           }}
           className="border-b"
@@ -75,7 +75,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         {/* WhatsApp Channel Section */}
         <div
           style={{
-            background: "linear-gradient(135deg, rgba(37, 211, 102, 0.08) 0%, rgba(37, 211, 102, 0.04) 100%)",
+            background: "linear-gradient(135deg, rgba(37, 211, 102, 0.08) 0%, rgba(8, 37, 19, 0.04) 100%)",
             borderColor: "var(--border-color)",
           }}
           className="border-b"
@@ -84,8 +84,8 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 items-start">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
-                  <WhatsappIcon style={{ width: 32, height: 32, color: "#25D366" }} />
-                  <h2 className="text-2xl font-bold" style={{ color: "var(--foreground)" }}>
+                  <WhatsappIcon style={{ width: 32, height: 32, color: "#41905e" }} />
+                  <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>
                     WhatsApp Channel
                   </h2>
                 </div>
@@ -102,7 +102,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
                 rel="noreferrer"
                 className="px-6 py-3 font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity whitespace-nowrap"
                 style={{
-                  background: "#25D366",
+                  background: "#41905e",
                   color: "#fff",
                 }}
               >
@@ -126,7 +126,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
                 href="mailto:info@kirubaisathiyam.org"
                 title="Email"
                 className="inline-flex items-center hover:opacity-70"
-                style={{ color: "#FF9500" }}
+                style={{ color: "#b48e59" }}
               >
                 <EmailIcon style={{ width: 20, height: 20 }} />
               </a>
@@ -136,7 +136,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
                 rel="noreferrer"
                 title="Instagram"
                 className="inline-flex items-center hover:opacity-70"
-                style={{ color: "#E4405F" }}
+                style={{ color: "#914e5a" }}
               >
                 <InstagramIcon style={{ width: 20, height: 20 }} />
               </a>
@@ -146,7 +146,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
                 rel="noreferrer"
                 title="YouTube"
                 className="inline-flex items-center hover:opacity-70"
-                style={{ color: "#FF0000" }}
+                style={{ color: "#9e3434" }}
               >
                 <YoutubeIcon style={{ width: 20, height: 20 }} />
               </a>

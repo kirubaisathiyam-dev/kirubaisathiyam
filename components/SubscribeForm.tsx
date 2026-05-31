@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { LoadingIcon } from "@/components/Icons";
 
-const emailRegex =
-  /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 function isValidEmail(value: string) {
   return emailRegex.test(value);
@@ -69,23 +68,30 @@ export default function SubscribeForm() {
       <button
         type="submit"
         disabled={status === "loading"}
-        className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold hover:opacity-90 transition-all"
+        className="inline-flex items-center justify-center gap-2 px-6 border py-3 text-sm font-semibold hover:opacity-90 transition-all"
         style={{
-          background: "#FBbF24",
-          color: "#1f2937",
+          borderColor: "var(--theme-border-color)",
+          backgroundColor: "var(--theme-foreground-bible)",
+          color: "var(--theme-foreground-contrast)",
           cursor: status === "loading" ? "not-allowed" : "pointer",
           opacity: status === "loading" ? 0.7 : 1,
         }}
       >
-        {status === "loading" && <LoadingIcon style={{ width: 16, height: 16 }} />}
+        {status === "loading" && (
+          <LoadingIcon style={{ width: 16, height: 16 }} />
+        )}
         <span>{status === "loading" ? "Subscribing..." : "Subscribe"}</span>
       </button>
 
       {status === "success" && (
-        <span className="w-full text-sm" style={{ color: "#0a7a2f" }}>{successText}</span>
+        <span className="w-full text-sm" style={{ color: "#2b7243" }}>
+          {successText}
+        </span>
       )}
       {status === "error" && (
-        <span className="w-full text-sm" style={{ color: "#b00020" }}>{errorText}</span>
+        <span className="w-full text-sm" style={{ color: "#883645" }}>
+          {errorText}
+        </span>
       )}
     </form>
   );
