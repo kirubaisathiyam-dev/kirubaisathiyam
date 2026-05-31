@@ -42,10 +42,14 @@ export default function SiteHeader() {
     };
   }, [open]);
 
+  const hideOnScroll =
+    process.env.NEXT_PUBLIC_STICKY_HEADER_HIDE_ON_SCROLL !== "false";
+
   return (
     <>
       <StickyHeader
         className="border-b"
+        hideOnScroll={hideOnScroll}
         style={{ borderColor: "var(--border-color)" }}
       >
         <div className="mx-auto flex w-full items-center justify-between gap-6 px-4 py-5 lg:px-6">

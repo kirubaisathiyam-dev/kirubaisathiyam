@@ -6,18 +6,27 @@ type StickyHeaderProps = {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  hideOnScroll?: boolean;
 };
 
 export default function StickyHeader({
   children,
   className,
   style,
+  hideOnScroll,
 }: StickyHeaderProps) {
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
+  const shouldHideOnScroll =
+    hideOnScroll ??
+    process.env.NEXT_PUBLIC_STICKY_HEADER_HIDE_ON_SCROLL !== "false";
 
   useEffect(() => {
+    if (!shouldHideOnScroll) {
+      return;
+    }
+
     lastScrollY.current = window.scrollY;
 
     const onScroll = () => {
@@ -45,7 +54,7 @@ export default function StickyHeader({
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [shouldHideOnScroll]);
 
   return (
     <header

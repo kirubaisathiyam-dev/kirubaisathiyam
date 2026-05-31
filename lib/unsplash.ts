@@ -45,12 +45,46 @@ export function getFallbackUnsplashImage(
   };
 }
 
-function getQueryForContext(context: UnsplashContext) {
-  if (context === "devotion") {
-    return "nature landscape mountains river sea forest wilderness";
+const UNSPLASH_SEARCH_TERMS: readonly string[] = [
+  "nature",
+  "landscape",
+  "mountains",
+  "river",
+  "sea",
+  "ocean",
+  "coast",
+  "coastline",
+  "forest",
+  "wilderness",
+  "beach",
+  "garden",
+  "flowers",
+  "sunrise",
+  "sunset",
+  "sky",
+  "clouds",
+  "meadow",
+  "waterfall",
+  "lake",
+  "island",
+  "field",
+];
+
+function getRandomQueryTerms<T>(items: readonly T[], count: number) {
+  const result: T[] = [];
+  const copy = [...items];
+
+  while (result.length < count && copy.length > 0) {
+    const index = Math.floor(Math.random() * copy.length);
+    result.push(copy.splice(index, 1)[0]);
   }
 
-  return "nature landscape mountains river ocean coastline forest wilderness";
+  return result;
+}
+
+function getQueryForContext(context: UnsplashContext) {
+  const index = Math.floor(Math.random() * UNSPLASH_SEARCH_TERMS.length);
+  return UNSPLASH_SEARCH_TERMS[index];
 }
 
 function buildUnsplashCdnUrl(rawUrl?: string, regularUrl?: string) {
