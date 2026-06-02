@@ -121,7 +121,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             >
               © {new Date().getFullYear()} kirubaisathiyam.org
             </span>
-            <div className="flex flex-wrap items-center gap-8">
+            <div className="flex flex-wrap items-center gap-6 px-2">
               <a
                 href="mailto:info@kirubaisathiyam.org"
                 title="Email"
