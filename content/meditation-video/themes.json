@@ -1,0 +1,24 @@
+[
+  {
+    "id": "sunset-dusk",
+    "label": "Sunset Dusk",
+    "description": "Warm evening horizon with gentle dusk motion and built-in video audio.",
+    "videoSrc": "/meditation-videos/Beautiful Sunset Landscape, Warm Gentle Evening, Dusk, Background video, 4k, VJ Loop, Video Footage.mp4",
+    "overlay": "linear-gradient(180deg, rgba(34, 15, 12, 0.18) 0%, rgba(45, 17, 15, 0.74) 100%)",
+    "panelBackground": "rgba(39, 16, 15, 0.42)",
+    "panelBorder": "rgba(255, 216, 199, 0.24)",
+    "accent": "#ffd8c7",
+    "mutedAccent": "rgba(255, 216, 199, 0.8)"
+  },
+  {
+    "id": "gentle-flowers",
+    "label": "Gentle Flowers",
+    "description": "Soft flower field motion with the video carrying its own ambient sound.",
+    "videoSrc": "/meditation-videos/Beautiful Gentle Flowers, Daisies, Wild Flowers, Nature, Background video, 4k, VJ Loop,Video Footage.mp4",
+    "overlay": "linear-gradient(180deg, rgba(28, 24, 11, 0.14) 0%, rgba(33, 27, 12, 0.7) 100%)",
+    "panelBackground": "rgba(31, 26, 12, 0.4)",
+    "panelBorder": "rgba(252, 242, 199, 0.24)",
+    "accent": "#fcf2c7",
+    "mutedAccent": "rgba(252, 242, 199, 0.8)"
+  }
+]

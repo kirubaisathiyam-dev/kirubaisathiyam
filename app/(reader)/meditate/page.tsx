@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import MeditationExperience from "@/components/MeditationExperience";
+import MeditationVideoExperience from "@/components/MeditationVideoExperience";
 
 export const metadata: Metadata = {
   title: "வேத தியானம் | Scripture Meditation",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function MeditatePage() {
   return (
     <Suspense fallback={null}>
-      <MeditationExperience />
+      <MeditationVideoExperience />
     </Suspense>
   );
 }

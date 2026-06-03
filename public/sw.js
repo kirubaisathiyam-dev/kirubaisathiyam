@@ -32,6 +32,7 @@ function getCacheName(pathname) {
     pathname.startsWith("/articles/") ||
     pathname.startsWith("/church-history/") ||
     pathname.startsWith("/meditation/") ||
+    pathname.startsWith("/meditation-videos/") ||
     pathname.startsWith("/theology/") ||
     pathname.startsWith("/uploads/") ||
     pathname.startsWith("/images/")
@@ -302,6 +303,7 @@ self.addEventListener("fetch", (event) => {
     pathname.endsWith(".jpg") ||
     pathname.endsWith(".jpeg") ||
     pathname.endsWith(".mp3") ||
+    pathname.endsWith(".mp4") ||
     pathname.endsWith(".wav") ||
     pathname.endsWith(".ogg") ||
     pathname.endsWith(".aac") ||
