@@ -1,7 +1,7 @@
 import themes from "@/content/meditation-video/themes.json";
 
 export const OFFLINE_MEDITATION_VIDEO_SRC =
-  "/meditation-videos/Beautiful Sunset Landscape, Warm Gentle Evening, Dusk, Background video, 4k, VJ Loop, Video Footage.mp4";
+  "/meditation-videos/sunrise-dawn.mp4";
 
 export type MeditationVideoTheme = {
   id: string;

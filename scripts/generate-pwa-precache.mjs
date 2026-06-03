@@ -150,9 +150,7 @@ const contentAssets = [
   "/bible-notes.json",
   "/local-bible/Books.json",
   ...listPublicAssets(meditationVideosDir, "/meditation-videos").filter(
-    (asset) =>
-      asset ===
-      "/meditation-videos/Beautiful Sunset Landscape, Warm Gentle Evening, Dusk, Background video, 4k, VJ Loop, Video Footage.mp4",
+    (asset) => asset === "/meditation-videos/sunrise-dawn.mp4",
   ),
   ...listPublicAssets(uploadsDir, "/uploads"),
   ...listPublicAssets(imagesDir, "/images"),
