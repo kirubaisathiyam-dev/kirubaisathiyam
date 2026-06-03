@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRightIcon } from "@/components/Icons";
-import { getDevotionSlug, type DailyDevotionRecord } from "@/lib/daily-devotion";
+import {
+  getDevotionSlug,
+  getTodayDevotionCandidates,
+  SITE_TIME_ZONE,
+  type DailyDevotionRecord,
+} from "@/lib/daily-devotion";
 
 type DevotionsArchiveProps = {
   records: DailyDevotionRecord[];
@@ -26,9 +31,41 @@ function groupByMonth(records: DailyDevotionRecord[]) {
   return Array.from(groups.entries());
 }
 
+function findTodayRecord(records: DailyDevotionRecord[]) {
+  const candidates = getTodayDevotionCandidates(new Date(), SITE_TIME_ZONE);
+  return records.find((record) => record.date && candidates.includes(record.date)) ?? null;
+}
+
 export default function DevotionsArchive({ records }: DevotionsArchiveProps) {
   const groupedRecords = useMemo(() => groupByMonth(records), [records]);
-  const [expandedMonth, setExpandedMonth] = useState(groupedRecords[0]?.[0] || "");
+  const todayRecord = useMemo(() => findTodayRecord(records), [records]);
+  const todayDate = todayRecord?.date ?? null;
+  const defaultExpandedMonth = useMemo(() => {
+    if (todayRecord?.date) {
+      const [, month = ""] = todayRecord.date.split(/\s+/);
+      return month;
+    }
+
+    return groupedRecords[0]?.[0] || "";
+  }, [groupedRecords, todayRecord]);
+  const [expandedMonth, setExpandedMonth] = useState(defaultExpandedMonth);
+  const todayRowRef = useRef<HTMLDivElement | null>(null);
+  const hasFocusedTodayRef = useRef(false);
+
+  useEffect(() => {
+    if (!todayDate || hasFocusedTodayRef.current) {
+      return;
+    }
+
+    const [, month = ""] = todayDate.split(/\s+/);
+    if (expandedMonth !== month || !todayRowRef.current) {
+      return;
+    }
+
+    hasFocusedTodayRef.current = true;
+    todayRowRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    todayRowRef.current.focus({ preventScroll: true });
+  }, [expandedMonth, todayDate]);
 
   return (
     <div className="space-y-3">
@@ -78,11 +115,18 @@ export default function DevotionsArchive({ records }: DevotionsArchiveProps) {
                       return null;
                     }
 
+                    const isToday = record.date === todayDate;
+
                     return (
                       <div
                         key={record.date}
+                        ref={isToday ? todayRowRef : null}
+                        tabIndex={isToday ? -1 : undefined}
                         className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3"
-                        style={{ borderColor: "var(--border-color)" }}
+                        style={{
+                          borderColor: "var(--border-color)",
+                          background: isToday ? "var(--background)" : undefined,
+                        }}
                       >
                         <p className="text-sm font-semibold sm:text-base">
                           {record.date}
