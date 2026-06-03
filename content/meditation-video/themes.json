@@ -20,5 +20,38 @@
     "panelBorder": "rgba(252, 242, 199, 0.24)",
     "accent": "#fcf2c7",
     "mutedAccent": "rgba(252, 242, 199, 0.8)"
+  },
+  {
+    "id": "dandelion-sunbeams",
+    "label": "Dandelion Sunbeams",
+    "description": "Warm summer light across grass and dandelions with soft wind through the field.",
+    "videoSrc": "/meditation-videos/Dandelion, Sunbeams, Grass, Wind, Sun, Summer, Nature, Background video, 4k, VJ Loop, Video Footage.mp4",
+    "overlay": "linear-gradient(180deg, rgba(30, 24, 8, 0.14) 0%, rgba(28, 22, 8, 0.68) 100%)",
+    "panelBackground": "rgba(30, 24, 10, 0.4)",
+    "panelBorder": "rgba(246, 232, 171, 0.24)",
+    "accent": "#f6e8ab",
+    "mutedAccent": "rgba(246, 232, 171, 0.8)"
+  },
+  {
+    "id": "blue-cornflowers",
+    "label": "Blue Cornflowers",
+    "description": "Open field of blue flowers with soft daylight and a calm natural drift.",
+    "videoSrc": "/meditation-videos/Field of Flowers, Blue Flowers, Cornflowers, Flowers, Nature, Background video,VJ Loop,Video Footage.mp4",
+    "overlay": "linear-gradient(180deg, rgba(12, 18, 34, 0.14) 0%, rgba(10, 18, 36, 0.7) 100%)",
+    "panelBackground": "rgba(12, 19, 36, 0.4)",
+    "panelBorder": "rgba(205, 224, 255, 0.24)",
+    "accent": "#cde0ff",
+    "mutedAccent": "rgba(205, 224, 255, 0.8)"
+  },
+  {
+    "id": "sunrise-dawn",
+    "label": "Sunrise Dawn",
+    "description": "Quiet morning light unfolding across the landscape with a gentle sunrise pace.",
+    "videoSrc": "/meditation-videos/Sunrise, Dawn, Morning, Landscape, Time Lapse, Sun, Nature, Background video, VJ Loop, Video Footage.mp4",
+    "overlay": "linear-gradient(180deg, rgba(32, 18, 10, 0.12) 0%, rgba(26, 16, 12, 0.68) 100%)",
+    "panelBackground": "rgba(30, 18, 12, 0.4)",
+    "panelBorder": "rgba(255, 222, 186, 0.24)",
+    "accent": "#ffdeba",
+    "mutedAccent": "rgba(255, 222, 186, 0.8)"
   }
 ]
