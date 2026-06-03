@@ -5,6 +5,7 @@ import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 import "./globals.css";
 import "cookieconsent/build/cookieconsent.min.css";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
+import DailyDevotionAutoPush from "@/components/DailyDevotionAutoPush";
 import OverflowHyphenation from "@/components/OverflowHyphenation";
 import PwaRegister from "@/components/PwaRegister";
 
@@ -116,6 +117,7 @@ export default function RootLayout({
       <body className="antialiased" suppressHydrationWarning>
         {children}
         <CookieConsentBanner />
+        <DailyDevotionAutoPush />
         <OverflowHyphenation />
         <PwaRegister />
       </body>

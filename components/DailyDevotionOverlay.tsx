@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRightIcon, PlayIcon } from "@/components/Icons";
@@ -228,21 +228,69 @@ export default function DailyDevotionOverlay() {
     typeof navigator === "undefined" ? true : navigator.onLine,
   );
   const [imageLoadFailed, setImageLoadFailed] = useState(false);
+  const loadRequestIdRef = useRef(0);
 
   useEffect(() => {
     let isMounted = true;
 
     async function loadDevotion() {
+      const requestId = loadRequestIdRef.current + 1;
+      loadRequestIdRef.current = requestId;
       const devotion = await getClientDailyDevotion();
-      if (isMounted) {
-        setDailyDevotion(devotion);
+      if (!isMounted || loadRequestIdRef.current !== requestId) {
+        return;
       }
+
+      setDailyDevotion((current) => {
+        if (
+          current?.slug === devotion?.slug &&
+          current?.reference === devotion?.reference &&
+          current?.verse === devotion?.verse &&
+          current?.devotion === devotion?.devotion
+        ) {
+          return current;
+        }
+
+        return devotion;
+      });
     }
 
+    const refreshWhenVisible = () => {
+      if (document.visibilityState !== "visible") {
+        return;
+      }
+
+      void loadDevotion();
+    };
+
+    const handleFocus = () => {
+      void loadDevotion();
+    };
+
+    const handleOnline = () => {
+      setIsOnline(true);
+      setImageLoadFailed(false);
+      void loadDevotion();
+    };
+
+    const handleOffline = () => {
+      setIsOnline(false);
+    };
+
     void loadDevotion();
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("pageshow", handleFocus);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
       isMounted = false;
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("pageshow", handleFocus);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
@@ -291,25 +339,6 @@ export default function DailyDevotionOverlay() {
       isMounted = false;
     };
   }, [dailyDevotion?.slug]);
-
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      setImageLoadFailed(false);
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-    };
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
 
   if (!dailyDevotion) {
     return <DailyDevotionSkeleton />;
