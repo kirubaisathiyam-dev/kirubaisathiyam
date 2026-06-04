@@ -1,7 +1,7 @@
 ---
 title: முன்னுரை
 bookFolder: the-mortification-of-sin
-order: 3
+order: 1
 date: 2026-06-05T16:57:50.600Z
 ---
 
