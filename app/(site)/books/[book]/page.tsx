@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllBooks, getBookBySlug } from "@/lib/books";
-import { toAbsoluteUrl } from "@/lib/seo";
+import { BOOKS_SECTION, getAllBooks, getBookBySlug } from "@/lib/books";
+import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 export const dynamicParams = false;
 
@@ -21,6 +21,10 @@ export function generateStaticParams() {
     : [{ book: "__placeholder__" }];
 }
 
+const siteUrl = getSiteUrl();
+const siteName = "Kirubai Sathiyam";
+const fallbackImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
+
 export async function generateMetadata({
   params,
 }: BookPageProps): Promise<Metadata> {
@@ -37,28 +41,37 @@ export async function generateMetadata({
     };
   }
 
-  const imageUrl = toAbsoluteUrl(entry.image || "/web-app-manifest-512x512.png");
+  const title = `${entry.title} | ${BOOKS_SECTION.label}`;
+  const description =
+    entry.summary ||
+    `${BOOKS_SECTION.label} பகுதியில் ${entry.title} புத்தகத்தின் அறிமுகமும் பொருளடக்கமும் தமிழில்.`;
+  const imageUrl = toAbsoluteUrl(
+    entry.image || BOOKS_SECTION.image || fallbackImage,
+  );
+  const canonicalPath = `/books/${entry.slug}`;
 
   return {
-    title: `${entry.title} | புத்தகங்கள்`,
-    description: entry.summary,
+    title,
+    description,
     keywords: entry.keywords.length ? entry.keywords : undefined,
     authors: entry.author ? [{ name: entry.author }] : undefined,
     alternates: {
-      canonical: `/books/${entry.slug}`,
+      canonical: canonicalPath,
     },
     openGraph: {
       type: "book",
-      url: `/books/${entry.slug}`,
-      title: `${entry.title} | புத்தகங்கள்`,
-      description: entry.summary,
-      siteName: "Kirubai Sathiyam",
+      url: canonicalPath,
+      title,
+      description,
+      siteName,
+      locale: "ta-IN",
+      authors: entry.author ? [entry.author] : undefined,
       images: [{ url: imageUrl }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${entry.title} | புத்தகங்கள்`,
-      description: entry.summary,
+      title,
+      description,
       images: [imageUrl],
     },
   };
@@ -72,16 +85,44 @@ export default async function BookPage({ params }: BookPageProps) {
     notFound();
   }
 
+  const bookUrl = toAbsoluteUrl(`/books/${entry.slug}`);
+  const imageUrl = toAbsoluteUrl(entry.image || BOOKS_SECTION.image || fallbackImage);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Book",
+    name: entry.title,
+    description: entry.summary,
+    author: entry.author
+      ? {
+          "@type": "Person",
+          name: entry.author,
+        }
+      : undefined,
+    datePublished: entry.date,
+    image: [imageUrl],
+    url: bookUrl,
+    publisher: {
+      "@type": "Organization",
+      name: siteName,
+      url: siteUrl.toString(),
+    },
+  };
+
   return (
     <div className="mx-auto max-w-4xl space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <header className="space-y-3">
         <div className="grid gap-6 md:grid-cols-[minmax(0,240px)_1fr] md:items-start">
-        {entry.image ? (
-          <div
-            className="relative h-auto w-full max-w-md overflow-hidden border "
-            style={{ borderColor: "var(--border-color)" }}
-          >
-            <div className="relative aspect-[3/4] w-full">
+          {entry.image ? (
+            <div
+              className="relative h-auto w-full max-w-md overflow-hidden border"
+              style={{ borderColor: "var(--border-color)" }}
+            >
+              <div className="relative aspect-[3/4] w-full">
                 <Image
                   src={entry.image}
                   alt={entry.title}
@@ -91,27 +132,27 @@ export default async function BookPage({ params }: BookPageProps) {
                   className="object-cover"
                 />
               </div>
-          </div>
-        ) : null}
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
-            {entry.title}
-          </h1>
-          <p style={{ color: "var(--muted-foreground)" }}>{entry.summary}</p>
-          <p
-            className="text-sm leading-7"
-            style={{ color: "var(--foreground-bible)" }}
-          >
-            {entry.author}
-          </p>
-          {entry.creditsHtml ? (
-            <div
-              className="prose prose-sm prose-neutral max-w-3xl text-sm leading-7 book-credits"
-              style={{ color: "var(--muted-foreground)" }}
-              dangerouslySetInnerHTML={{ __html: entry.creditsHtml }}
-            />
+            </div>
           ) : null}
-        </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
+              {entry.title}
+            </h1>
+            <p style={{ color: "var(--muted-foreground)" }}>{entry.summary}</p>
+            <p
+              className="text-sm leading-7"
+              style={{ color: "var(--foreground-bible)" }}
+            >
+              {entry.author}
+            </p>
+            {entry.creditsHtml ? (
+              <div
+                className="prose prose-sm prose-neutral max-w-3xl text-sm leading-7 book-credits"
+                style={{ color: "var(--muted-foreground)" }}
+                dangerouslySetInnerHTML={{ __html: entry.creditsHtml }}
+              />
+            ) : null}
+          </div>
         </div>
       </header>
 

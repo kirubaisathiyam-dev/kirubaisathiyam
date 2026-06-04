@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ContentReader from "@/components/ContentReader";
-import { getAllBookChapters, getAllBooks, getBookChapter } from "@/lib/books";
+import {
+  BOOKS_SECTION,
+  getAllBookChapters,
+  getAllBooks,
+  getBookChapter,
+} from "@/lib/books";
 import { getSiteUrl, toAbsoluteUrl } from "@/lib/seo";
 
 export const dynamicParams = false;
@@ -29,7 +34,9 @@ export function generateStaticParams() {
   return chapters.length > 0
     ? chapters.map((chapter) => ({
         book: chapter.bookSlug,
-        segments: chapter.sectionSlug ? [chapter.sectionSlug, chapter.slug] : [chapter.slug],
+        segments: chapter.sectionSlug
+          ? [chapter.sectionSlug, chapter.slug]
+          : [chapter.slug],
       }))
     : [{ book: "__placeholder__", segments: ["__placeholder__"] }];
 }
@@ -37,6 +44,32 @@ export function generateStaticParams() {
 const siteUrl = getSiteUrl();
 const siteName = "Kirubai Sathiyam";
 const fallbackImage = toAbsoluteUrl("/web-app-manifest-512x512.png");
+
+function getSharePreview(contentHtml: string, fallback: string, maxWords = 20) {
+  const text = contentHtml
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!text) {
+    return fallback;
+  }
+
+  const words = text.split(" ").filter(Boolean);
+  if (words.length <= maxWords) {
+    return text;
+  }
+
+  return `${words.slice(0, maxWords).join(" ")}...`;
+}
 
 export async function generateMetadata({
   params,
@@ -55,7 +88,7 @@ export async function generateMetadata({
 
   if (!chapter) {
     return {
-      title: "அதிகாரம் கிடைக்கவில்லை",
+      title: "அத்தியாயம் கிடைக்கவில்லை",
       robots: {
         index: false,
         follow: false,
@@ -63,23 +96,34 @@ export async function generateMetadata({
     };
   }
 
-  const imageUrl = toAbsoluteUrl(chapter.image || bookMeta?.image || fallbackImage);
   const title = `${chapter.title} | ${chapter.bookTitle}`;
-  const description = chapter.excerpt || `${chapter.bookTitle} புத்தகத்தின் தமிழ் அதிகாரம்.`;
+  const description =
+    chapter.excerpt ||
+    (chapter.sectionLabel
+      ? `${BOOKS_SECTION.label} பகுதியில் ${chapter.bookTitle} / ${chapter.sectionLabel} குறித்த தமிழ் அத்தியாயம்.`
+      : `${BOOKS_SECTION.label} பகுதியில் ${chapter.bookTitle} குறித்த தமிழ் அத்தியாயம்.`);
+  const imageUrl = toAbsoluteUrl(
+    chapter.image || bookMeta?.image || BOOKS_SECTION.image || fallbackImage,
+  );
+  const canonicalPath = buildBookChapterHref(book, slug, sectionSlug);
 
   return {
     title,
     description,
+    keywords: bookMeta?.keywords.length ? bookMeta.keywords : undefined,
     authors: chapter.author ? [{ name: chapter.author }] : undefined,
     alternates: {
-      canonical: buildBookChapterHref(book, slug, sectionSlug),
+      canonical: canonicalPath,
     },
     openGraph: {
       type: "article",
-      url: buildBookChapterHref(book, slug, sectionSlug),
+      url: canonicalPath,
       title,
       description,
       siteName,
+      locale: "ta-IN",
+      publishedTime: chapter.date,
+      authors: chapter.author ? [chapter.author] : undefined,
       images: [{ url: imageUrl }],
     },
     twitter: {
@@ -120,17 +164,33 @@ export default async function BookChapterPage({ params }: BookChapterPageProps) 
       ? chapters[chapterIndex + 1]
       : undefined;
   const chapterUrl = toAbsoluteUrl(buildBookChapterHref(book, slug, sectionSlug));
-  const imageUrl = chapter.image
-    ? toAbsoluteUrl(chapter.image)
-    : bookMeta?.image
-      ? toAbsoluteUrl(bookMeta.image)
-      : fallbackImage;
-  const shareText = chapter.excerpt || `${chapter.title} from ${chapter.bookTitle}.`;
+  const imageUrl = toAbsoluteUrl(
+    chapter.image || bookMeta?.image || BOOKS_SECTION.image || fallbackImage,
+  );
+  const sharePreview = getSharePreview(
+    chapter.contentHtml,
+    chapter.sectionLabel
+      ? `${chapter.sectionLabel} பகுதியிலுள்ள ${chapter.bookTitle} அத்தியாயம்.`
+      : `${chapter.bookTitle} புத்தகத்திலுள்ள தமிழ் அத்தியாயம்.`,
+  );
+  const shareText = [
+    chapter.title,
+    chapter.sectionLabel
+      ? `${chapter.bookTitle} · ${chapter.sectionLabel}`
+      : chapter.bookTitle,
+    sharePreview,
+    "மேலும் வாசிக்க",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Chapter",
+    "@type": "Article",
     headline: chapter.title,
     description: chapter.excerpt,
+    articleSection: chapter.sectionLabel
+      ? `${BOOKS_SECTION.label} / ${chapter.bookTitle} / ${chapter.sectionLabel}`
+      : `${BOOKS_SECTION.label} / ${chapter.bookTitle}`,
     isPartOf: {
       "@type": "Book",
       name: chapter.bookTitle,

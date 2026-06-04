@@ -3,12 +3,13 @@ import BooksBrowser from "@/components/BooksBrowser";
 import { BOOKS_SECTION, getAllBooks } from "@/lib/books";
 import { toAbsoluteUrl } from "@/lib/seo";
 
-const shareImage = toAbsoluteUrl(BOOKS_SECTION.image || "/web-app-manifest-512x512.png");
+const shareImage = toAbsoluteUrl(
+  BOOKS_SECTION.image || "/web-app-manifest-512x512.png",
+);
 
 export const metadata: Metadata = {
   title: "புத்தகங்கள் | தமிழ் கிறிஸ்தவ புத்தகங்கள்",
-  description:
-    "முகப்பு சுருக்கம், அட்டைப்படம், மற்றும் அதிகார வாரியான வழிசெலுத்தலுடன் தமிழ் கிறிஸ்தவ புத்தகங்களை வாசிக்கவும்.",
+  description: BOOKS_SECTION.description,
   keywords: [
     "தமிழ் கிறிஸ்தவ புத்தகங்கள்",
     "தமிழில் கிறிஸ்தவ புத்தகங்கள்",
@@ -22,16 +23,14 @@ export const metadata: Metadata = {
     type: "website",
     url: "/books",
     title: "புத்தகங்கள் | தமிழ் கிறிஸ்தவ புத்தகங்கள்",
-    description:
-      "முகப்பு சுருக்கம், அட்டைப்படம், மற்றும் அதிகார வாரியான வழிசெலுத்தலுடன் தமிழ் கிறிஸ்தவ புத்தகங்களை வாசிக்கவும்.",
+    description: BOOKS_SECTION.description,
     siteName: "Kirubai Sathiyam",
     images: [{ url: shareImage }],
   },
   twitter: {
     card: "summary_large_image",
     title: "புத்தகங்கள் | தமிழ் கிறிஸ்தவ புத்தகங்கள்",
-    description:
-      "முகப்பு சுருக்கம், அட்டைப்படம், மற்றும் அதிகார வாரியான வழிசெலுத்தலுடன் தமிழ் கிறிஸ்தவ புத்தகங்களை வாசிக்கவும்.",
+    description: BOOKS_SECTION.description,
     images: [shareImage],
   },
 };
@@ -46,7 +45,7 @@ export default function BooksPage() {
           புத்தகங்கள்
         </h1>
         <p style={{ color: "var(--muted-foreground)" }}>
-          முகப்பு சுருக்கத்துடன் மற்றும் அதிகார வாரியான வாசிப்பு அமைப்புடன் முழு புத்தகங்கள்.
+          {BOOKS_SECTION.description}
         </p>
       </header>
 

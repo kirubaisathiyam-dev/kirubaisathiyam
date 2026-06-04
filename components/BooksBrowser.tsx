@@ -90,12 +90,6 @@ export default function BooksBrowser({ books }: Props) {
                     </div>
                   ) : null}
                   <div className="space-y-3 p-4 sm:p-5">
-                    <p
-                      className="text-xs font-semibold uppercase tracking-wide"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
-                      புத்தகம்
-                    </p>
                     <h2 className="text-lg font-semibold leading-snug">
                       {book.title}
                     </h2>

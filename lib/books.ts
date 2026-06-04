@@ -17,9 +17,9 @@ const booksChaptersDirectory = path.join(process.cwd(), "content/books/chapters"
 export const BOOKS_SECTION = {
   slug: "books",
   image: "/images/history.jpg",
-  label: "Books",
+  label: "புத்தகங்கள்",
   description:
-    "Christian books in Tamil with a book introduction, cover, and chapter-by-chapter reading experience.",
+    "சீர்திருத்தக் கிறிஸ்தவ சத்தியங்கள், பரிசுத்த வாழ்வு, மனந்திரும்புதல், விசுவாசம், மற்றும் தேவனுக்குப் பயந்து நடக்கும் வாழ்க்கைக்குத் துணைசெய்யும் தமிழ் கிறிஸ்தவ புத்தகங்கள்.",
 } as const;
 
 export type BookMeta = {
