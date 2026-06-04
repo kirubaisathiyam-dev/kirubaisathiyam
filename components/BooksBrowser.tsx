@@ -106,14 +106,6 @@ export default function BooksBrowser({ books }: Props) {
                       {book.author}
                     </p>
                     <p className="text-sm leading-relaxed">{book.summary}</p>
-                    <p
-                      className="text-xs"
-                      style={{ color: "var(--muted-foreground)" }}
-                    >
-                      {book.sectionCount} பிரிவு
-                      {book.sectionCount === 1 ? "" : "கள்"} · {book.chapterCount} அதிகாரம்
-                      {book.chapterCount === 1 ? "" : "கள்"}
-                    </p>
                   </div>
                 </div>
               </Link>

@@ -229,7 +229,7 @@ export default function Home() {
 
       <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Books</h2>
+          <h2 className="text-xl font-semibold">புத்தகங்கள்</h2>
           <Link
             href="/books"
             className="inline-flex items-center gap-1 text-xs font-semibold hover:underline"
@@ -264,12 +264,7 @@ export default function Home() {
                 </div>
               ) : null}
               <div className="space-y-2 p-4">
-                <p
-                  className="text-xs font-semibold uppercase tracking-wide"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  Book
-                </p>
+      
                 <div className="text-lg font-semibold leading-snug hover:underline">
                   {book.title}
                 </div>
@@ -283,7 +278,7 @@ export default function Home() {
                   className="text-sm"
                   style={{ color: "var(--muted-foreground)" }}
                 >
-                  {book.sectionCount} sections · {book.chapterCount} chapters
+                  {book.sectionCount} பிரிவுகள் · {book.chapterCount} அதிகாரங்கள்
                 </p>
               </div>
             </Link>
