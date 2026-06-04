@@ -1,13 +1,8 @@
 ---
 title: முன்னுரை
-book: The Mortification of Sin (பாவத்தை அழித்தல்)
-section: ''
-sectionFolder: ''
-author: John Owen
-keywords:
-  - The Mortification of Sin (பாவத்தை அழித்தல்)
-order: 1
-date: 2026-06-05T10:09:53.513Z
+bookFolder: the-mortification-of-sin
+order: 3
+date: 2026-06-05T16:57:50.600Z
 ---
 
 கிறிஸ்தவ வாசகரே,

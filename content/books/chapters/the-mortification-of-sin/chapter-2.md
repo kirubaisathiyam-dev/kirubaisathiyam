@@ -1,5 +1,5 @@
 ---
-title: அதிகாரம் II
+title: அத்தியாயம் II
 bookFolder: the-mortification-of-sin
 order: 3
 date: 2026-06-05T16:57:50.600Z
