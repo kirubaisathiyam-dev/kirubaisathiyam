@@ -26,6 +26,16 @@ export default function ReaderShell({ children }: ReaderShellProps) {
   const getBackHref = () => {
     if (!pathname) return "/";
     if (pathname.startsWith("/articles/")) return "/articles";
+    if (pathname.startsWith("/books/")) {
+      const parts = pathname.split("/").filter(Boolean);
+      if (parts.length >= 4) {
+        return `/books/${parts[1]}#${parts[2]}`;
+      }
+      if (parts.length >= 2) {
+        return `/books/${parts[1]}`;
+      }
+      return "/books";
+    }
     if (pathname.startsWith("/bible/read")) return "/bible";
     if (/^\/bible\/[^/]+\/[^/]+(?:\/[^/]+)?$/.test(pathname)) return "/bible";
     if (pathname === "/meditate") {

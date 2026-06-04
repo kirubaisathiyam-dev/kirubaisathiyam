@@ -43,3 +43,26 @@ fragment ChurchHistoryParts on ChurchHistory {
   date
   body
 }
+
+fragment BookParts on Book {
+  __typename
+  title
+  bookFolder
+  date
+  author
+  keywords
+  summary
+  credits
+  image
+}
+
+fragment BookChapterParts on BookChapter {
+  __typename
+  title
+  bookFolder
+  section
+  sectionFolder
+  order
+  date
+  body
+}

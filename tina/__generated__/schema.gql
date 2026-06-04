@@ -62,6 +62,10 @@ type Query {
   reformedTheologyConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ReformedTheologyFilter): ReformedTheologyConnection!
   churchHistory(relativePath: String): ChurchHistory!
   churchHistoryConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: ChurchHistoryFilter): ChurchHistoryConnection!
+  book(relativePath: String): Book!
+  bookConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: BookFilter): BookConnection!
+  bookChapter(relativePath: String): BookChapter!
+  bookChapterConnection(before: String, after: String, first: Float, last: Float, sort: String, filter: BookChapterFilter): BookChapterConnection!
 }
 
 input DocumentFilter {
@@ -69,6 +73,8 @@ input DocumentFilter {
   systematicTheology: SystematicTheologyFilter
   reformedTheology: ReformedTheologyFilter
   churchHistory: ChurchHistoryFilter
+  book: BookFilter
+  bookChapter: BookChapterFilter
 }
 
 type DocumentConnectionEdges {
@@ -94,7 +100,7 @@ type Collection {
   documents(before: String, after: String, first: Float, last: Float, sort: String, filter: DocumentFilter, folder: String): DocumentConnection!
 }
 
-union DocumentNode = Article | SystematicTheology | ReformedTheology | ChurchHistory | Folder
+union DocumentNode = Article | SystematicTheology | ReformedTheology | ChurchHistory | Book | BookChapter | Folder
 
 type Article implements Node & Document {
   title: String!
@@ -274,6 +280,76 @@ type ChurchHistoryConnection implements Connection {
   edges: [ChurchHistoryConnectionEdges]
 }
 
+type Book implements Node & Document {
+  title: String!
+  bookFolder: String
+  date: String!
+  author: String!
+  keywords: [String!]!
+  summary: String
+  credits: String
+  image: String
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input BookFilter {
+  title: StringFilter
+  bookFolder: StringFilter
+  date: DatetimeFilter
+  author: StringFilter
+  keywords: StringFilter
+  summary: StringFilter
+  credits: StringFilter
+  image: ImageFilter
+}
+
+type BookConnectionEdges {
+  cursor: String!
+  node: Book
+}
+
+type BookConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [BookConnectionEdges]
+}
+
+type BookChapter implements Node & Document {
+  title: String!
+  bookFolder: String!
+  section: String
+  sectionFolder: String
+  order: Float
+  date: String!
+  body: JSON!
+  id: ID!
+  _sys: SystemInfo!
+  _values: JSON!
+}
+
+input BookChapterFilter {
+  title: StringFilter
+  bookFolder: StringFilter
+  section: StringFilter
+  sectionFolder: StringFilter
+  order: NumberFilter
+  date: DatetimeFilter
+  body: RichTextFilter
+}
+
+type BookChapterConnectionEdges {
+  cursor: String!
+  node: BookChapter
+}
+
+type BookChapterConnection implements Connection {
+  pageInfo: PageInfo!
+  totalCount: Float!
+  edges: [BookChapterConnectionEdges]
+}
+
 type Mutation {
   addPendingDocument(collection: String!, relativePath: String!, template: String): DocumentNode!
   updateDocument(collection: String, relativePath: String!, params: DocumentUpdateMutation!): DocumentNode!
@@ -288,6 +364,10 @@ type Mutation {
   createReformedTheology(relativePath: String!, params: ReformedTheologyMutation!): ReformedTheology!
   updateChurchHistory(relativePath: String!, params: ChurchHistoryMutation!): ChurchHistory!
   createChurchHistory(relativePath: String!, params: ChurchHistoryMutation!): ChurchHistory!
+  updateBook(relativePath: String!, params: BookMutation!): Book!
+  createBook(relativePath: String!, params: BookMutation!): Book!
+  updateBookChapter(relativePath: String!, params: BookChapterMutation!): BookChapter!
+  createBookChapter(relativePath: String!, params: BookChapterMutation!): BookChapter!
 }
 
 input DocumentUpdateMutation {
@@ -295,6 +375,8 @@ input DocumentUpdateMutation {
   systematicTheology: SystematicTheologyMutation
   reformedTheology: ReformedTheologyMutation
   churchHistory: ChurchHistoryMutation
+  book: BookMutation
+  bookChapter: BookChapterMutation
   relativePath: String
 }
 
@@ -303,6 +385,8 @@ input DocumentMutation {
   systematicTheology: SystematicTheologyMutation
   reformedTheology: ReformedTheologyMutation
   churchHistory: ChurchHistoryMutation
+  book: BookMutation
+  bookChapter: BookChapterMutation
 }
 
 input ArticleMutation {
@@ -342,6 +426,27 @@ input ChurchHistoryMutation {
   subsectionFolder: String
   group: String
   groupFolder: String
+  order: Float
+  date: String
+  body: JSON
+}
+
+input BookMutation {
+  title: String
+  bookFolder: String
+  date: String
+  author: String
+  keywords: [String]
+  summary: String
+  credits: String
+  image: String
+}
+
+input BookChapterMutation {
+  title: String
+  bookFolder: String
+  section: String
+  sectionFolder: String
   order: Float
   date: String
   body: JSON

@@ -160,6 +160,14 @@ export default function SiteHeader() {
                   கட்டுரைகள்
                 </Link>
                 <Link
+                  href="/books"
+                  className="px-3 py-4 hover:opacity-70 border-t"
+                  style={{ borderColor: "var(--border-color)" }}
+                  onClick={() => setOpen(false)}
+                >
+                  Books
+                </Link>
+                <Link
                   href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
                   target="_blank"
                   rel="noreferrer"

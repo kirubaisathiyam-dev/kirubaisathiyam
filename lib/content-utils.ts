@@ -14,10 +14,15 @@ export type MarkdownFrontmatter = {
   author?: unknown;
   image?: unknown;
   summary?: unknown;
+  credits?: unknown;
   tags?: unknown;
   keywords?: unknown;
   audio?: unknown;
   order?: unknown;
+  book?: unknown;
+  bookFolder?: unknown;
+  section?: unknown;
+  sectionFolder?: unknown;
   subsection?: unknown;
   subsectionFolder?: unknown;
   group?: unknown;

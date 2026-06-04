@@ -52,6 +52,21 @@ function createChurchHistoryFilePath(subsectionFolderValue, groupFolderValue, da
   }
   return `${subsectionFolder}/${fileName}`;
 }
+function createBookFolderSlug(value, fallbackValue) {
+  return createSubsectionFolderSlug(value || fallbackValue);
+}
+function createBookMetaPath(bookFolderValue, titleValue) {
+  return createBookFolderSlug(bookFolderValue, titleValue);
+}
+function createBookChapterFilePath(bookFolderValue, sectionFolderValue, sectionValue, dateValue) {
+  const fileName = createTimestampSlug(dateValue);
+  const bookFolder = createBookFolderSlug(bookFolderValue, "book");
+  if (typeof sectionValue === "string" && sectionValue.trim()) {
+    const sectionFolder = createBookFolderSlug(sectionFolderValue, sectionValue);
+    return `${bookFolder}/${sectionFolder}/${fileName}`;
+  }
+  return `${bookFolder}/${fileName}`;
+}
 function createDateField() {
   return {
     type: "datetime",
@@ -95,6 +110,17 @@ function createSummaryField() {
     ui: {
       component: "textarea"
     }
+  };
+}
+function createCreditsField() {
+  return {
+    type: "string",
+    name: "credits",
+    label: "Credits",
+    ui: {
+      component: "textarea"
+    },
+    description: "Source, translator, reviewer, and original-link note shown on the front of the book page. Markdown links are supported."
   };
 }
 function createImageField() {
@@ -166,6 +192,33 @@ function createGroupFolderField() {
     label: "Sub-subsection Folder",
     required: false,
     description: "English folder name for the nested group, for example: preparation-for-christianity."
+  };
+}
+function createBookFolderField() {
+  return {
+    type: "string",
+    name: "bookFolder",
+    label: "Book Folder",
+    required: false,
+    description: "English folder name for the book, for example: the-mortification-of-sin."
+  };
+}
+function createSectionField() {
+  return {
+    type: "string",
+    name: "section",
+    label: "Section",
+    required: false,
+    description: "Optional visible section name inside the book."
+  };
+}
+function createSectionFolderField() {
+  return {
+    type: "string",
+    name: "sectionFolder",
+    label: "Section Folder",
+    required: false,
+    description: "English folder name for the section, for example: the-nature-of-mortification."
   };
 }
 function createArticleFields() {
@@ -333,6 +386,72 @@ var config_default = defineConfig({
           createGroupField(),
           createGroupFolderField(),
           ...createTheologyFields()
+        ]
+      },
+      {
+        name: "book",
+        label: "Books",
+        path: "content/books/meta",
+        format: "md",
+        ui: {
+          filename: {
+            slugify: (values) => createBookMetaPath(values.bookFolder, values.title),
+            description: "Each book introduction is stored as one markdown file using the book slug."
+          }
+        },
+        fields: [
+          {
+            type: "string",
+            name: "title",
+            label: "Title",
+            isTitle: true,
+            required: true
+          },
+          createBookFolderField(),
+          createDateField(),
+          createAuthorField(),
+          createKeywordsField(),
+          createSummaryField(),
+          createCreditsField(),
+          createImageField()
+        ]
+      },
+      {
+        name: "bookChapter",
+        label: "Book Chapters",
+        path: "content/books/chapters",
+        format: "md",
+        ui: {
+          filename: {
+            slugify: (values) => createBookChapterFilePath(
+              values.bookFolder,
+              values.sectionFolder,
+              values.section,
+              values.date
+            ),
+            description: "Each chapter is stored as a timestamp-named markdown file inside the book and section folders."
+          }
+        },
+        fields: [
+          {
+            type: "string",
+            name: "title",
+            label: "Title",
+            isTitle: true,
+            required: true
+          },
+          {
+            type: "string",
+            name: "bookFolder",
+            label: "Book Folder",
+            required: true,
+            description: "Book folder slug, for example: the-mortification-of-sin."
+          },
+          createSectionField(),
+          createSectionFolderField(),
+          createOrderField(),
+          createDateField(),
+          createBodyField()
         ]
       }
     ]

@@ -184,6 +184,7 @@ body[data-theme="light"] {
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -200,12 +201,10 @@ body[data-theme="light"] {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--skeleton-highlight) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      var(--skeleton-highlight) 50%,
+      transparent 100%);
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
 }
 
@@ -214,18 +213,17 @@ body[data-theme="light"] {
 }
 
 .skeleton-block-contrast::after {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 50%,
+      transparent 100%);
 }
 
 @keyframes page-enter {
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
@@ -244,6 +242,7 @@ body[data-theme="light"] {
   0% {
     opacity: 0.22;
   }
+
   100% {
     opacity: 0;
   }
@@ -255,15 +254,14 @@ body[data-theme="light"] {
   pointer-events: none;
   z-index: 70;
   background:
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       var(--background) 0%,
-      rgba(0, 0, 0, 0) 38%
-    );
+      rgba(0, 0, 0, 0) 38%);
   animation: page-veil 320ms ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .page-transition-enter,
   .page-transition-veil,
   .skeleton-block::after,
@@ -287,25 +285,23 @@ body {
   max-width: 100%;
 }
 
-body :where(
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6,
-    p,
-    li,
-    blockquote,
-    figcaption,
-    label,
-    a,
-    button,
-    td,
-    th,
-    .verse-text,
-    .bible-tooltip
-  ) {
+body :where(h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  li,
+  blockquote,
+  figcaption,
+  label,
+  a,
+  button,
+  td,
+  th,
+  .verse-text,
+  .bible-tooltip) {
   overflow-wrap: anywhere;
   word-break: normal;
   hyphens: manual;
@@ -383,6 +379,10 @@ button:disabled {
 .prose pre {
   border: 1px solid var(--border-color);
   background: var(--background);
+}
+
+.book-credits a {
+  color: var(--foreground-bible) !important;
 }
 
 pre,

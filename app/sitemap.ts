@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/articles";
+import { getAllBookChapters, getAllBooks } from "@/lib/books";
 import dailyDevotionRecords from "@/public/daily-devotion.json";
 import {
   getAllChurchHistoryTopics,
@@ -20,6 +21,8 @@ import {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = getSiteUrl().toString().replace(/\/$/, "");
   const articles = getAllArticles();
+  const books = getAllBooks();
+  const bookChapters = getAllBookChapters();
   const churchHistoryTopics = getAllChurchHistoryTopics();
   const theologyTopics = getAllTheologyTopics();
   const devotionRecords = dailyDevotionRecords as DailyDevotionRecord[];
@@ -36,12 +39,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const latestChurchHistoryDate = churchHistoryTopics[0]?.date
     ? new Date(churchHistoryTopics[0].date)
     : latestArticleDate;
+  const latestBookDate = books[0]?.latestDate
+    ? new Date(books[0].latestDate)
+    : latestArticleDate;
   const latestContentDate =
     Math.max(
+      latestBookDate.getTime(),
       latestTheologyDate.getTime(),
       latestChurchHistoryDate.getTime(),
       latestArticleDate.getTime(),
-    ) === latestTheologyDate.getTime()
+    ) === latestBookDate.getTime()
+      ? latestBookDate
+      : Math.max(
+            latestTheologyDate.getTime(),
+            latestChurchHistoryDate.getTime(),
+            latestArticleDate.getTime(),
+          ) === latestTheologyDate.getTime()
       ? latestTheologyDate
       : Math.max(
             latestChurchHistoryDate.getTime(),
@@ -76,6 +89,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: `${siteUrl}/books`,
+      lastModified: latestBookDate,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
       url: `${siteUrl}/bible`,
       lastModified: new Date(),
       changeFrequency: "weekly",
@@ -100,6 +119,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(article.date),
     changeFrequency: "monthly",
     priority: 0.8,
+  }));
+
+  const bookEntries: MetadataRoute.Sitemap = books.map((book) => ({
+    url: `${siteUrl}/books/${book.slug}`,
+    lastModified: new Date(book.latestDate || book.date),
+    changeFrequency: "monthly",
+    priority: 0.75,
+  }));
+
+  const bookChapterEntries: MetadataRoute.Sitemap = bookChapters.map((chapter) => ({
+    url: chapter.sectionSlug
+      ? `${siteUrl}/books/${chapter.bookSlug}/${chapter.sectionSlug}/${chapter.slug}`
+      : `${siteUrl}/books/${chapter.bookSlug}/${chapter.slug}`,
+    lastModified: new Date(chapter.date),
+    changeFrequency: "monthly",
+    priority: 0.74,
   }));
 
   const theologyDatesBySection = new Map(
@@ -200,6 +235,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     ...staticEntries,
     ...articleEntries,
+    ...bookEntries,
+    ...bookChapterEntries,
     ...theologySectionEntries,
     ...theologySubsectionEntries,
     ...theologyTopicEntries,

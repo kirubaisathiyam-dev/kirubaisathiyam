@@ -6,6 +6,7 @@ import DailyDevotionOverlay from "@/components/DailyDevotionOverlay";
 import RecentArticlesCarousel from "@/components/RecentArticlesCarousel";
 import RecentTheologyCarousel from "@/components/RecentTheologyCarousel";
 import { getAllArticles } from "@/lib/articles";
+import { getAllBooks } from "@/lib/books";
 import { CHURCH_HISTORY_SECTION } from "@/lib/church-history";
 import { formatTamilDate } from "@/lib/date";
 import { toAbsoluteUrl } from "@/lib/seo";
@@ -64,8 +65,10 @@ export const metadata: Metadata = {
 
 export default function Home() {
   const articles = getAllArticles();
+  const books = getAllBooks();
   const theologySections = getTheologySectionsWithTopics();
   const recentArticles = articles.slice(0, 6);
+  const recentBooks = books.slice(0, 6);
 
   return (
     <div className="space-y-16">
@@ -217,6 +220,70 @@ export default function Home() {
                   style={{ color: "var(--muted-foreground)" }}
                 >
                   {formatTamilDate(article.date)} · {article.author}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-5xl space-y-6 px-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Books</h2>
+          <Link
+            href="/books"
+            className="inline-flex items-center gap-1 text-xs font-semibold hover:underline"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            மேலும்
+            <ArrowRightIcon style={{ width: 15, height: 15 }} />
+          </Link>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {recentBooks.map((book) => (
+            <Link
+              href={`/books/${book.slug}`}
+              key={book.slug}
+              className="flex h-full flex-col border"
+              style={{ borderColor: "var(--border-color)" }}
+            >
+              {book.image ? (
+                <div
+                  className="overflow-hidden border"
+                  style={{ borderColor: "var(--border-color)" }}
+                >
+                  <div className="relative aspect-[3/4] w-full">
+                    <Image
+                      src={book.image}
+                      alt={book.title}
+                      fill
+                      sizes="(min-width: 1024px) 18rem, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+              ) : null}
+              <div className="space-y-2 p-4">
+                <p
+                  className="text-xs font-semibold uppercase tracking-wide"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  Book
+                </p>
+                <div className="text-lg font-semibold leading-snug hover:underline">
+                  {book.title}
+                </div>
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  {book.author}
+                </p>
+                <p
+                  className="text-sm"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  {book.sectionCount} sections · {book.chapterCount} chapters
                 </p>
               </div>
             </Link>
