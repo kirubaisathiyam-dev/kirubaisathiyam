@@ -61,6 +61,15 @@ type ChurchHistoryTopicMetaWithSort = ChurchHistoryTopicMeta & {
   sortDate: Date;
 };
 
+type ChurchHistoryGroupWithSort = ChurchHistoryGroup & {
+  sortOrder: number;
+};
+
+type ChurchHistorySubsectionWithSort = Omit<ChurchHistorySubsection, "groups"> & {
+  groups: ChurchHistoryGroupWithSort[];
+  sortOrder: number;
+};
+
 function parseOrder(value: unknown) {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -107,16 +116,16 @@ function compareTopics(
   a: ChurchHistoryTopicMetaWithSort,
   b: ChurchHistoryTopicMetaWithSort,
 ) {
+  if (a.order !== b.order) {
+    return a.order - b.order;
+  }
+
   if (a.subsectionLabel !== b.subsectionLabel) {
     return a.subsectionLabel.localeCompare(b.subsectionLabel);
   }
 
   if ((a.groupLabel || "") !== (b.groupLabel || "")) {
     return (a.groupLabel || "").localeCompare(b.groupLabel || "");
-  }
-
-  if (a.order !== b.order) {
-    return a.order - b.order;
   }
 
   if (a.title !== b.title) {
@@ -253,29 +262,71 @@ export function getChurchHistorySubsections() {
   }
 
   return Array.from(grouped.values())
-    .map((subsection) => ({
-      ...subsection,
-      directTopics: subsection.directTopics.sort((a, b) => {
+    .map((subsection): ChurchHistorySubsectionWithSort => {
+      const directTopics = subsection.directTopics.sort((a, b) => {
         if (a.order !== b.order) {
           return a.order - b.order;
         }
 
         return a.title.localeCompare(b.title);
-      }),
-      groups: subsection.groups
-        .map((group) => ({
-          ...group,
-          topics: group.topics.sort((a, b) => {
+      });
+
+      const groups = subsection.groups
+        .map((group): ChurchHistoryGroupWithSort => {
+          const topics = group.topics.sort((a, b) => {
             if (a.order !== b.order) {
               return a.order - b.order;
             }
 
             return a.title.localeCompare(b.title);
-          }),
-        }))
-        .sort((a, b) => a.label.localeCompare(b.label)),
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+          });
+
+          return {
+            ...group,
+            topics,
+            sortOrder: topics[0]?.order ?? Number.MAX_SAFE_INTEGER,
+          };
+        })
+        .sort((a, b) => {
+          if (a.sortOrder !== b.sortOrder) {
+            return a.sortOrder - b.sortOrder;
+          }
+
+          return a.label.localeCompare(b.label);
+        });
+
+      return {
+        ...subsection,
+        directTopics,
+        groups,
+        sortOrder: Math.min(
+          directTopics[0]?.order ?? Number.MAX_SAFE_INTEGER,
+          groups[0]?.sortOrder ?? Number.MAX_SAFE_INTEGER,
+        ),
+      };
+    })
+    .sort((a, b) => {
+      if (a.sortOrder !== b.sortOrder) {
+        return a.sortOrder - b.sortOrder;
+      }
+
+      return a.label.localeCompare(b.label);
+    })
+    .map(
+      ({
+        sortOrder: _sortOrder,
+        groups,
+        ...subsection
+      }: ChurchHistorySubsectionWithSort) => ({
+        ...subsection,
+        groups: groups.map(
+          ({
+            sortOrder: _groupSortOrder,
+            ...group
+          }: ChurchHistoryGroupWithSort) => group,
+        ),
+      }),
+    );
 }
 
 export function getChurchHistorySubsection(subsectionSlug: string) {
