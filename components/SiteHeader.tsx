@@ -165,7 +165,7 @@ export default function SiteHeader() {
                   style={{ borderColor: "var(--border-color)" }}
                   onClick={() => setOpen(false)}
                 >
-                  Books
+                  புத்தகங்கள் 
                 </Link>
                 <Link
                   href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"

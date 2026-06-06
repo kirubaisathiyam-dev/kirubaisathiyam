@@ -51,8 +51,8 @@ export default function BooksBrowser({ books }: Props) {
 
       <div className="flex items-center justify-between text-sm">
         <p style={{ color: "var(--muted-foreground)" }}>
-          {filteredBooks.length} புத்தகம்
-          {filteredBooks.length === 1 ? "" : "கள்"}
+          {filteredBooks.length} புத்தக
+          {filteredBooks.length === 1 ? "ம்" : "ங்கள்"}
         </p>
       </div>
 
