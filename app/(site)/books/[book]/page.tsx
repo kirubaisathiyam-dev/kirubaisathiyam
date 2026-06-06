@@ -167,7 +167,7 @@ export default async function BookPage({ params }: BookPageProps) {
         <ol className="space-y-10">
           {entry.directChapters.length > 0 ? (
             <li className="list-none">
-              <div className="space-y-4 pl-4">
+              <div className="space-y-4 pl-0 sm:pl-4">
                 <ol className="space-y-3">
                   {entry.directChapters.map((chapter, chapterIndex) => (
                     <li key={chapter.slug} className="list-none">
@@ -193,7 +193,7 @@ export default async function BookPage({ params }: BookPageProps) {
               id={section.slug}
               className="list-none scroll-mt-24"
             >
-              <div className="space-y-4 pl-4">
+              <div className="space-y-4 pl-0 sm:pl-4">
                 <div className="flex items-baseline">
                   <span className="w-8 flex-none text-lg">
                     {entry.directChapters.length + sectionIndex + 1}.
@@ -203,7 +203,7 @@ export default async function BookPage({ params }: BookPageProps) {
                   </h2>
                 </div>
 
-                <div className="space-y-3 pl-6">
+                <div className="space-y-3 pl-0 sm:pl-6">
                   <ol className="space-y-3">
                     {section.chapters.map((chapter, chapterIndex) => (
                       <li key={chapter.slug} className="list-none">

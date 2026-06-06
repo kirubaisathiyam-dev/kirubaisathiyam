@@ -114,7 +114,7 @@ export default function ChurchHistoryPage() {
               key={subsection.slug}
               className="list-none scroll-mt-24"
             >
-              <div className="space-y-4 pl-4">
+              <div className="space-y-4 pl-0 sm:pl-4">
                 <div className="flex items-baseline">
                   <span className="w-8 flex-none text-xl font-semibold">
                     {subsectionIndex + 1}.
@@ -124,7 +124,7 @@ export default function ChurchHistoryPage() {
                   </h2>
                 </div>
 
-                <div className="space-y-4 pl-4">
+                <div className="space-y-4 pl-0 sm:pl-4">
                   {subsection.directTopics.length > 0 ? (
                     <ol className="space-y-3">
                       {subsection.directTopics.map((topic, topicIndex) => (
@@ -156,7 +156,7 @@ export default function ChurchHistoryPage() {
                         className="space-y-3 scroll-mt-24"
                       >
                         <div className="flex items-baseline">
-                          <span className="w-16 flex-none text-base font-semibold">
+                          <span className="w-12 flex-none text-base font-semibold">
                             {subsectionIndex + 1}.{groupNumber}.
                           </span>
                           <h3 className="flex-1 text-lg font-semibold">
@@ -164,14 +164,14 @@ export default function ChurchHistoryPage() {
                           </h3>
                         </div>
 
-                        <ol className="space-y-3 pl-6">
+                        <ol className="space-y-3 pl-0 sm:pl-6">
                           {group.topics.map((topic, topicIndex) => (
                             <li key={topic.slug} className="list-none">
                               <Link
                                 href={`/church-history/${subsection.slug}/${group.slug}/${topic.slug}`}
                                 className="group flex items-baseline text-base leading-relaxed"
                               >
-                                <span className="w-20 flex-none">
+                                <span className="w-16 flex-none">
                                   {subsectionIndex + 1}.{groupNumber}.
                                   {topicIndex + 1}.
                                 </span>
