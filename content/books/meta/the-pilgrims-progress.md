@@ -1,5 +1,5 @@
 ---
-title: மோட்சப்பயணம்
+title: மோட்சப்பயணம் (The Pilgrim''s Progress)
 bookFolder: the-pilgrims-progress
 date: 2026-06-06T07:24:27.413Z
 author: ஜான் பனியன்

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRightIcon, VolumeIcon } from "@/components/Icons";
 import DailyDevotionOverlay from "@/components/DailyDevotionOverlay";
 import RecentArticlesCarousel from "@/components/RecentArticlesCarousel";
+import RecentBooksCarousel from "@/components/RecentBooksCarousel";
 import RecentTheologyCarousel from "@/components/RecentTheologyCarousel";
 import { getAllArticles } from "@/lib/articles";
 import { getAllBooks } from "@/lib/books";
@@ -239,51 +240,7 @@ export default function Home() {
             <ArrowRightIcon style={{ width: 15, height: 15 }} />
           </Link>
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {recentBooks.map((book) => (
-            <Link
-              href={`/books/${book.slug}`}
-              key={book.slug}
-              className="flex h-full flex-col border"
-              style={{ borderColor: "var(--border-color)" }}
-            >
-              {book.image ? (
-                <div
-                  className="overflow-hidden border"
-                  style={{ borderColor: "var(--border-color)" }}
-                >
-                  <div className="relative aspect-[3/4] w-full">
-                    <Image
-                      src={book.image}
-                      alt={book.title}
-                      fill
-                      sizes="(min-width: 1024px) 18rem, 100vw"
-                      className="object-cover"
-                    />
-                  </div>
-                </div>
-              ) : null}
-              <div className="space-y-2 p-4">
-      
-                <div className="text-lg font-semibold leading-snug hover:underline">
-                  {book.title}
-                </div>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {book.author}
-                </p>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {book.sectionCount} பிரிவுகள் · {book.chapterCount} அதிகாரங்கள்
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <RecentBooksCarousel books={recentBooks} />
       </section>
 
       <section className="mx-auto w-full max-w-5xl space-y-6 px-4">

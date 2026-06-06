@@ -173,7 +173,7 @@ export default async function BookPage({ params }: BookPageProps) {
                     <li key={chapter.slug} className="list-none">
                       <Link
                         href={`/books/${entry.slug}/${chapter.slug}`}
-                        className="group flex items-baseline text-base leading-relaxed"
+                        className="group flex items-baseline text-lg leading-relaxed"
                       >
                         <span className="w-8 flex-none">{chapterIndex + 1}.</span>
                         <span className="flex-1 underline-offset-4 group-hover:underline">
@@ -195,10 +195,10 @@ export default async function BookPage({ params }: BookPageProps) {
             >
               <div className="space-y-4 pl-4">
                 <div className="flex items-baseline">
-                  <span className="w-8 flex-none text-base font-semibold">
+                  <span className="w-8 flex-none text-lg">
                     {entry.directChapters.length + sectionIndex + 1}.
                   </span>
-                  <h2 className="flex-1 text-lg font-semibold">
+                  <h2 className="flex-1 text-lg">
                     {section.label}
                   </h2>
                 </div>

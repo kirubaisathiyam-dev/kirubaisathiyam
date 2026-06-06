@@ -1,5 +1,5 @@
 ---
-title: The Mortification of Sin (பாவத்தை அழித்தல்)
+title: பாவத்தை அழித்தல் (The Mortification of Sin)
 date: 2026-06-04T00:00:00.000Z
 author: ஜான் ஓவன்
 keywords:
