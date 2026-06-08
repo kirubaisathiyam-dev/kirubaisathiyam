@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import BibleReferenceTooltip from "@/components/BibleReferenceTooltip";
+import FeatureBanner from "@/components/FeatureBanner";
 import PageTransition from "@/components/PageTransition";
 import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import ReaderShell from "@/components/ReaderShell";
@@ -11,6 +12,17 @@ import { EmailIcon, InstagramIcon, WhatsappIcon, YoutubeIcon } from "@/component
 
 type SiteLayoutProps = {
   children: React.ReactNode;
+};
+
+const topFeatureBanner = {
+  id: "youtube-channel-june-2026",
+  enabled: true,
+  title: "New Feature",
+  description: "Our YouTube channel is now live. Watch Bible reading, prayer, and meditation videos.",
+  ctaLabel: "Watch Now",
+  ctaHref: "https://www.youtube.com/@KirubaiSathiyam",
+  accentColor: "#9e3434",
+  background: "linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(69, 10, 10, 0.05) 100%)",
 };
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
@@ -33,6 +45,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <FeatureBanner {...topFeatureBanner} />
       <SiteHeader />
 
       <main
