@@ -7,7 +7,7 @@ import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import ReaderShell from "@/components/ReaderShell";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeForm from "@/components/SubscribeForm";
-import { EmailIcon, InstagramIcon, YoutubeIcon, WhatsappIcon } from "@/components/Icons";
+import { EmailIcon, InstagramIcon, WhatsappIcon, YoutubeIcon } from "@/components/Icons";
 
 type SiteLayoutProps = {
   children: React.ReactNode;
@@ -52,7 +52,8 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       >
         <div
           style={{
-            background: "linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, rgba(128, 105, 48, 0.03) 100%)",
+            background:
+              "linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, rgba(128, 105, 48, 0.03) 100%)",
             borderColor: "var(--border-color)",
           }}
           className="border-b"
@@ -60,11 +61,11 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
           <div className="mx-auto w-full max-w-5xl px-4 py-12">
             <div className="space-y-4">
               <div>
-                <p className="text-xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
+                <p className="mb-2 text-xl font-bold" style={{ color: "var(--foreground)" }}>
                   புதிய கட்டுரைகள் உங்கள் மின்னஞ்சலில்
                 </p>
                 <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                  தேவை நெறிபடி கட்டுரைகள் மற்றும் வேத செய்திகளைப் பெறுங்கள்
+                  தேவையான கட்டுரைகள் மற்றும் வேத செய்திகளைப் பெறுங்கள்
                 </p>
               </div>
               <SubscribeForm />
@@ -72,35 +73,35 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
           </div>
         </div>
 
-        {/* WhatsApp Channel Section */}
         <div
           style={{
-            background: "linear-gradient(135deg, rgba(37, 211, 102, 0.08) 0%, rgba(8, 37, 19, 0.04) 100%)",
+            background:
+              "linear-gradient(135deg, rgba(37, 211, 102, 0.08) 0%, rgba(8, 37, 19, 0.04) 100%)",
             borderColor: "var(--border-color)",
           }}
           className="border-b"
         >
           <div className="mx-auto w-full max-w-5xl px-4 py-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 items-start">
+            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
+                <div className="mb-3 flex items-center gap-3">
                   <WhatsappIcon style={{ width: 32, height: 32, color: "#41905e" }} />
                   <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>
                     WhatsApp Channel
                   </h2>
                 </div>
-                <p className="text-base mb-2" style={{ color: "var(--foreground)" }}>
+                <p className="mb-2 text-base" style={{ color: "var(--foreground)" }}>
                   பரிசுத்த வாழ்க்கை - அனுதின தியானம்
                 </p>
                 <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
-                  WhatsApp-இல் தினந்தோறும் தியானம் மற்றும் செய்திகள் பெறுங்கள்
+                  WhatsApp-இல் தினந்தோறும் தியானம் மற்றும் செய்திகளைப் பெறுங்கள்
                 </p>
               </div>
               <a
                 href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
                 target="_blank"
                 rel="noreferrer"
-                className="px-6 py-3 font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity whitespace-nowrap"
+                className="flex items-center gap-2 whitespace-nowrap px-6 py-3 font-semibold transition-opacity hover:opacity-90"
                 style={{
                   background: "#41905e",
                   color: "#fff",
@@ -113,8 +114,49 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
           </div>
         </div>
 
+        <div
+          style={{
+            background:
+              "linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(69, 10, 10, 0.04) 100%)",
+            borderColor: "var(--border-color)",
+          }}
+          className="border-b"
+        >
+          <div className="mx-auto w-full max-w-5xl px-4 py-8">
+            <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex-1">
+                <div className="mb-3 flex items-center gap-3">
+                  <YoutubeIcon style={{ width: 32, height: 32, color: "#9e3434" }} />
+                  <h2 className="text-xl font-bold" style={{ color: "var(--foreground)" }}>
+                    YouTube Channel
+                  </h2>
+                </div>
+                <p className="mb-2 text-base" style={{ color: "var(--foreground)" }}>
+                  வேத வசனங்களை கேட்டு தியானிக்க எங்கள் YouTube சேனலை பாருங்கள்.
+                </p>
+                <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                  வேத வாசிப்பு, ஜெபம், மற்றும் தியானத்திற்கான காணொளிகள் இங்கே உள்ளன.
+                </p>
+              </div>
+              <a
+                href="https://www.youtube.com/@KirubaiSathiyam"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 whitespace-nowrap px-6 py-3 font-semibold transition-opacity hover:opacity-90"
+                style={{
+                  background: "#9e3434",
+                  color: "#fff",
+                }}
+              >
+                <YoutubeIcon style={{ width: 20, height: 20 }} />
+                Watch Our Channel
+              </a>
+            </div>
+          </div>
+        </div>
+
         <div className="mx-auto w-full max-w-5xl space-y-5 px-4 py-8">
-          <div className="flex flex-wrap gap-4 justify-between items-center">
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
             <span
               className="block text-xs opacity-80 hover:opacity-100"
               style={{ color: "var(--muted-foreground)" }}
@@ -149,6 +191,16 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
                 style={{ color: "#9e3434" }}
               >
                 <YoutubeIcon style={{ width: 20, height: 20 }} />
+              </a>
+              <a
+                href="https://whatsapp.com/channel/0029Vb745DA7dmeV8xxmEF23"
+                target="_blank"
+                rel="noreferrer"
+                title="WhatsApp"
+                className="inline-flex items-center hover:opacity-70"
+                style={{ color: "#41905e" }}
+              >
+                <WhatsappIcon style={{ width: 20, height: 20 }} />
               </a>
             </div>
           </div>
