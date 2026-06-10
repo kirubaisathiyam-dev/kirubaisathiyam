@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DevotionHero from "@/components/DevotionHero";
+import DevotionAudioReader from "@/components/DevotionAudioReader";
 import DevotionShareCard from "@/components/DevotionShareCard";
 import DevotionShareActions from "@/components/DevotionShareActions";
 import {
@@ -361,42 +362,11 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
       />
 
       {devotion.devotion ? (
-        <div className="mx-auto mt-8 flex w-full max-w-4xl flex-col gap-8 px-4 sm:px-6 sm:mt-10">
-          {devotion.audio ? (
-            <div
-              className="py-2"
-              style={{ borderColor: "var(--border-color)" }}
-            >
-              <audio
-                className="w-full"
-                controls
-                src={devotion.audio}
-                preload="metadata"
-              >
-                Your browser does not support audio playback. Download the file{" "}
-                <a
-                  href={devotion.audio}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="underline"
-                >
-                  here
-                </a>
-                .
-              </audio>
-            </div>
-          ) : null}
-          <div
-            className="prose prose-neutral max-w-none text-base leading-8 sm:text-lg"
-            style={{ color: "var(--foreground)" }}
-            dangerouslySetInnerHTML={{ __html: devotionHtml }}
-          />
-          <p
-            className="text-sm sm:text-base"
-            style={{ color: "rgba(255, 255, 255, 0.5)" }}
-          >
-            {DEVOTION_ATTRIBUTION}
-          </p>
+        <DevotionAudioReader
+          audio={devotion.audio}
+          devotionHtml={devotionHtml}
+          attribution={DEVOTION_ATTRIBUTION}
+        >
           <div className="mb-8">
             <DevotionShareActions
               title={`Daily Devotion - ${devotion.verseReference}`}
@@ -408,7 +378,7 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
               fileName={imageFileName}
             />
           </div>
-        </div>
+        </DevotionAudioReader>
       ) : null}
     </article>
   );
