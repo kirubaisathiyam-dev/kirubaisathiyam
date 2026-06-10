@@ -1,4 +1,4 @@
-const VERSION = "v4";
+const VERSION = "v5";
 const PRECACHE = `precache-${VERSION}`;
 const RUNTIME = `runtime-${VERSION}`;
 const CONTENT = `content-${VERSION}`;
@@ -242,6 +242,14 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   const pathname = url.pathname;
+
+  if (
+    pathname.startsWith("/audio/") ||
+    pathname.startsWith("/devotion-audios/")
+  ) {
+    event.respondWith(fetch(request));
+    return;
+  }
 
   if (request.mode === "navigate") {
     const fallbackUrl = pathname.startsWith("/articles/")

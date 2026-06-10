@@ -4,9 +4,9 @@ import { useEffect } from "react";
 
 const SW_PATH = "/sw.js";
 const CACHE_NAMES = {
-  precache: "precache-v4",
-  runtime: "runtime-v4",
-  content: "content-v4",
+  precache: "precache-v5",
+  runtime: "runtime-v5",
+  content: "content-v5",
 } as const;
 const OFFLINE_MANIFEST_VERSION_KEY = "kirubai-offline:manifest-version";
 const OFFLINE_LAST_SYNC_KEY = "kirubai-offline:last-sync";

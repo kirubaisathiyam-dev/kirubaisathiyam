@@ -44,6 +44,7 @@ type DevotionPageData = {
   verseReference: string;
   verseText: string;
   devotion: string;
+  audio?: string;
   canonicalPath: string;
 };
 
@@ -188,6 +189,7 @@ async function getDevotionPageData(
     verseReference: verseDetails.reference,
     verseText: verseDetails.verse,
     devotion: slotEntry.devotion ?? "",
+    audio: slotEntry.audio || undefined,
     canonicalPath,
   };
 }
@@ -316,6 +318,16 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
       name: siteName,
       url: siteUrl.toString(),
     },
+    ...(devotion.audio
+      ? {
+          audio: {
+            "@type": "AudioObject",
+            name: `${devotion.label} audio`,
+            url: toAbsoluteUrl(devotion.audio),
+            contentUrl: toAbsoluteUrl(devotion.audio),
+          },
+        }
+      : {}),
   };
 
   return (
@@ -350,6 +362,30 @@ export default async function DevotionPage({ params }: DevotionPageProps) {
 
       {devotion.devotion ? (
         <div className="mx-auto mt-8 flex w-full max-w-4xl flex-col gap-8 px-4 sm:px-6 sm:mt-10">
+          {devotion.audio ? (
+            <div
+              className="py-2"
+              style={{ borderColor: "var(--border-color)" }}
+            >
+              <audio
+                className="w-full"
+                controls
+                src={devotion.audio}
+                preload="metadata"
+              >
+                Your browser does not support audio playback. Download the file{" "}
+                <a
+                  href={devotion.audio}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline"
+                >
+                  here
+                </a>
+                .
+              </audio>
+            </div>
+          ) : null}
           <div
             className="prose prose-neutral max-w-none text-base leading-8 sm:text-lg"
             style={{ color: "var(--foreground)" }}

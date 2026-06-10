@@ -6,6 +6,7 @@ export type DailyDevotionSlotKey = "am" | "pm";
 export type DailyDevotionSlot = {
   verse?: string;
   devotion?: string;
+  audio?: string;
 };
 
 export type DailyDevotionRecord = {
