@@ -4,9 +4,9 @@ import { useEffect } from "react";
 
 const SW_PATH = "/sw.js";
 const CACHE_NAMES = {
-  precache: "precache-v5",
-  runtime: "runtime-v5",
-  content: "content-v5",
+  precache: "precache-v6",
+  runtime: "runtime-v6",
+  content: "content-v6",
 } as const;
 const OFFLINE_MANIFEST_VERSION_KEY = "kirubai-offline:manifest-version";
 const OFFLINE_LAST_SYNC_KEY = "kirubai-offline:last-sync";
@@ -40,6 +40,7 @@ const CORE_ROUTE_ASSET_URLS = [
   "/bible/search",
   "/privacy-terms",
 ];
+const AUDIO_ASSET_PATTERN = /\.(mp3|m4a|aac|ogg|wav)$/i;
 
 type OfflineManifest = {
   routes?: string[];
@@ -78,6 +79,10 @@ async function cacheUrl(rawUrl: string) {
 
   const targetUrl = new URL(rawUrl, window.location.origin);
   if (targetUrl.origin !== window.location.origin) {
+    return;
+  }
+
+  if (AUDIO_ASSET_PATTERN.test(targetUrl.pathname)) {
     return;
   }
 

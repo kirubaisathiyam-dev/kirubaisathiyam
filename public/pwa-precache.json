@@ -18,12 +18,17 @@
     "/bible/read",
     "/bible/search",
     "/church-history",
+    "/church-history/apostlic-christianity",
+    "/church-history/apostlic-christianity/preparation-for-christianity/2026-06-06-110507",
+    "/church-history/apostlic-christianity/preparation-for-christianity/2026-06-06-111335",
+    "/church-history/apostlic-christianity/preparation-for-christianity/2026-06-06-112107",
     "/church-history/introduction",
     "/church-history/introduction/2026-05-25-130320",
     "/church-history/introduction/2026-05-25-131255",
     "/church-history/introduction/2026-05-25-134155",
     "/church-history/introduction/2026-05-25-141749",
     "/church-history/introduction/2026-05-25-142025",
+    "/church-history/introduction/2026-06-06-104958",
     "/meditate",
     "/privacy-terms",
     "/theology",
@@ -62,11 +67,15 @@
     "/articles/2026-05-19-170809"
   ],
   "churchHistoryTopics": [
+    "/church-history/apostlic-christianity/preparation-for-christianity/2026-06-06-110507",
+    "/church-history/apostlic-christianity/preparation-for-christianity/2026-06-06-111335",
+    "/church-history/apostlic-christianity/preparation-for-christianity/2026-06-06-112107",
     "/church-history/introduction/2026-05-25-130320",
     "/church-history/introduction/2026-05-25-131255",
     "/church-history/introduction/2026-05-25-134155",
     "/church-history/introduction/2026-05-25-141749",
-    "/church-history/introduction/2026-05-25-142025"
+    "/church-history/introduction/2026-05-25-142025",
+    "/church-history/introduction/2026-06-06-104958"
   ],
   "theologyTopics": [
     "/theology/systematic-theology/introduction/2026-03-21-013948",
@@ -181,13 +190,13 @@
     "/uploads/7203.jpg",
     "/uploads/7d2c1238df3cc9b97d418d66953926cd.jpg",
     "/uploads/7d635575948e7cb7d12d0904a7ec851b.jpg",
+    "/uploads/ae89a48b8f14ef24fca6a6b641ed6949.jpg",
     "/uploads/chatgpt-image-jan-19-2026-08_01_02-am-1-.png",
+    "/uploads/e6969faaeafa3f63de43d2fe11678e8e.jpg",
     "/uploads/f31b5cd07078f2b269ef5cf5adfb63e3.jpg",
-    "/uploads/je_1.mp3",
     "/uploads/life.jpg",
-    "/uploads/life.mp3",
     "/uploads/long.jpg",
     "/uploads/map3.png"
   ],
-  "generatedAt": "2026-06-03T07:57:42.202Z"
+  "generatedAt": "2026-06-10T05:28:26.433Z"
 }

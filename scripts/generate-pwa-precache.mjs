@@ -10,6 +10,7 @@ const uploadsDir = path.join(projectRoot, "public", "uploads");
 const imagesDir = path.join(projectRoot, "public", "images");
 const meditationVideosDir = path.join(projectRoot, "public", "meditation-videos");
 const outputPath = path.join(projectRoot, "public", "pwa-precache.json");
+const AUDIO_EXTENSIONS = new Set([".mp3", ".m4a", ".aac", ".ogg", ".wav"]);
 
 const listFiles = (dir, ext) => {
   try {
@@ -68,6 +69,9 @@ const listPublicAssets = (dir, urlPrefix, baseDir = dir) => {
     return [];
   }
 };
+
+const isAudioAsset = (assetPath) =>
+  AUDIO_EXTENSIONS.has(path.extname(assetPath).toLowerCase());
 
 const articleFiles = listFiles(articlesDir, ".md");
 const churchHistoryFiles = listRecursiveFiles(churchHistoryDir, ".md").sort((a, b) =>
@@ -152,7 +156,7 @@ const contentAssets = [
   ...listPublicAssets(meditationVideosDir, "/meditation-videos").filter(
     (asset) => asset === "/meditation-videos/sunrise-dawn.mp4",
   ),
-  ...listPublicAssets(uploadsDir, "/uploads"),
+  ...listPublicAssets(uploadsDir, "/uploads").filter((asset) => !isAudioAsset(asset)),
   ...listPublicAssets(imagesDir, "/images"),
 ].sort((a, b) => a.localeCompare(b));
 
